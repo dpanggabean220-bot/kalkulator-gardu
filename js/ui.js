@@ -445,983 +445,982 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-// Handle form submission for calculator 6
-const form6 = document.getElementById('form6');
-if (form6) {
-    form6.addEventListener('submit', function(e) {
-        e.preventDefault();
+    // Handle form submission for calculator 6
+    const form6 = document.getElementById('form6');
+    if (form6) {
+        form6.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-        // Get input values
-        const mvascInput = document.getElementById('mvasc');
-        const tegangan6Input = document.getElementById('tegangan6');
-        const hasilDiv = document.getElementById('hasil6');
+            // Get input values
+            const mvascInput = document.getElementById('mvasc');
+            const tegangan6Input = document.getElementById('tegangan6');
+            const hasilDiv = document.getElementById('hasil6');
 
-        // Clear previous results and errors
-        hasilDiv.innerHTML = '';
-        mvascInput.classList.remove('error-input');
-        tegangan6Input.classList.remove('error-input');
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+            mvascInput.classList.remove('error-input');
+            tegangan6Input.classList.remove('error-input');
 
-        // Remove any existing error messages
-        const existingErrors = form6.querySelectorAll('.error');
-        existingErrors.forEach(el => el.remove());
+            // Remove any existing error messages
+            const existingErrors = form6.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
 
-        try {
-            const MVA_sc = parseFloat(mvascInput.value);
-            const V = parseFloat(tegangan6Input.value);
+            try {
+                const MVA_sc = parseFloat(mvascInput.value);
+                const V = parseFloat(tegangan6Input.value);
 
-            // Validate empty inputs
-            if (isNaN(MVA_sc) || mvascInput.value.trim() === '') {
-                throw new Error('MVA hubung singkat harus diisi');
-            }
-            if (isNaN(V) || tegangan6Input.value.trim() === '') {
-                throw new Error('Tegangan V harus diisi');
-            }
-
-            // Call the rumus function
-            const I_sc = Rumus.arusHubungSingkatDariMVA(MVA_sc, V);
-            const I_sc_kA = I_sc / 1000;
-
-            // Format hasil dengan satuan dan locale Indonesia
-            const hasilFormatted_kA = I_sc_kA.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kA';
-            const hasilFormatted_A = I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' A';
-
-            // Tampilkan hasil
-            hasilDiv.innerHTML = `
-                <strong>Arus hubung singkat:</strong> ${hasilFormatted_kA}<br>
-                <small>${hasilFormatted_A}</small><br>
-                <strong>Rumus:</strong> I_sc = MVA_sc × 1000 / (√3 × V)<br>
-                <strong>Perhitungan:</strong> I_sc = ${MVA_sc} × 1000 / (√3 × ${V}) = ${hasilFormatted_A}
-            `;
-        } catch (error) {
-            // Tampilkan error di dekat kolom yang salah
-            if (error.message.includes('MVA hubung singkat')) {
-                mvascInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                mvascInput.parentNode.insertBefore(errorElem, mvascInput.nextSibling);
-            }
-            if (error.message.includes('Tegangan V')) {
-                tegangan6Input.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                tegangan6Input.parentNode.insertBefore(errorElem, tegangan6Input.nextSibling);
-            }
-
-            // Tampilkan juga error umum di hasil div untuk debugging
-            hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-            hasilDiv.style.color = '#d32f2f';
-        }
-    });
-}
-
-// Handle form submission for calculator 7
-const form7 = document.getElementById('form7');
-if (form7) {
-    form7.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Get input values
-        const daya7Input = document.getElementById('daya7');
-        const tegangan7Input = document.getElementById('tegangan7');
-        const zPercent7Input = document.getElementById('z_percent7');
-        const hasilDiv = document.getElementById('hasil7');
-
-        // Clear previous results and errors
-        hasilDiv.innerHTML = '';
-        daya7Input.classList.remove('error-input');
-        tegangan7Input.classList.remove('error-input');
-        zPercent7Input.classList.remove('error-input');
-
-        // Remove any existing error messages
-        const existingErrors = form7.querySelectorAll('.error');
-        existingErrors.forEach(el => el.remove());
-
-        try {
-            const S = parseFloat(daya7Input.value);
-            const V = parseFloat(tegangan7Input.value);
-            const Z_percent = parseFloat(zPercent7Input.value);
-
-            // Validate empty inputs
-            if (isNaN(S) || daya7Input.value.trim() === '') {
-                throw new Error('Daya S harus diisi');
-            }
-            if (isNaN(V) || tegangan7Input.value.trim() === '') {
-                throw new Error('Tegangan V harus diisi');
-            }
-            if (isNaN(Z_percent) || zPercent7Input.value.trim() === '') {
-                throw new Error('Impedansi Z% harus diisi');
-            }
-
-            // Call the rumus function
-            const I_sc = Rumus.arusHubungSingkatTerminalTrafo(S, V, Z_percent);
-            const I_sc_kA = I_sc / 1000;
-
-            // Format hasil dengan satuan dan locale Indonesia
-            const hasilFormatted_kA = I_sc_kA.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kA';
-            const hasilFormatted_A = I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' A';
-
-            // Tampilkan hasil
-            hasilDiv.innerHTML = `
-                <strong>Arus hubung singkat:</strong> ${hasilFormatted_kA}<br>
-                <small>${hasilFormatted_A}</small><br>
-                <strong>Rumus:</strong> I_sc = I_nominal × 100 / Z%<br>
-                <strong>Perhitungan:</strong> I_sc = ${I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} A
-            `;
-        } catch (error) {
-            // Tampilkan error di dekat kolom yang salah
-            if (error.message.includes('Daya S')) {
-                daya7Input.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                daya7Input.parentNode.insertBefore(errorElem, daya7Input.nextSibling);
-            }
-            if (error.message.includes('Tegangan V')) {
-                tegangan7Input.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                tegangan7Input.parentNode.insertBefore(errorElem, tegangan7Input.nextSibling);
-            }
-            if (error.message.includes('Impedansi Z%')) {
-                zPercent7Input.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                zPercent7Input.parentNode.insertBefore(errorElem, zPercent7Input.nextSibling);
-            }
-
-            // Tampilkan juga error umum di hasil div untuk debugging
-            hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-            hasilDiv.style.color = '#d32f2f';
-        }
-    });
-}
-
-// Handle form submission for calculator 8
-const form8 = document.getElementById('form8');
-if (form8) {
-    // First, set up mode switching for cable input
-    const kabelModeRadios = form8.querySelectorAll('input[name="kabelMode"]');
-    const kabelModeContents = {
-        direct: document.getElementById('kabel-mode-direct'),
-        length: document.getElementById('kabel-mode-length')
-    };
-
-    // Function to show the selected mode and hide others
-    function showSelectedKabelMode() {
-        kabelModeRadios.forEach(radio => {
-            if (radio.checked) {
-                const mode = radio.value;
-                // Hide all mode contents
-                Object.values(kabelModeContents).forEach(content => {
-                    content.style.display = 'none';
-                });
-                // Show the selected one
-                if (kabelModeContents[mode]) {
-                    kabelModeContents[mode].style.display = 'block';
+                // Validate empty inputs
+                if (isNaN(MVA_sc) || mvascInput.value.trim() === '') {
+                    throw new Error('MVA hubung singkat harus diisi');
                 }
+                if (isNaN(V) || tegangan6Input.value.trim() === '') {
+                    throw new Error('Tegangan V harus diisi');
+                }
+
+                // Call the rumus function
+                const I_sc = Rumus.arusHubungSingkatDariMVA(MVA_sc, V);
+                const I_sc_kA = I_sc / 1000;
+
+                // Format hasil dengan satuan dan locale Indonesia
+                const hasilFormatted_kA = I_sc_kA.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kA';
+                const hasilFormatted_A = I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' A';
+
+                // Tampilkan hasil
+                hasilDiv.innerHTML = `
+                    <strong>Arus hubung singkat:</strong> ${hasilFormatted_kA}<br>
+                    <small>${hasilFormatted_A}</small><br>
+                    <strong>Rumus:</strong> I_sc = MVA_sc × 1000 / (√3 × V)<br>
+                    <strong>Perhitungan:</strong> I_sc = ${MVA_sc} × 1000 / (√3 × ${V}) = ${hasilFormatted_A}
+                `;
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (error.message.includes('MVA hubung singkat')) {
+                    mvascInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    mvascInput.parentNode.insertBefore(errorElem, mvascInput.nextSibling);
+                }
+                if (error.message.includes('Tegangan V')) {
+                    tegangan6Input.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    tegangan6Input.parentNode.insertBefore(errorElem, tegangan6Input.nextSibling);
+                }
+
+                // Tampilkan juga error umum di hasil div untuk debugging
+                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                hasilDiv.style.color = '#d32f2f';
             }
         });
     }
 
-    // Add event listeners to radio buttons
-    kabelModeRadios.forEach(radio => {
-        radio.addEventListener('change', showSelectedKabelMode);
-    });
+    // Handle form submission for calculator 7
+    const form7 = document.getElementById('form7');
+    if (form7) {
+        form7.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-    // Initialize the display to the default mode (direct)
-    showSelectedKabelMode();
+            // Get input values
+            const daya7Input = document.getElementById('daya7');
+            const tegangan7Input = document.getElementById('tegangan7');
+            const zPercent7Input = document.getElementById('z_percent7');
+            const hasilDiv = document.getElementById('hasil7');
 
-    form8.addEventListener('submit', function(e) {
-        e.preventDefault();
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+            daya7Input.classList.remove('error-input');
+            tegangan7Input.classList.remove('error-input');
+            zPercent7Input.classList.remove('error-input');
 
-        // Get input values
-        const iPrimInput = document.getElementById('i_prim');
-        const iSekRatingInput = document.getElementById('i_sek_rating');
-        const iPrimRatingInput = document.getElementById('i_prim_rating');
-        const burdenRatingInput = document.getElementById('burden_rating');
-        const hasilDiv = document.getElementById('hasil8');
+            // Remove any existing error messages
+            const existingErrors = form7.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
 
-        // Clear previous results and errors
-        hasilDiv.innerHTML = '';
-        iPrimInput.classList.remove('error-input');
-        iSekRatingInput.classList.remove('error-input');
-        iPrimRatingInput.classList.remove('error-input');
-        burdenRatingInput.classList.remove('error-input');
+            try {
+                const S = parseFloat(daya7Input.value);
+                const V = parseFloat(tegangan7Input.value);
+                const Z_percent = parseFloat(zPercent7Input.value);
 
-        // Clear error inputs for both cable modes
-        const directModeInputs = [
-            document.getElementById('tahanan_relay_direct'),
-            document.getElementById('tahanan_kabel')
-        ];
-        directModeInputs.forEach(input => {
-            if (input) input.classList.remove('error-input');
-        });
-
-        const lengthModeInputs = [
-            document.getElementById('tahanan_relay_length'),
-            document.getElementById('panjang_kabel'),
-            document.getElementById('luas_penampang')
-        ];
-        lengthModeInputs.forEach(input => {
-            if (input) input.classList.remove('error-input');
-        });
-
-        // Remove any existing error messages
-        const existingErrors = form8.querySelectorAll('.error');
-        existingErrors.forEach(el => el.remove());
-
-        try {
-            const I_prim = parseFloat(iPrimInput.value);
-            const I_sek_rating = parseFloat(iSekRatingInput.value);
-            const I_prim_rating = parseFloat(iPrimRatingInput.value);
-
-            let burdenRating = null;
-            if (burdenRatingInput.value.trim() !== '') {
-                burdenRating = parseFloat(burdenRatingInput.value);
-                // Validate burden rating if provided
-                if (isNaN(burdenRating)) {
-                    throw new Error('Rating burden CT harus berupa angka');
+                // Validate empty inputs
+                if (isNaN(S) || daya7Input.value.trim() === '') {
+                    throw new Error('Daya S harus diisi');
                 }
-                if (burdenRating <= 0) {
-                    throw new Error('Rating burden CT harus lebih besar dari nol');
+                if (isNaN(V) || tegangan7Input.value.trim() === '') {
+                    throw new Error('Tegangan V harus diisi');
                 }
-            }
+                if (isNaN(Z_percent) || zPercent7Input.value.trim() === '') {
+                    throw new Error('Impedansi Z% harus diisi');
+                }
 
-            // Validate empty inputs for primary currents
-            if (isNaN(I_prim) || iPrimInput.value.trim() === '') {
-                throw new Error('Arus primer I_prim harus diisi');
-            }
-            if (isNaN(I_sek_rating) || iSekRatingInput.value.trim() === '') {
-                throw new Error('Arus sekunder rating I_sek_rating harus diisi');
-            }
-            if (isNaN(I_prim_rating) || iPrimRatingInput.value.trim() === '') {
-                throw new Error('Arus primer rating I_prim_rating harus diisi');
-            }
+                // Call the rumus function
+                const I_sc = Rumus.arusHubungSingkatTerminalTrafo(S, V, Z_percent);
+                const I_sc_kA = I_sc / 1000;
 
-            // Get selected cable mode
-            let selectedKabelMode = '';
+                // Format hasil dengan satuan dan locale Indonesia
+                const hasilFormatted_kA = I_sc_kA.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kA';
+                const hasilFormatted_A = I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' A';
+
+                // Tampilkan hasil
+                hasilDiv.innerHTML = `
+                    <strong>Arus hubung singkat:</strong> ${hasilFormatted_kA}<br>
+                    <small>${hasilFormatted_A}</small><br>
+                    <strong>Rumus:</strong> I_sc = I_nominal × 100 / Z%<br>
+                    <strong>Perhitungan:</strong> I_sc = ${I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} A
+                `;
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (error.message.includes('Daya S')) {
+                    daya7Input.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    daya7Input.parentNode.insertBefore(errorElem, daya7Input.nextSibling);
+                }
+                if (error.message.includes('Tegangan V')) {
+                    tegangan7Input.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    tegangan7Input.parentNode.insertBefore(errorElem, tegangan7Input.nextSibling);
+                }
+                if (error.message.includes('Impedansi Z%')) {
+                    zPercent7Input.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    zPercent7Input.parentNode.insertBefore(errorElem, zPercent7Input.nextSibling);
+                }
+
+                // Tampilkan juga error umum di hasil div untuk debugging
+                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                hasilDiv.style.color = '#d32f2f';
+            }
+        });
+    }
+
+    // Handle form submission for calculator 8
+    const form8 = document.getElementById('form8');
+    if (form8) {
+        // First, set up mode switching for cable input
+        const kabelModeRadios = form8.querySelectorAll('input[name="kabelMode"]');
+        const kabelModeContents = {
+            direct: document.getElementById('kabel-mode-direct'),
+            length: document.getElementById('kabel-mode-length')
+        };
+
+        // Function to show the selected mode and hide others
+        function showSelectedKabelMode() {
             kabelModeRadios.forEach(radio => {
                 if (radio.checked) {
-                    selectedKabelMode = radio.value;
+                    const mode = radio.value;
+                    // Hide all mode contents
+                    Object.values(kabelModeContents).forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    // Show the selected one
+                    if (kabelModeContents[mode]) {
+                        kabelModeContents[mode].style.display = 'block';
+                    }
+                }
+            });
+        }
+
+        // Add event listeners to radio buttons
+        kabelModeRadios.forEach(radio => {
+            radio.addEventListener('change', showSelectedKabelMode);
+        });
+
+        // Initialize the display to the default mode (direct)
+        showSelectedKabelMode();
+
+        form8.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get input values
+            const iPrimInput = document.getElementById('i_prim');
+            const iSekRatingInput = document.getElementById('i_sek_rating');
+            const iPrimRatingInput = document.getElementById('i_prim_rating');
+            const burdenRatingInput = document.getElementById('burden_rating');
+            const hasilDiv = document.getElementById('hasil8');
+
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+            iPrimInput.classList.remove('error-input');
+            iSekRatingInput.classList.remove('error-input');
+            iPrimRatingInput.classList.remove('error-input');
+            burdenRatingInput.classList.remove('error-input');
+
+            // Clear error inputs for both cable modes
+            const directModeInputs = [
+                document.getElementById('tahanan_relay_direct'),
+                document.getElementById('tahanan_kabel')
+            ];
+            directModeInputs.forEach(input => {
+                if (input) input.classList.remove('error-input');
+            });
+
+            const lengthModeInputs = [
+                document.getElementById('tahanan_relay_length'),
+                document.getElementById('panjang_kabel'),
+                document.getElementById('luas_penampang')
+            ];
+            lengthModeInputs.forEach(input => {
+                if (input) input.classList.remove('error-input');
+            });
+
+            // Remove any existing error messages
+            const existingErrors = form8.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
+
+            try {
+                const I_prim = parseFloat(iPrimInput.value);
+                const I_sek_rating = parseFloat(iSekRatingInput.value);
+                const I_prim_rating = parseFloat(iPrimRatingInput.value);
+
+                let burdenRating = null;
+                if (burdenRatingInput.value.trim() !== '') {
+                    burdenRating = parseFloat(burdenRatingInput.value);
+                    // Validate burden rating if provided
+                    if (isNaN(burdenRating)) {
+                        throw new Error('Rating burden CT harus berupa angka');
+                    }
+                    if (burdenRating <= 0) {
+                        throw new Error('Rating burden CT harus lebih besar dari nol');
+                    }
+                }
+
+                // Validate empty inputs for primary currents
+                if (isNaN(I_prim) || iPrimInput.value.trim() === '') {
+                    throw new Error('Arus primer I_prim harus diisi');
+                }
+                if (isNaN(I_sek_rating) || iSekRatingInput.value.trim() === '') {
+                    throw new Error('Arus sekunder rating I_sek_rating harus diisi');
+                }
+                if (isNaN(I_prim_rating) || iPrimRatingInput.value.trim() === '') {
+                    throw new Error('Arus primer rating I_prim_rating harus diisi');
+                }
+
+                // Get selected cable mode
+                let selectedKabelMode = '';
+                kabelModeRadios.forEach(radio => {
+                    if (radio.checked) {
+                        selectedKabelMode = radio.value;
+                    }
+                });
+
+                let R_relay;
+                let R_kabel;
+
+                if (selectedKabelMode === 'direct') {
+                    // Mode 1: Direct input of resistances
+                    const tahananRelayInput = document.getElementById('tahanan_relay_direct');
+                    const tahananKabelInput = document.getElementById('tahanan_kabel');
+
+                    // Validate empty inputs
+                    if (isNaN(parseFloat(tahananRelayInput.value)) || tahananRelayInput.value.trim() === '') {
+                        throw new Error('Tahanan relay harus diisi');
+                    }
+                    if (isNaN(parseFloat(tahananKabelInput.value)) || tahananKabelInput.value.trim() === '') {
+                        throw new Error('Tahanan kabel total pulang-pergi harus diisi');
+                    }
+
+                    R_relay = parseFloat(tahananRelayInput.value);
+                    R_kabel = parseFloat(tahananKabelInput.value);
+
+                    // Validate resistance values
+                    if (R_relay < 0) {
+                        throw new Error('Tahanan relay tidak boleh negatif');
+                    }
+                    if (R_kabel < 0) {
+                        throw new Error('Tahanan kabel tidak boleh negatif');
+                    }
+                } else if (selectedKabelMode === 'length') {
+                    // Mode 2: Calculate resistance from cable length and cross-section
+                    const tahananRelayInput = document.getElementById('tahanan_relay_length');
+                    const panjangKabelInput = document.getElementById('panjang_kabel');
+                    const luasPenampangInput = document.getElementById('luas_penampang');
+
+                    // Validate empty inputs
+                    if (isNaN(parseFloat(tahananRelayInput.value)) || tahananRelayInput.value.trim() === '') {
+                        throw new Error('Tahanan relay harus diisi');
+                    }
+                    if (isNaN(parseFloat(panjangKabelInput.value)) || panjangKabelInput.value.trim() === '') {
+                        throw new Error('Panjang kabel satu arah harus diisi');
+                    }
+                    if (isNaN(parseFloat(luasPenampangInput.value)) || luasPenampangInput.value.trim() === '') {
+                        throw new Error('Luas penampang kabel harus diisi');
+                    }
+
+                    R_relay = parseFloat(tahananRelayInput.value);
+                    const panjangKabel = parseFloat(panjangKabelInput.value);
+                    const luasPenampang = parseFloat(luasPenampangInput.value);
+
+                    // Validate values
+                    if (R_relay < 0) {
+                        throw new Error('Tahanan relay tidak boleh negatif');
+                    }
+                    if (panjangKabel <= 0) {
+                        throw new Error('Panjang kabel satu arah harus lebih besar dari nol');
+                    }
+                    if (luasPenampang <= 0) {
+                        throw new Error('Luas penampang kabel harus lebih besar dari nol');
+                    }
+
+                    // Calculate cable resistance using the rumus function
+                    R_kabel = Rumus.tahananKabelTembaga(panjangKabel, luasPenampang);
+                } else {
+                    throw new Error('Mode input kabel tidak valid');
+                }
+
+                // Call the rumus function
+                const result = Rumus.arusSekunderCT(I_prim, I_sek_rating, I_prim_rating, R_relay, R_kabel, burdenRating);
+
+                // Format hasil dengan satuan dan locale Indonesia
+                const iSekFormatted = result.I_sek.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' A';
+                const vaFormatted = result.VA.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' VA';
+
+                // Tampilkan hasil
+                let hasilHTML = `
+                    <strong>Arus sekunder:</strong> ${iSekFormatted}<br>
+                    <strong>Burden:</strong> ${vaFormatted}<br>
+                `;
+
+                // Add burden rating info if provided
+                if (burdenRating !== null) {
+                    const burdenPercentFormatted = result.burdenPercent.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' %';
+                    const burdenRatingFormatted = burdenRating.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' VA';
+
+                    hasilHTML += `<strong>Rating burden CT:</strong> ${burdenRatingFormatted}<br>
+                    <strong>Persentase pemakaian burden:</strong> ${burdenPercentFormatted}<br>`;
+
+                    // Add warning if burden exceeds rating
+                    if (result.burdenPercent > 100) {
+                        hasilHTML += `<br><span style="color: #d32f2f; font-weight: bold;">Peringatan: Burden melebihi rating CT</span><br>`;
+                    }
+                }
+
+                hasilHTML += `
+                    <strong>Rumus:</strong><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;I_sek = I_prim × (I_sek_rating / I_prim_rating)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;R_total = R_relay + R_kabel<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;VA = I_sek² × R_total<br>
+                    <strong>Perhitungan:</strong><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;I_sek = ${I_prim} × (${I_sek_rating} / ${I_prim_rating}) = ${result.I_sek.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} A<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;R_total = ${R_relay.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${R_kabel.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${(R_relay + R_kabel).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Ω<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;VA = ${result.I_sek.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}² × ${(R_relay + R_kabel).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${result.VA.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} VA
+                `;
+
+                // Add cable resistance calculation info if using length mode
+                if (selectedKabelMode === 'length') {
+                    hasilHTML += `<br><strong>Perhitungan tahanan kabel:</strong><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;R_kabel = 2 × L × ρ / A<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;R_kabel = 2 × ${panjangKabel} × 0,0175 / ${luasPenampang} = ${R_kabel.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} Ω<br>
+                    <small>Catatan: Nilai 0,0175 Ω·mm²/m adalah resistivitas tembaga pada 20 °C</small>`;
+                }
+
+                hasilDiv.innerHTML = hasilHTML;
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (error.message.includes('Arus primer I_prim')) {
+                    iPrimInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    iPrimInput.parentNode.insertBefore(errorElem, iPrimInput.nextSibling);
+                }
+                if (error.message.includes('Arus sekunder rating I_sek_rating')) {
+                    iSekRatingInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    iSekRatingInput.parentNode.insertBefore(errorElem, iSekRatingInput.nextSibling);
+                }
+                if (error.message.includes('Arus primer rating I_prim_rating')) {
+                    iPrimRatingInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    iPrimRatingInput.parentNode.insertBefore(errorElem, iPrimRatingInput.nextSibling);
+                }
+                // Error untuk input mode-specific - hanya tampilkan di mode yang aktif
+                if (selectedKabelMode === 'direct') {
+                    if (error.message.includes('Tahanan relay')) {
+                        const tahananRelayInput = document.getElementById('tahanan_relay_direct');
+                        if (tahananRelayInput) {
+                            tahananRelayInput.classList.add('error-input');
+                            const errorElem = document.createElement('div');
+                            errorElem.className = 'error';
+                            errorElem.textContent = error.message;
+                            tahananRelayInput.parentNode.insertBefore(errorElem, tahananRelayInput.nextSibling);
+                        }
+                    }
+                    if (error.message.includes('Tahanan kabel')) {
+                        const tahananKabelInput = document.getElementById('tahanan_kabel');
+                        if (tahananKabelInput) {
+                            tahananKabelInput.classList.add('error-input');
+                            const errorElem = document.createElement('div');
+                            errorElem.className = 'error';
+                            errorElem.textContent = error.message;
+                            tahananKabelInput.parentNode.insertBefore(errorElem, tahananKabelInput.nextSibling);
+                        }
+                    }
+                } else if (selectedKabelMode === 'length') {
+                    if (error.message.includes('Tahanan relay')) {
+                        const tahananRelayInput = document.getElementById('tahanan_relay_length');
+                        if (tahananRelayInput) {
+                            tahananRelayInput.classList.add('error-input');
+                            const errorElem = document.createElement('div');
+                            errorElem.className = 'error';
+                            errorElem.textContent = error.message;
+                            tahananRelayInput.parentNode.insertBefore(errorElem, tahananRelayInput.nextSibling);
+                        }
+                    }
+                    if (error.message.includes('Panjang kabel')) {
+                        const panjangKabelInput = document.getElementById('panjang_kabel');
+                        if (panjangKabelInput) {
+                            panjangKabelInput.classList.add('error-input');
+                            const errorElem = document.createElement('div');
+                            errorElem.className = 'error';
+                            errorElem.textContent = error.message;
+                            panjangKabelInput.parentNode.insertBefore(errorElem, panjangKabelInput.nextSibling);
+                        }
+                    }
+                    if (error.message.includes('Luas penampang')) {
+                        const luasPenampangInput = document.getElementById('luas_penampang');
+                        if (luasPenampangInput) {
+                            luasPenampangInput.classList.add('error-input');
+                            const errorElem = document.createElement('div');
+                            errorElem.className = 'error';
+                            errorElem.textContent = error.message;
+                            luasPenampangInput.parentNode.insertBefore(errorElem, luasPenampangInput.nextSibling);
+                        }
+                    }
+                }
+                if (error.message.includes('Rating burden CT')) {
+                    burdenRatingInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    burdenRatingInput.parentNode.insertBefore(errorElem, burdenRatingInput.nextSibling);
+                }
+
+                // Tampilkan juga error umum di hasil div untuk debugging
+                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                hasilDiv.style.color = '#d32f2f';
+            }
+        });
+    }
+
+    // Handle form submission for calculator 4
+    const form4 = document.getElementById('form4');
+    if (form4) {
+        form4.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get input values
+            const vNominalInput = document.getElementById('v_nominal');
+            const tapNInput = document.getElementById('tapen');
+            const stepInput = document.getElementById('step');
+            const hasilDiv = document.getElementById('hasil4');
+
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+            vNominalInput.classList.remove('error-input');
+            tapNInput.classList.remove('error-input');
+            stepInput.classList.remove('error-input');
+
+            // Remove any existing error messages
+            const existingErrors = form4.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
+
+            try {
+                const V_nominal = parseFloat(vNominalInput.value);
+                const n = parseFloat(tapNInput.value);
+                const stepPercent = parseFloat(stepInput.value);
+
+                // Validate empty inputs
+                if (isNaN(V_nominal) || vNominalInput.value.trim() === '') {
+                    throw new Error('Tegangan nominal V_nominal harus diisi');
+                }
+                if (isNaN(n) || tapNInput.value.trim() === '') {
+                    throw new Error('Posisi tap n harus diisi');
+                }
+                if (isNaN(stepPercent) || stepInput.value.trim() === '') {
+                    throw new Error('Persentase langkah step harus diisi');
+                }
+
+                // Call the rumus function
+                const V_tap = Rumus.teganganPerPosisiTap(V_nominal, n, stepPercent);
+
+                // Format hasil dengan satuan dan locale Indonesia
+                const vNominalFormatted = V_nominal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kV';
+                const vTapFormatted = V_tap.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kV';
+
+                // Tampilkan hasil
+                hasilDiv.innerHTML = `
+                    <strong>Tegangan setelah tap:</strong> ${vTapFormatted}<br>
+                    <strong>Rumus:</strong> V_tap = V_nominal × (1 + n × step% / 100)<br>
+                    <strong>Perhitungan:</strong> V_tap = ${V_nominal} × (1 + ${n} × ${stepPercent} / 100) = ${V_tap.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kV
+                `;
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (error.message.includes('Tegangan nominal V_nominal')) {
+                    vNominalInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    vNominalInput.parentNode.insertBefore(errorElem, vNominalInput.nextSibling);
+                }
+                if (error.message.includes('Posisi tap n')) {
+                    tapNInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    tapNInput.parentNode.insertBefore(errorElem, tapNInput.nextSibling);
+                }
+                if (error.message.includes('Persentase langkah step')) {
+                    stepInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    stepInput.parentNode.insertBefore(errorElem, stepInput.nextSibling);
+                }
+
+                // Tampilkan juga error umum di hasil div untuk debugging
+                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                hasilDiv.style.color = '#d32f2f';
+            }
+        });
+    }
+
+    // Handle form submission for calculator 5
+    const form5 = document.getElementById('form5');
+    if (form5) {
+        form5.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get input values
+            const dayaInput = document.getElementById('daya5');
+            const cosPhi1Input = document.getElementById('cosPhi1');
+            const cosPhi2Input = document.getElementById('cosPhi2');
+            const hasilDiv = document.getElementById('hasil5');
+
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+            dayaInput.classList.remove('error-input');
+            cosPhi1Input.classList.remove('error-input');
+            cosPhi2Input.classList.remove('error-input');
+
+            // Remove any existing error messages
+            const existingErrors = form5.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
+
+            try {
+                const P = parseFloat(dayaInput.value);
+                const cosPhi1 = parseFloat(cosPhi1Input.value);
+                const cosPhi2 = parseFloat(cosPhi2Input.value);
+
+                // Validate empty inputs
+                if (isNaN(P) || dayaInput.value.trim() === '') {
+                    throw new Error('Daya aktif P harus diisi');
+                }
+                if (isNaN(cosPhi1) || cosPhi1Input.value.trim() === '') {
+                    throw new Error('Faktor daya awal cos φ1 harus diisi');
+                }
+                if (isNaN(cosPhi2) || cosPhi2Input.value.trim() === '') {
+                    throw new Error('Faktor daya target cos φ2 harus diisi');
+                }
+
+                // Call the rumus function
+                const Qc = Rumus.kapasitorPerbaikanCosPhi(P, cosPhi1, cosPhi2);
+
+                // Format hasil dengan satuan dan locale Indonesia
+                const pFormatted = P.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MW';
+                const qcFormatted = Qc.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' MVAR';
+
+                // Tampilkan hasil
+                hasilDiv.innerHTML = `
+                    <strong>Besar kapasitor:</strong> ${qcFormatted}<br>
+                    <strong>Rumus:</strong> Qc = P × (tan φ1 − tan φ2)<br>
+                    <strong>Perhitungan:</strong> Qc = ${P} × (tan(cos⁻¹(${cosPhi1})) − tan(cos⁻¹(${cosPhi2}))) = ${Qc.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} MVAR
+                `;
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (error.message.includes('Daya aktif P')) {
+                    dayaInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    dayaInput.parentNode.insertBefore(errorElem, dayaInput.nextSibling);
+                }
+                if (error.message.includes('Faktor daya awal cos φ1')) {
+                    cosPhi1Input.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    cosPhi1Input.parentNode.insertBefore(errorElem, cosPhi1Input.nextSibling);
+                }
+                if (error.message.includes('Faktor daya target cos φ2')) {
+                    cosPhi2Input.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    cosPhi2Input.parentNode.insertBefore(errorElem, cosPhi2Input.nextSibling);
+                }
+
+                // Tampilkan juga error umum di hasil div untuk debugging
+                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                hasilDiv.style.color = '#d32f2f';
+            }
+        });
+    }
+
+    // Handle form submission for calculator 9
+    const form9 = document.getElementById('form9');
+    if (form9) {
+        // Now handle the form submission
+        form9.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get the selected curve type
+            let selectedCurveType = '';
+            const curveTypeRadios = form9.querySelectorAll('input[name="curveType"]');
+            curveTypeRadios.forEach(radio => {
+                if (radio.checked) {
+                    selectedCurveType = radio.value;
                 }
             });
 
-            let R_relay;
-            let R_kabel;
+            // Get input values
+            const tmsInput = document.getElementById('tms');
+            const ratioInput = document.getElementById('ratio');
+            const hasilDiv = document.getElementById('hasil9');
 
-            if (selectedKabelMode === 'direct') {
-                // Mode 1: Direct input of resistances
-                const tahananRelayInput = document.getElementById('tahanan_relay_direct');
-                const tahananKabelInput = document.getElementById('tahanan_kabel');
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+            tmsInput.classList.remove('error-input');
+            ratioInput.classList.remove('error-input');
 
-                // Validate empty inputs
-                if (isNaN(parseFloat(tahananRelayInput.value)) || tahananRelayInput.value.trim() === '') {
-                    throw new Error('Tahanan relay harus diisi');
-                }
-                if (isNaN(parseFloat(tahananKabelInput.value)) || tahananKabelInput.value.trim() === '') {
-                    throw new Error('Tahanan kabel total pulang-pergi harus diisi');
-                }
+            // Remove any existing error messages
+            const existingErrors = form9.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
 
-                R_relay = parseFloat(tahananRelayInput.value);
-                R_kabel = parseFloat(tahananKabelInput.value);
-
-                // Validate resistance values
-                if (R_relay < 0) {
-                    throw new Error('Tahanan relay tidak boleh negatif');
-                }
-                if (R_kabel < 0) {
-                    throw new Error('Tahanan kabel tidak boleh negatif');
-                }
-            } else if (selectedKabelMode === 'length') {
-                // Mode 2: Calculate resistance from cable length and cross-section
-                const tahananRelayInput = document.getElementById('tahanan_relay_length');
-                const panjangKabelInput = document.getElementById('panjang_kabel');
-                const luasPenampangInput = document.getElementById('luas_penampang');
+            try {
+                const TMS = parseFloat(tmsInput.value);
+                const I_over_Is = parseFloat(ratioInput.value);
 
                 // Validate empty inputs
-                if (isNaN(parseFloat(tahananRelayInput.value)) || tahananRelayInput.value.trim() === '') {
-                    throw new Error('Tahanan relay harus diisi');
+                if (isNaN(TMS) || tmsInput.value.trim() === '') {
+                    throw new Error('TMS harus diisi');
                 }
-                if (isNaN(parseFloat(panjangKabelInput.value)) || panjangKabelInput.value.trim() === '') {
-                    throw new Error('Panjang kabel satu arah harus diisi');
-                }
-                if (isNaN(parseFloat(luasPenampangInput.value)) || luasPenampangInput.value.trim() === '') {
-                    throw new Error('Luas penampang kabel harus diisi');
+                if (isNaN(I_over_Is) || ratioInput.value.trim() === '') {
+                    throw new Error('I/I_s harus diisi');
                 }
 
-                R_relay = parseFloat(tahananRelayInput.value);
-                const panjangKabel = parseFloat(panjangKabelInput.value);
-                const luasPenampang = parseFloat(luasPenampangInput.value);
+                // Call the rumus function
+                const t = Rumus.waktuKerjaRelayOCR(selectedCurveType, TMS, I_over_Is);
 
-                // Validate values
-                if (R_relay < 0) {
-                    throw new Error('Tahanan relay tidak boleh negatif');
-                }
-                if (panjangKabel <= 0) {
-                    throw new Error('Panjang kabel satu arah harus lebih besar dari nol');
-                }
-                if (luasPenampang <= 0) {
-                    throw new Error('Luas penampang kabel harus lebih besar dari nol');
-                }
+                // Format hasil dengan satuan dan locale Indonesia
+                const tmsFormatted = TMS.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+                const ratioFormatted = I_over_Is.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
-                // Calculate cable resistance using the rumus function
-                R_kabel = Rumus.tahananKabelTembaga(panjangKabel, luasPenampang);
-            } else {
-                throw new Error('Mode input kabel tidak valid');
-            }
+                // Tampilkan hasil
+                if (t === null) {
+                    hasilDiv.innerHTML = `
+                        <strong>Hasil:</strong> Relay tidak bekerja<br>
+                        <strong>Rumus:</strong> t = TMS × k / ((I / I_s)^α − 1)<br>
+                        <strong>Keterangan:</strong> Karena I/I_s ≤ 1, relay tidak bekerja
+                    `;
+                } else {
+                    const tFormatted = t.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' s';
 
-            // Call the rumus function
-            const result = Rumus.arusSekunderCT(I_prim, I_sek_rating, I_prim_rating, R_relay, R_kabel, burdenRating);
-
-            // Format hasil dengan satuan dan locale Indonesia
-            const iSekFormatted = result.I_sek.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' A';
-            const vaFormatted = result.VA.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' VA';
-
-            // Tampilkan hasil
-            let hasilHTML = `
-                <strong>Arus sekunder:</strong> ${iSekFormatted}<br>
-                <strong>Burden:</strong> ${vaFormatted}<br>
-            `;
-
-            // Add burden rating info if provided
-            if (burdenRating !== null) {
-                const burdenPercentFormatted = result.burdenPercent.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' %';
-                const burdenRatingFormatted = burdenRating.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' VA';
-
-                hasilHTML += `<strong>Rating burden CT:</strong> ${burdenRatingFormatted}<br>
-                <strong>Persentase pemakaian burden:</strong> ${burdenPercentFormatted}<br>`;
-
-                // Add warning if burden exceeds rating
-                if (result.burdenPercent > 100) {
-                    hasilHTML += `<br><span style="color: #d32f2f; font-weight: bold;">Peringatan: Burden melebihi rating CT</span><br>`;
-                }
-            }
-
-            hasilHTML += `
-                <strong>Rumus:</strong><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;I_sek = I_prim × (I_sek_rating / I_prim_rating)<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;R_total = R_relay + R_kabel<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;VA = I_sek² × R_total<br>
-                <strong>Perhitungan:</strong><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;I_sek = ${I_prim} × (${I_sek_rating} / ${I_prim_rating}) = ${result.I_sek.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} A<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;R_total = ${R_relay.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${R_kabel.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${(R_relay + R_kabel).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Ω<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;VA = ${result.I_sek.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}² × ${(R_relay + R_kabel).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${result.VA.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} VA
-            `;
-
-            // Add cable resistance calculation info if using length mode
-            if (selectedKabelMode === 'length') {
-                hasilHTML += `<br><strong>Perhitungan tahanan kabel:</strong><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;R_kabel = 2 × L × ρ / A<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;R_kabel = 2 × ${panjangKabel} × 0,0175 / ${luasPenampang} = ${R_kabel.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} Ω<br>
-                <small>Catatan: Nilai 0,0175 Ω·mm²/m adalah resistivitas tembaga pada 20 °C</small>`;
-            }
-
-            hasilDiv.innerHTML = hasilHTML;
-        } catch (error) {
-            // Tampilkan error di dekat kolom yang salah
-            if (error.message.includes('Arus primer I_prim')) {
-                iPrimInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                iPrimInput.parentNode.insertBefore(errorElem, iPrimInput.nextSibling);
-            }
-            if (error.message.includes('Arus sekunder rating I_sek_rating')) {
-                iSekRatingInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                iSekRatingInput.parentNode.insertBefore(errorElem, iSekRatingInput.nextSibling);
-            }
-            if (error.message.includes('Arus primer rating I_prim_rating')) {
-                iPrimRatingInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                iPrimRatingInput.parentNode.insertBefore(errorElem, iPrimRatingInput.nextSibling);
-            }
-            // Error untuk input mode-specific - hanya tampilkan di mode yang aktif
-            if (selectedKabelMode === 'direct') {
-                if (error.message.includes('Tahanan relay')) {
-                    const tahananRelayInput = document.getElementById('tahanan_relay_direct');
-                    if (tahananRelayInput) {
-                        tahananRelayInput.classList.add('error-input');
-                        const errorElem = document.createElement('div');
-                        errorElem.className = 'error';
-                        errorElem.textContent = error.message;
-                        tahananRelayInput.parentNode.insertBefore(errorElem, tahananRelayInput.nextSibling);
+                    // Get k and alpha values for display
+                    let k, alpha;
+                    switch (selectedCurveType) {
+                        case 'SI': k = 0.14; alpha = 0.02; break;
+                        case 'VI': k = 13.5; alpha = 1; break;
+                        case 'EI': k = 80; alpha = 2; break;
                     }
+
+                    hasilDiv.innerHTML = `
+                        <strong>Waktu kerja:</strong> ${tFormatted}<br>
+                        <strong>Rumus:</strong> t = TMS × k / ((I / I_s)^α − 1)<br>
+                        <strong>Parameter kurva ${selectedCurveType}:</strong> k = ${k}, α = ${alpha}<br>
+                        <strong>Perhitungan:</strong> t = ${TMS} × ${k} / (${I_over_Is}^${alpha} − 1) = ${t.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} s
+                    `;
                 }
-                if (error.message.includes('Tahanan kabel')) {
-                    const tahananKabelInput = document.getElementById('tahanan_kabel');
-                    if (tahananKabelInput) {
-                        tahananKabelInput.classList.add('error-input');
-                        const errorElem = document.createElement('div');
-                        errorElem.className = 'error';
-                        errorElem.textContent = error.message;
-                        tahananKabelInput.parentNode.insertBefore(errorElem, tahananKabelInput.nextSibling);
-                    }
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (error.message.includes('TMS harus diisi')) {
+                    tmsInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    tmsInput.parentNode.insertBefore(errorElem, tmsInput.nextSibling);
                 }
-            } else if (selectedKabelMode === 'length') {
-                if (error.message.includes('Tahanan relay')) {
-                    const tahananRelayInput = document.getElementById('tahanan_relay_length');
-                    if (tahananRelayInput) {
-                        tahananRelayInput.classList.add('error-input');
-                        const errorElem = document.createElement('div');
-                        errorElem.className = 'error';
-                        errorElem.textContent = error.message;
-                        tahananRelayInput.parentNode.insertBefore(errorElem, tahananRelayInput.nextSibling);
-                    }
+                if (error.message.includes('I/I_s harus diisi')) {
+                    ratioInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    ratioInput.parentNode.insertBefore(errorElem, ratioInput.nextSibling);
                 }
-                if (error.message.includes('Panjang kabel')) {
-                    const panjangKabelInput = document.getElementById('panjang_kabel');
-                    if (panjangKabelInput) {
-                        panjangKabelInput.classList.add('error-input');
-                        const errorElem = document.createElement('div');
-                        errorElem.className = 'error';
-                        errorElem.textContent = error.message;
-                        panjangKabelInput.parentNode.insertBefore(errorElem, panjangKabelInput.nextSibling);
-                    }
+                if (error.message.includes('Jenis kurva harus berupa string')) {
+                    // This error comes from the function itself, show in hasil div
+                    hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                    hasilDiv.style.color = '#d32f2f';
                 }
-                if (error.message.includes('Luas penampang')) {
-                    const luasPenampangInput = document.getElementById('luas_penampang');
-                    if (luasPenampangInput) {
-                        luasPenampangInput.classList.add('error-input');
-                        const errorElem = document.createElement('div');
-                        errorElem.className = 'error';
-                        errorElem.textContent = error.message;
-                        luasPenampangInput.parentNode.insertBefore(errorElem, luasPenampangInput.nextSibling);
-                    }
+                if (error.message.includes('Jenis kurva harus SI, VI, atau EI')) {
+                    // This error comes from the function itself, show in hasil div
+                    hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                    hasilDiv.style.color = '#d32f2f';
                 }
-            }
-            if (error.message.includes('Rating burden CT')) {
-                burdenRatingInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                burdenRatingInput.parentNode.insertBefore(errorElem, burdenRatingInput.nextSibling);
-            }
-
-            // Tampilkan juga error umum di hasil div untuk debugging
-            hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-            hasilDiv.style.color = '#d32f2f';
-        }
-    });
-}
-
-// Handle form submission for calculator 4
-const form4 = document.getElementById('form4');
-if (form4) {
-    form4.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Get input values
-        const vNominalInput = document.getElementById('v_nominal');
-        const tapNInput = document.getElementById('tapen');
-        const stepInput = document.getElementById('step');
-        const hasilDiv = document.getElementById('hasil4');
-
-        // Clear previous results and errors
-        hasilDiv.innerHTML = '';
-        vNominalInput.classList.remove('error-input');
-        tapNInput.classList.remove('error-input');
-        stepInput.classList.remove('error-input');
-
-        // Remove any existing error messages
-        const existingErrors = form4.querySelectorAll('.error');
-        existingErrors.forEach(el => el.remove());
-
-        try {
-            const V_nominal = parseFloat(vNominalInput.value);
-            const n = parseFloat(tapNInput.value);
-            const stepPercent = parseFloat(stepInput.value);
-
-            // Validate empty inputs
-            if (isNaN(V_nominal) || vNominalInput.value.trim() === '') {
-                throw new Error('Tegangan nominal V_nominal harus diisi');
-            }
-            if (isNaN(n) || tapNInput.value.trim() === '') {
-                throw new Error('Posisi tap n harus diisi');
-            }
-            if (isNaN(stepPercent) || stepInput.value.trim() === '') {
-                throw new Error('Persentase langkah step harus diisi');
-            }
-
-            // Call the rumus function
-            const V_tap = Rumus.teganganPerPosisiTap(V_nominal, n, stepPercent);
-
-            // Format hasil dengan satuan dan locale Indonesia
-            const vNominalFormatted = V_nominal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kV';
-            const vTapFormatted = V_tap.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kV';
-
-            // Tampilkan hasil
-            hasilDiv.innerHTML = `
-                <strong>Tegangan setelah tap:</strong> ${vTapFormatted}<br>
-                <strong>Rumus:</strong> V_tap = V_nominal × (1 + n × step% / 100)<br>
-                <strong>Perhitungan:</strong> V_tap = ${V_nominal} × (1 + ${n} × ${stepPercent} / 100) = ${V_tap.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kV
-            `;
-        } catch (error) {
-            // Tampilkan error di dekat kolom yang salah
-            if (error.message.includes('Tegangan nominal V_nominal')) {
-                vNominalInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                vNominalInput.parentNode.insertBefore(errorElem, vNominalInput.nextSibling);
-            }
-            if (error.message.includes('Posisi tap n')) {
-                tapNInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                tapNInput.parentNode.insertBefore(errorElem, tapNInput.nextSibling);
-            }
-            if (error.message.includes('Persentase langkah step')) {
-                stepInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                stepInput.parentNode.insertBefore(errorElem, stepInput.nextSibling);
-            }
-
-            // Tampilkan juga error umum di hasil div untuk debugging
-            hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-            hasilDiv.style.color = '#d32f2f';
-        }
-    });
-}
-
-// Handle form submission for calculator 5
-const form5 = document.getElementById('form5');
-if (form5) {
-    form5.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Get input values
-        const dayaInput = document.getElementById('daya5');
-        const cosPhi1Input = document.getElementById('cosPhi1');
-        const cosPhi2Input = document.getElementById('cosPhi2');
-        const hasilDiv = document.getElementById('hasil5');
-
-        // Clear previous results and errors
-        hasilDiv.innerHTML = '';
-        dayaInput.classList.remove('error-input');
-        cosPhi1Input.classList.remove('error-input');
-        cosPhi2Input.classList.remove('error-input');
-
-        // Remove any existing error messages
-        const existingErrors = form5.querySelectorAll('.error');
-        existingErrors.forEach(el => el.remove());
-
-        try {
-            const P = parseFloat(dayaInput.value);
-            const cosPhi1 = parseFloat(cosPhi1Input.value);
-            const cosPhi2 = parseFloat(cosPhi2Input.value);
-
-            // Validate empty inputs
-            if (isNaN(P) || dayaInput.value.trim() === '') {
-                throw new Error('Daya aktif P harus diisi');
-            }
-            if (isNaN(cosPhi1) || cosPhi1Input.value.trim() === '') {
-                throw new Error('Faktor daya awal cos φ1 harus diisi');
-            }
-            if (isNaN(cosPhi2) || cosPhi2Input.value.trim() === '') {
-                throw new Error('Faktor daya target cos φ2 harus diisi');
-            }
-
-            // Call the rumus function
-            const Qc = Rumus.kapasitorPerbaikanCosPhi(P, cosPhi1, cosPhi2);
-
-            // Format hasil dengan satuan dan locale Indonesia
-            const pFormatted = P.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MW';
-            const qcFormatted = Qc.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' MVAR';
-
-            // Tampilkan hasil
-            hasilDiv.innerHTML = `
-                <strong>Besar kapasitor:</strong> ${qcFormatted}<br>
-                <strong>Rumus:</strong> Qc = P × (tan φ1 − tan φ2)<br>
-                <strong>Perhitungan:</strong> Qc = ${P} × (tan(cos⁻¹(${cosPhi1})) − tan(cos⁻¹(${cosPhi2}))) = ${Qc.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} MVAR
-            `;
-        } catch (error) {
-            // Tampilkan error di dekat kolom yang salah
-            if (error.message.includes('Daya aktif P')) {
-                dayaInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                dayaInput.parentNode.insertBefore(errorElem, dayaInput.nextSibling);
-            }
-            if (error.message.includes('Faktor daya awal cos φ1')) {
-                cosPhi1Input.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                cosPhi1Input.parentNode.insertBefore(errorElem, cosPhi1Input.nextSibling);
-            }
-            if (error.message.includes('Faktor daya target cos φ2')) {
-                cosPhi2Input.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                cosPhi2Input.parentNode.insertBefore(errorElem, cosPhi2Input.nextSibling);
-            }
-
-            // Tampilkan juga error umum di hasil div untuk debugging
-            hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-            hasilDiv.style.color = '#d32f2f';
-        }
-    });
-}
-
-// Handle form submission for calculator 9
-const form9 = document.getElementById('form9');
-if (form9) {
-    // Now handle the form submission
-    form9.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Get the selected curve type
-        let selectedCurveType = '';
-        const curveTypeRadios = form9.querySelectorAll('input[name="curveType"]');
-        curveTypeRadios.forEach(radio => {
-            if (radio.checked) {
-                selectedCurveType = radio.value;
-            }
-        });
-
-        // Get input values
-        const tmsInput = document.getElementById('tms');
-        const ratioInput = document.getElementById('ratio');
-        const hasilDiv = document.getElementById('hasil9');
-
-        // Clear previous results and errors
-        hasilDiv.innerHTML = '';
-        tmsInput.classList.remove('error-input');
-        ratioInput.classList.remove('error-input');
-
-        // Remove any existing error messages
-        const existingErrors = form9.querySelectorAll('.error');
-        existingErrors.forEach(el => el.remove());
-
-        try {
-            const TMS = parseFloat(tmsInput.value);
-            const I_over_Is = parseFloat(ratioInput.value);
-
-            // Validate empty inputs
-            if (isNaN(TMS) || tmsInput.value.trim() === '') {
-                throw new Error('TMS harus diisi');
-            }
-            if (isNaN(I_over_Is) || ratioInput.value.trim() === '') {
-                throw new Error('I/I_s harus diisi');
-            }
-
-            // Call the rumus function
-            const t = Rumus.waktuKerjaRelayOCR(selectedCurveType, TMS, I_over_Is);
-
-            // Format hasil dengan satuan dan locale Indonesia
-            const tmsFormatted = TMS.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-            const ratioFormatted = I_over_Is.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-
-            // Tampilkan hasil
-            if (t === null) {
-                hasilDiv.innerHTML = `
-                    <strong>Hasil:</strong> Relay tidak bekerja<br>
-                    <strong>Rumus:</strong> t = TMS × k / ((I / I_s)^α − 1)<br>
-                    <strong>Keterangan:</strong> Karena I/I_s ≤ 1, relay tidak bekerja
-                `;
-            } else {
-                const tFormatted = t.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' s';
-
-                // Get k and alpha values for display
-                let k, alpha;
-                switch (selectedCurveType) {
-                    case 'SI': k = 0.14; alpha = 0.02; break;
-                    case 'VI': k = 13.5; alpha = 1; break;
-                    case 'EI': k = 80; alpha = 2; break;
+                if (error.message.includes('TMS harus berupa angka')) {
+                    tmsInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    tmsInput.parentNode.insertBefore(errorElem, tmsInput.nextSibling);
+                }
+                if (error.message.includes('I/I_s harus berupa angka')) {
+                    ratioInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    ratioInput.parentNode.insertBefore(errorElem, ratioInput.nextSibling);
+                }
+                if (error.message.includes('TMS harus lebih besar dari nol')) {
+                    tmsInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    tmsInput.parentNode.insertBefore(errorElem, tmsInput.nextSibling);
+                }
+                if (error.message.includes('I/I_s harus lebih besar dari nol')) {
+                    ratioInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    ratioInput.parentNode.insertBefore(errorElem, ratioInput.nextSibling);
                 }
 
-                hasilDiv.innerHTML = `
-                    <strong>Waktu kerja:</strong> ${tFormatted}<br>
-                    <strong>Rumus:</strong> t = TMS × k / ((I / I_s)^α − 1)<br>
-                    <strong>Parameter kurva ${selectedCurveType}:</strong> k = ${k}, α = ${alpha}<br>
-                    <strong>Perhitungan:</strong> t = ${TMS} × ${k} / (${I_over_Is}^${alpha} − 1) = ${t.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} s
-                `;
-            }
-        } catch (error) {
-            // Tampilkan error di dekat kolom yang salah
-            if (error.message.includes('TMS harus diisi')) {
-                tmsInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                tmsInput.parentNode.insertBefore(errorElem, tmsInput.nextSibling);
-            }
-            if (error.message.includes('I/I_s harus diisi')) {
-                ratioInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                ratioInput.parentNode.insertBefore(errorElem, ratioInput.nextSibling);
-            }
-            if (error.message.includes('Jenis kurva harus berupa string')) {
-                // This error comes from the function itself, show in hasil div
-                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
-            }
-            if (error.message.includes('Jenis kurva harus SI, VI, atau EI')) {
-                // This error comes from the function itself, show in hasil div
-                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
-            }
-            if (error.message.includes('TMS harus berupa angka')) {
-                tmsInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                tmsInput.parentNode.insertBefore(errorElem, tmsInput.nextSibling);
-            }
-            if (error.message.includes('I/I_s harus berupa angka')) {
-                ratioInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                ratioInput.parentNode.insertBefore(errorElem, ratioInput.nextSibling);
-            }
-            if (error.message.includes('TMS harus lebih besar dari nol')) {
-                tmsInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                tmsInput.parentNode.insertBefore(errorElem, tmsInput.nextSibling);
-            }
-            if (error.message.includes('I/I_s harus lebih besar dari nol')) {
-                ratioInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                ratioInput.parentNode.insertBefore(errorElem, ratioInput.nextSibling);
-            }
-
-            // Tampilkan juga error umum di hasil div untuk debugging
-            if (!hasilDiv.innerHTML.includes('Error:')) {
-                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
-            }
-        }
-    });
-}
-
-// Handle form submission for calculator 18
-const form18 = document.getElementById('form18');
-if (form18) {
-    // First, set up mode switching
-    const modeRadios = form18.querySelectorAll('input[name="konversiMode"]');
-    const nilaiInput = document.getElementById('nilai18');
-    const satuan18 = document.getElementById('satuan18');
-
-    // Function to update satuan18 based on selected mode
-    function updateSatuanDisplay() {
-        modeRadios.forEach(radio => {
-            if (radio.checked) {
-                const mode = radio.value;
-                switch (mode) {
-                    case 'kVkeV': satuan18.value = 'kV'; break;
-                    case 'VkekV': satuan18.value = 'V'; break;
-                    case 'kAkeA': satuan18.value = 'kA'; break;
-                    case 'AkekA': satuan18.value = 'A'; break;
-                    case 'MVaketaVA': satuan18.value = 'MVA'; break;
-                    case 'kVAkeMVA': satuan18.value = 'kVA'; break;
-                    case 'CkeK': satuan18.value = '°C'; break;
-                    case 'KkeC': satuan18.value = 'K'; break;
+                // Tampilkan juga error umum di hasil div untuk debugging
+                if (!hasilDiv.innerHTML.includes('Error:')) {
+                    hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                    hasilDiv.style.color = '#d32f2f';
                 }
             }
         });
     }
 
-    // Add event listeners to radio buttons to update satuan display
-    modeRadios.forEach(radio => {
-        radio.addEventListener('change', updateSatuanDisplay);
-    });
+    // Handle form submission for calculator 18
+    const form18 = document.getElementById('form18');
+    if (form18) {
+        // First, set up mode switching
+        const modeRadios = form18.querySelectorAll('input[name="konversiMode"]');
+        const nilaiInput = document.getElementById('nilai18');
+        const satuan18 = document.getElementById('satuan18');
 
-    // Initialize the display to the default mode (kVkeV)
-    updateSatuanDisplay();
+        // Function to update satuan18 based on selected mode
+        function updateSatuanDisplay() {
+            modeRadios.forEach(radio => {
+                if (radio.checked) {
+                    const mode = radio.value;
+                    switch (mode) {
+                        case 'kVkeV': satuan18.value = 'kV'; break;
+                        case 'VkekV': satuan18.value = 'V'; break;
+                        case 'kAkeA': satuan18.value = 'kA'; break;
+                        case 'AkekA': satuan18.value = 'A'; break;
+                        case 'MVaketaVA': satuan18.value = 'MVA'; break;
+                        case 'kVAkeMVA': satuan18.value = 'kVA'; break;
+                        case 'CkeK': satuan18.value = '°C'; break;
+                        case 'KkeC': satuan18.value = 'K'; break;
+                    }
+                }
+            });
+        }
 
-    // Now handle the form submission
-    form18.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Get the selected mode
-        let selectedMode = '';
+        // Add event listeners to radio buttons to update satuan display
         modeRadios.forEach(radio => {
-            if (radio.checked) {
-                selectedMode = radio.value;
-            }
+            radio.addEventListener('change', updateSatuanDisplay);
         });
 
-        const hasilDiv = document.getElementById('hasil18');
+        // Initialize the display to the default mode (kVkeV)
+        updateSatuanDisplay();
 
-        // Clear previous results and errors
-        hasilDiv.innerHTML = '';
-        nilaiInput.classList.remove('error-input');
+        // Now handle the form submission
+        form18.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-        // Remove any existing error messages
-        const existingErrors = form18.querySelectorAll('.error');
-        existingErrors.forEach(el => el.remove());
+            // Get the selected mode
+            let selectedMode = '';
+            modeRadios.forEach(radio => {
+                if (radio.checked) {
+                    selectedMode = radio.value;
+                }
+            });
 
-        try {
-            const nilai = parseFloat(nilaiInput.value);
+            const hasilDiv = document.getElementById('hasil18');
 
-            // Validate empty input
-            if (isNaN(nilai) || nilaiInput.value.trim() === '') {
-                throw new Error('Nilai harus diisi');
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+            nilaiInput.classList.remove('error-input');
+
+            // Remove any existing error messages
+            const existingErrors = form18.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
+
+            try {
+                const nilai = parseFloat(nilaiInput.value);
+
+                // Validate empty input
+                if (isNaN(nilai) || nilaiInput.value.trim() === '') {
+                    throw new Error('Nilai harus diisi');
+                }
+
+                let hasil;
+                let dariSatuan, keSatuan;
+                let rumus;
+                let perhitunganDetail;
+
+                switch (selectedMode) {
+                    case 'kVkeV':
+                        // Validasi untuk kV ke V
+                        if (nilai <= 0) {
+                            throw new Error('Nilai kV harus lebih besar dari nol');
+                        }
+                        hasil = Rumus.kVkeV(nilai);
+                        dariSatuan = 'kV';
+                        keSatuan = 'V';
+                        rumus = 'V = kV × 1000';
+                        perhitunganDetail = `${nilai} × 1000 = ${hasil}`;
+                        break;
+                    case 'VkekV':
+                        // Validasi untuk V ke kV
+                        if (nilai <= 0) {
+                            throw new Error('Nilai V harus lebih besar dari nol');
+                        }
+                        hasil = Rumus.VkekV(nilai);
+                        dariSatuan = 'V';
+                        keSatuan = 'kV';
+                        rumus = 'kV = V / 1000';
+                        perhitunganDetail = `${nilai} / 1000 = ${hasil}`;
+                        break;
+                    case 'kAkeA':
+                        // Validasi untuk kA ke A
+                        if (nilai <= 0) {
+                            throw new Error('Nilai kA harus lebih besar dari nol');
+                        }
+                        hasil = Rumus.kAkeA(nilai);
+                        dariSatuan = 'kA';
+                        keSatuan = 'A';
+                        rumus = 'A = kA × 1000';
+                        perhitunganDetail = `${nilai} × 1000 = ${hasil}`;
+                        break;
+                    case 'AkekA':
+                        // Validasi untuk A ke kA
+                        if (nilai <= 0) {
+                            throw new Error('Nilai A harus lebih besar dari nol');
+                        }
+                        hasil = Rumus.AkekA(nilai);
+                        dariSatuan = 'A';
+                        keSatuan = 'kA';
+                        rumus = 'kA = A / 1000';
+                        perhitunganDetail = `${nilai} / 1000 = ${hasil}`;
+                        break;
+                    case 'MVaketaVA':
+                        // Validasi untuk MVA ke kVA
+                        if (nilai <= 0) {
+                            throw new Error('Nilai MVA harus lebih besar dari nol');
+                        }
+                        hasil = Rumus.MVaketaVA(nilai);
+                        dariSatuan = 'MVA';
+                        keSatuan = 'kVA';
+                        rumus = 'kVA = MVA × 1000';
+                        perhitunganDetail = `${nilai} × 1000 = ${hasil}`;
+                        break;
+                    case 'kVAkeMVA':
+                        // Validasi untuk kVA ke MVA
+                        if (nilai <= 0) {
+                            throw new Error('Nilai kVA harus lebih besar dari nol');
+                        }
+                        hasil = Rumus.kVAkeMVA(nilai);
+                        dariSatuan = 'kVA';
+                        keSatuan = 'MVA';
+                        rumus = 'MVA = kVA / 1000';
+                        perhitunganDetail = `${nilai} / 1000 = ${hasil}`;
+                        break;
+                    case 'CkeK':
+                        // Validasi untuk °C ke K
+                        if (nilai < -273.15) {
+                            throw new Error('Nilai Celsius tidak boleh kurang dari -273,15');
+                        }
+                        hasil = Rumus.CkeK(nilai);
+                        dariSatuan = '°C';
+                        keSatuan = 'K';
+                        rumus = 'K = °C + 273,15';
+                        perhitunganDetail = `${nilai} + 273,15 = ${hasil}`;
+                        break;
+                    case 'KkeC':
+                        // Validasi untuk K ke °C
+                        if (nilai <= 0) {
+                            throw new Error('Nilai Kelvin harus lebih besar dari nol');
+                        }
+                        hasil = Rumus.KkeC(nilai);
+                        dariSatuan = 'K';
+                        keSatuan = '°C';
+                        rumus = '°C = K - 273,15';
+                        perhitunganDetail = `${nilai} - 273,15 = ${hasil}`;
+                        break;
+                    default:
+                        throw new Error('Mode konversi tidak valid');
+                }
+
+                // Format hasil dengan satuan dan locale Indonesia
+                const nilaiFormatted = nilai.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+                const hasilFormatted = hasil.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+
+                // Tampilkan hasil
+                hasilDiv.innerHTML = `
+                    <strong>Hasil konversi:</strong> ${hasilFormatted} ${keSatuan}<br>
+                    <strong>Rumus:</strong> ${rumus}<br>
+                    <strong>Perhitungan:</strong> ${nilaiFormatted} ${dariSatuan} = ${hasilFormatted} ${keSatuan}<br>
+                    <strong>Detail perhitungan:</strong> ${perhitunganDetail}
+                `;
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (error.message.includes('Nilai harus diisi')) {
+                    nilaiInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
+                } else if (error.message.includes('kV harus lebih besar dari nol') ||
+                          error.message.includes('V harus lebih besar dari nol') ||
+                          error.message.includes('kA harus lebih besar dari nol') ||
+                          error.message.includes('A harus lebih besar dari nol') ||
+                          error.message.includes('MVA harus lebih besar dari nol') ||
+                          error.message.includes('kVA harus lebih besar dari nol') ||
+                          error.message.includes('Kelvin harus lebih besar dari nol')) {
+                    nilaiInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
+                } else if (error.message.includes('Celsius tidak boleh kurang dari -273,15')) {
+                    nilaiInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
+                }
+
+                // Tampilkan juga error umum di hasil div untuk debugging
+                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                hasilDiv.style.color = '#d32f2f';
             }
-
-            let hasil;
-            let dariSatuan, keSatuan;
-            let rumus;
-            let perhitunganDetail;
-
-            switch (selectedMode) {
-                case 'kVkeV':
-                    // Validasi untuk kV ke V
-                    if (nilai <= 0) {
-                        throw new Error('Nilai kV harus lebih besar dari nol');
-                    }
-                    hasil = Rumus.kVkeV(nilai);
-                    dariSatuan = 'kV';
-                    keSatuan = 'V';
-                    rumus = 'V = kV × 1000';
-                    perhitunganDetail = `${nilai} × 1000 = ${hasil}`;
-                    break;
-                case 'VkekV':
-                    // Validasi untuk V ke kV
-                    if (nilai <= 0) {
-                        throw new Error('Nilai V harus lebih besar dari nol');
-                    }
-                    hasil = Rumus.VkekV(nilai);
-                    dariSatuan = 'V';
-                    keSatuan = 'kV';
-                    rumus = 'kV = V / 1000';
-                    perhitunganDetail = `${nilai} / 1000 = ${hasil}`;
-                    break;
-                case 'kAkeA':
-                    // Validasi untuk kA ke A
-                    if (nilai <= 0) {
-                        throw new Error('Nilai kA harus lebih besar dari nol');
-                    }
-                    hasil = Rumus.kAkeA(nilai);
-                    dariSatuan = 'kA';
-                    keSatuan = 'A';
-                    rumus = 'A = kA × 1000';
-                    perhitunganDetail = `${nilai} × 1000 = ${hasil}`;
-                    break;
-                case 'AkekA':
-                    // Validasi untuk A ke kA
-                    if (nilai <= 0) {
-                        throw new Error('Nilai A harus lebih besar dari nol');
-                    }
-                    hasil = Rumus.AkekA(nilai);
-                    dariSatuan = 'A';
-                    keSatuan = 'kA';
-                    rumus = 'kA = A / 1000';
-                    perhitunganDetail = `${nilai} / 1000 = ${hasil}`;
-                    break;
-                case 'MVaketaVA':
-                    // Validasi untuk MVA ke kVA
-                    if (nilai <= 0) {
-                        throw new Error('Nilai MVA harus lebih besar dari nol');
-                    }
-                    hasil = Rumus.MVaketaVA(nilai);
-                    dariSatuan = 'MVA';
-                    keSatuan = 'kVA';
-                    rumus = 'kVA = MVA × 1000';
-                    perhitunganDetail = `${nilai} × 1000 = ${hasil}`;
-                    break;
-                case 'kVAkeMVA':
-                    // Validasi untuk kVA ke MVA
-                    if (nilai <= 0) {
-                        throw new Error('Nilai kVA harus lebih besar dari nol');
-                    }
-                    hasil = Rumus.kVAkeMVA(nilai);
-                    dariSatuan = 'kVA';
-                    keSatuan = 'MVA';
-                    rumus = 'MVA = kVA / 1000';
-                    perhitunganDetail = `${nilai} / 1000 = ${hasil}`;
-                    break;
-                case 'CkeK':
-                    // Validasi untuk °C ke K
-                    if (nilai < -273.15) {
-                        throw new Error('Nilai Celsius tidak boleh kurang dari -273,15');
-                    }
-                    hasil = Rumus.CkeK(nilai);
-                    dariSatuan = '°C';
-                    keSatuan = 'K';
-                    rumus = 'K = °C + 273,15';
-                    perhitunganDetail = `${nilai} + 273,15 = ${hasil}`;
-                    break;
-                case 'KkeC':
-                    // Validasi untuk K ke °C
-                    if (nilai <= 0) {
-                        throw new Error('Nilai Kelvin harus lebih besar dari nol');
-                    }
-                    hasil = Rumus.KkeC(nilai);
-                    dariSatuan = 'K';
-                    keSatuan = '°C';
-                    rumus = '°C = K - 273,15';
-                    perhitunganDetail = `${nilai} - 273,15 = ${hasil}`;
-                    break;
-                default:
-                    throw new Error('Mode konversi tidak valid');
-            }
-
-            // Format hasil dengan satuan dan locale Indonesia
-            const nilaiFormatted = nilai.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-            const hasilFormatted = hasil.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-
-            // Tampilkan hasil
-            hasilDiv.innerHTML = `
-                <strong>Hasil konversi:</strong> ${hasilFormatted} ${keSatuan}<br>
-                <strong>Rumus:</strong> ${rumus}<br>
-                <strong>Perhitungan:</strong> ${nilaiFormatted} ${dariSatuan} = ${hasilFormatted} ${keSatuan}<br>
-                <strong>Detail perhitungan:</strong> ${perhitunganDetail}
-            `;
-        } catch (error) {
-            // Tampilkan error di dekat kolom yang salah
-            if (error.message.includes('Nilai harus diisi')) {
-                nilaiInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
-            } else if (error.message.includes('kV harus lebih besar dari nol') ||
-                      error.message.includes('V harus lebih besar dari nol') ||
-                      error.message.includes('kA harus lebih besar dari nol') ||
-                      error.message.includes('A harus lebih besar dari nol') ||
-                      error.message.includes('MVA harus lebih besar dari nol') ||
-                      error.message.includes('kVA harus lebih besar dari nol') ||
-                      error.message.includes('Kelvin harus lebih besar dari nol')) {
-                nilaiInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
-            } else if (error.message.includes('Celsius tidak boleh kurang dari -273,15')) {
-                nilaiInput.classList.add('error-input');
-                const errorElem = document.createElement('div');
-                errorElem.className = 'error';
-                errorElem.textContent = error.message;
-                nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
-            }
-
-            // Tampilkan juga error umum di hasil div untuk debugging
-            hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-            hasilDiv.style.color = '#d32f2f';
-        }
-    });
-}
-
+        });
+    }
 });
