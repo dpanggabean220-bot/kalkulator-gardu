@@ -152,4 +152,296 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Handle form submission for calculator 3
+    const form3 = document.getElementById('form3');
+    if (form3) {
+        // First, set up mode switching
+        const modeRadios = form3.querySelectorAll('input[name="mode3"]');
+        const modeContents = {
+            mva: document.getElementById('mode-mva'),
+            mw_mvar: document.getElementById('mode-mw_mvar'),
+            arus: document.getElementById('mode-arus')
+        };
+
+        // Function to show the selected mode and hide others
+        function showSelectedMode() {
+            modeRadios.forEach(radio => {
+                if (radio.checked) {
+                    const mode = radio.value;
+                    // Hide all mode contents
+                    Object.values(modeContents).forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    // Show the selected one
+                    if (modeContents[mode]) {
+                        modeContents[mode].style.display = 'block';
+                    }
+                }
+            });
+        }
+
+        // Add event listeners to radio buttons
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', showSelectedMode);
+        });
+
+        // Initialize the display to the default mode (MVA)
+        showSelectedMode();
+
+        // Now handle the form submission
+        form3.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get the selected mode
+            let selectedMode = '';
+            modeRadios.forEach(radio => {
+                if (radio.checked) {
+                    selectedMode = radio.value;
+                }
+            });
+
+            const hasilDiv = document.getElementById('hasil3');
+
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+
+            // Remove any existing error messages from all mode contents
+            Object.values(modeContents).forEach(content => {
+                const existingErrors = content.querySelectorAll('.error');
+                existingErrors.forEach(el => el.remove());
+            });
+
+            // Also remove error-input class from all inputs
+            const allInputs = form3.querySelectorAll('input[type="number"]');
+            allInputs.forEach(input => {
+                input.classList.remove('error-input');
+            });
+
+            try {
+                let persentase;
+                let perhitunganDetail = '';
+
+                if (selectedMode === 'mva') {
+                    // Mode 1: MVA terukur
+                    const s_ukurInput = document.getElementById('s_ukur');
+                    const s_ratingInput = document.getElementById('s_rating');
+
+                    // Validate empty inputs
+                    if (isNaN(parseFloat(s_ukurInput.value)) || s_ukurInput.value.trim() === '') {
+                        throw new Error('Daya terukur S_ukur harus diisi');
+                    }
+                    if (isNaN(parseFloat(s_ratingInput.value)) || s_ratingInput.value.trim() === '') {
+                        throw new Error('Daya rating S_rating harus diisi');
+                    }
+
+                    const S_ukur = parseFloat(s_ukurInput.value);
+                    const S_rating = parseFloat(s_ratingInput.value);
+
+                    // Validate non-negative for S_ukur and positive for S_rating
+                    if (S_ukur < 0) {
+                        throw new Error('Daya terukur S_ukur tidak boleh negatif');
+                    }
+                    if (S_rating <= 0) {
+                        throw new Error('Daya rating S_rating harus lebih besar dari nol');
+                    }
+
+                    // Call the rumus function
+                    persentase = Rumus.persentasePembebananTrafo(S_ukur, S_rating);
+
+                    // Format hasil dengan satuan dan locale Indonesia
+                    const persentaseFormatted = persentase.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' %';
+
+                    // Tampilkan hasil
+                    hasilDiv.innerHTML = `
+                        <strong>Persentase pembebanan:</strong> ${persentaseFormatted}<br>
+                        <strong>Rumus:</strong> % = S_ukur / S_rating × 100<br>
+                        <strong>Perhitungan:</strong> % = ${S_ukur} / ${S_rating} × 100 = ${persentase.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %
+                    `;
+
+                } else if (selectedMode === 'mw_mvar') {
+                    // Mode 2: MW dan MVAR
+                    const p_ukurInput = document.getElementById('p_ukur');
+                    const q_ukurInput = document.getElementById('q_ukur');
+                    const s_ratingInput = document.getElementById('s_rating2');
+
+                    // Validate empty inputs
+                    if (isNaN(parseFloat(p_ukurInput.value)) || p_ukurInput.value.trim() === '') {
+                        throw new Error('Daya aktif P_ukur harus diisi');
+                    }
+                    if (isNaN(parseFloat(q_ukurInput.value)) || q_ukurInput.value.trim() === '') {
+                        throw new Error('Daya reaktif Q_ukur harus diisi');
+                    }
+                    if (isNaN(parseFloat(s_ratingInput.value)) || s_ratingInput.value.trim() === '') {
+                        throw new Error('Daya rating S_rating harus diisi');
+                    }
+
+                    const P = parseFloat(p_ukurInput.value);
+                    const Q = parseFloat(q_ukurInput.value);
+                    const S_rating = parseFloat(s_ratingInput.value);
+
+                    // Validate S_rating positive
+                    if (S_rating <= 0) {
+                        throw new Error('Daya rating S_rating harus lebih besar dari nol');
+                    }
+
+                    // Hitung S terukur menggunakan fungsi segitigaDaya
+                    const segitigaResult = Rumus.segitigaDaya(P, Q);
+                    const S_ukur = segitigaResult.S;
+
+                    // Hitung persentase pembebanan
+                    persentase = Rumus.persentasePembebananTrafo(S_ukur, S_rating);
+
+                    // Format hasil dengan satuan dan locale Indonesia
+                    const persentaseFormatted = persentase.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' %';
+                    const s_ukurFormatted = S_ukur.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MVA';
+
+                    // Tampilkan hasil
+                    hasilDiv.innerHTML = `
+                        <strong>Persentase pembebanan:</strong> ${persentaseFormatted}<br>
+                        <strong>Rumus:</strong><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;S_ukur = √(P² + Q²)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;% = S_ukur / S_rating × 100<br>
+                        <strong>Perhitungan:</strong><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;S_ukur = √(${P}² + ${Q}²) = ${s_ukurFormatted}<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;% = ${s_ukurFormatted} / ${S_rating} × 100 = ${persentaseFormatted}
+                    `;
+
+                } else if (selectedMode === 'arus') {
+                    // Mode 3: Arus terukur
+                    const arus_ukurInput = document.getElementById('arus_ukur');
+                    const tegangan_ukurInput = document.getElementById('tegangan_ukur');
+                    const s_ratingInput = document.getElementById('s_rating3');
+
+                    // Validate empty inputs
+                    if (isNaN(parseFloat(arus_ukurInput.value)) || arus_ukurInput.value.trim() === '') {
+                        throw new Error('Arus terukur I_ukur harus diisi');
+                    }
+                    if (isNaN(parseFloat(tegangan_ukurInput.value)) || tegangan_ukurInput.value.trim() === '') {
+                        throw new Error('Tegangan terukur V_ukur harus diisi');
+                    }
+                    if (isNaN(parseFloat(s_ratingInput.value)) || s_ratingInput.value.trim() === '') {
+                        throw new Error('Daya rating S_rating harus diisi');
+                    }
+
+                    const I_ukur = parseFloat(arus_ukurInput.value);
+                    const V_ukur = parseFloat(tegangan_ukurInput.value);
+                    const S_rating = parseFloat(s_ratingInput.value);
+
+                    // Validate positive for V_ukur and S_rating
+                    if (V_ukur <= 0) {
+                        throw new Error('Tegangan terukur V_ukur harus lebih besar dari nol');
+                    }
+                    if (S_rating <= 0) {
+                        throw new Error('Daya rating S_rating harus lebih besar dari nol');
+                    }
+
+                    // Hitung arus nominal menggunakan fungsi arusNominal3Fasa
+                    // Note: arusNominal3Fasa(S, V) expects S in MVA and V in kV, returns I in A
+                    const I_nominal = Rumus.arusNominal3Fasa(S_rating, V_ukur);
+
+                    // Hitung persentase pembebanan
+                    persentase = (I_ukur / I_nominal) * 100;
+
+                    // Format hasil dengan satuan dan locale Indonesia
+                    const persentaseFormatted = persentase.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' %';
+                    const i_nominalFormatted = I_nominal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' A';
+
+                    // Tampilkan hasil
+                    hasilDiv.innerHTML = `
+                        <strong>Persentase pembebanan:</strong> ${persentaseFormatted}<br>
+                        <strong>Rumus:</strong><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;I_nominal = S_rating × 1000 / (√3 × V_ukur)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;% = I_ukur / I_nominal × 100<br>
+                        <strong>Perhitungan:</strong><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;I_nominal = ${S_rating} × 1000 / (√3 × ${V_ukur}) = ${i_nominalFormatted}<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;% = ${I_ukur.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / ${i_nominalFormatted} × 100 = ${persentaseFormatted}
+                    `;
+
+                } else {
+                    throw new Error('Mode input tidak valid');
+                }
+
+                // Tambahkan peringatan jika di atas 100%
+                if (persentase > 100) {
+                    hasilDiv.innerHTML += '<br><span style="color: #d32f2f; font-weight: bold;">Peringatan: Trafo berbeban lebih</span>';
+                }
+
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (selectedMode === 'mva') {
+                    if (error.message.includes('S_ukur')) {
+                        const s_ukurInput = document.getElementById('s_ukur');
+                        s_ukurInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        s_ukurInput.parentNode.insertBefore(errorElem, s_ukurInput.nextSibling);
+                    }
+                    if (error.message.includes('S_rating')) {
+                        const s_ratingInput = document.getElementById('s_rating');
+                        s_ratingInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        s_ratingInput.parentNode.insertBefore(errorElem, s_ratingInput.nextSibling);
+                    }
+                } else if (selectedMode === 'mw_mvar') {
+                    if (error.message.includes('P_ukur')) {
+                        const p_ukurInput = document.getElementById('p_ukur');
+                        p_ukurInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        p_ukurInput.parentNode.insertBefore(errorElem, p_ukurInput.nextSibling);
+                    }
+                    if (error.message.includes('Q_ukur')) {
+                        const q_ukurInput = document.getElementById('q_ukur');
+                        q_ukurInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        q_ukurInput.parentNode.insertBefore(errorElem, q_ukurInput.nextSibling);
+                    }
+                    if (error.message.includes('S_rating')) {
+                        const s_ratingInput = document.getElementById('s_rating2');
+                        s_ratingInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        s_ratingInput.parentNode.insertBefore(errorElem, s_ratingInput.nextSibling);
+                    }
+                } else if (selectedMode === 'arus') {
+                    if (error.message.includes('I_ukur')) {
+                        const arus_ukurInput = document.getElementById('arus_ukur');
+                        arus_ukurInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        arus_ukurInput.parentNode.insertBefore(errorElem, arus_ukurInput.nextSibling);
+                    }
+                    if (error.message.includes('V_ukur')) {
+                        const tegangan_ukurInput = document.getElementById('tegangan_ukur');
+                        tegangan_ukurInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        tegangan_ukurInput.parentNode.insertBefore(errorElem, tegangan_ukurInput.nextSibling);
+                    }
+                    if (error.message.includes('S_rating')) {
+                        const s_ratingInput = document.getElementById('s_rating3');
+                        s_ratingInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        s_ratingInput.parentNode.insertBefore(errorElem, s_ratingInput.nextSibling);
+                    }
+                }
+
+                // Tampilkan juga error umum di hasil div untuk debugging
+                hasilDiv.innerHTML += '<br><strong>Error:</strong> ' + error.message;
+                hasilDiv.style.color = '#d32f2f';
+            }
+        });
+    }
 });

@@ -58,6 +58,51 @@
             </form>
             <div id="hasil2" class="hasil"></div>
         </section>
+        <!-- Kalkulator 3: Persentase Pembebanan Trafo -->
+        <section id="kalkulator3">
+            <h2>Persentase Pembebanan Trafo</h2>
+            <div class="mode-selection">
+                <label>Pilih mode input:</label>
+                <div class="mode-options">
+                    <label><input type="radio" name="mode3" value="mva" checked> MVA terukur</label>
+                    <label><input type="radio" name="mode3" value="mw_mvar"> MW dan MVAR</label>
+                    <label><input type="radio" name="mode3" value="arus"> Arus terukur</label>
+                </div>
+            </div>
+            <form id="form3">
+                <!-- Mode 1: MVA terukur (default) -->
+                <div id="mode-mva" class="mode-content">
+                    <label for="s_ukur">Daya terukur S_ukur (MVA):</label>
+                    <input type="number" id="s_ukur" name="s_ukur" step="any" required>
+                    <label for="s_rating">Daya rating S_rating (MVA):</label>
+                    <input type="number" id="s_rating" name="s_rating" step="any" required>
+                </div>
+
+                <!-- Mode 2: MW dan MVAR -->
+                <div id="mode-mw_mvar" class="mode-content" style="display: none;">
+                    <label for="p_ukur">Daya aktif P_ukur (MW):</label>
+                    <input type="number" id="p_ukur" name="p_ukur" step="any" required>
+                    <label for="q_ukur">Daya reaktif Q_ukur (MVAR):</label>
+                    <input type="number" id="q_ukur" name="q_ukur" step="any" required>
+                    <label for="s_rating2">Daya rating S_rating (MVA):</label>
+                    <input type="number" id="s_rating2" name="s_rating2" step="any" required>
+                </div>
+
+                <!-- Mode 3: Arus terukur -->
+                <div id="mode-arus" class="mode-content" style="display: none;">
+                    <label for="arus_ukur">Arus terukur I_ukur (A):</label>
+                    <input type="number" id="arus_ukur" name="arus_ukur" step="any" required>
+                    <label for="tegangan_ukur">Tegangan terukur V_ukur (kV):</label>
+                    <input type="number" id="tegangan_ukur" name="tegangan_ukur" step="any" required>
+                    <label for="s_rating3">Daya rating S_rating (MVA):</label>
+                    <input type="number" id="s_rating3" name="s_rating3" step="any" required>
+                </div>
+
+                <button type="submit">Hitung</button>
+            </form>
+            <div id="hasil3" class="hasil"></div>
+        </section>
+
         <!-- More sections can be added similarly, but we leave them as placeholders for now -->
     </main>
     <footer>

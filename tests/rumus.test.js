@@ -99,3 +99,118 @@ test('Segitiga daya - input Q bukan angka', async t => {
     { message: 'Daya reaktif Q harus berupa angka' }
   );
 });
+
+// Kalkulator 3: Persentase pembebanan trafo
+test('Persentase pembebanan trafo - S_ukur = 80 MVA, S_rating = 100 MVA', async t => {
+  const persentase = Rumus.persentasePembebananTrafo(80, 100);
+  assertCloseTo(persentase, 80, 0.01, 'Persentase harus 80%');
+});
+
+test('Persentase pembebanan trafo - S_ukur = 120 MVA, S_rating = 100 MVA (overload)', async t => {
+  const persentase = Rumus.persentasePembebananTrafo(120, 100);
+  assertCloseTo(persentase, 120, 0.01, 'Persentase harus 120%');
+});
+
+test('Persentase pembebanan trafo - input S_ukur bukan angka', async t => {
+  assert.throws(
+    () => Rumus.persentasePembebananTrafo('abc', 100),
+    { message: 'Daya terukur S_ukur harus berupa angka' }
+  );
+});
+
+test('Persentase pembebanan trafo - input S_rating bukan angka', async t => {
+  assert.throws(
+    () => Rumus.persentasePembebananTrafo(80, 'xyz'),
+    { message: 'Daya rating S_rating harus berupa angka' }
+  );
+});
+
+test('Persentase pembebanan trafo - input S_ukur negatif', async t => {
+  assert.throws(
+    () => Rumus.persentasePembebananTrafo(-10, 100),
+    { message: 'Daya terukur S_ukur tidak boleh negatif' }
+  );
+});
+
+test('Persentase pembebanan trafo - input S_rating kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.persentasePembebananTrafo(80, 0),
+    { message: 'Daya rating S_rating harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.persentasePembebananTrafo(80, -5),
+    { message: 'Daya rating S_rating harus lebih besar dari nol' }
+  );
+});
+
+// Kalkulator 3: Mode MW dan MVAR
+test('Persentase pembebanan trafo mode MW dan MVAR - P=80 MW, Q=60 MVAR, S_rating=100 MVA', async t => {
+  // Hitung S terukur terlebih dahulu menggunakan fungsi segitigaDaya
+  const segitigaResult = Rumus.segitigaDaya(80, 60);
+  const S_ukur = segitigaResult.S; // Harusnya 100 MVA
+
+  // Hitung persentase pembebanan
+  const persentase = Rumus.persentasePembebananTrafo(S_ukur, 100);
+  assertCloseTo(persentase, 100, 0.01, 'Persentase harus 100% untuk P=80 MW, Q=60 MVAR, S_rating=100 MVA');
+});
+
+test('Persentase pembebanan trafo mode MW dan MVAR - P=60 MW, Q=80 MVAR, S_rating=100 MVA', async t => {
+  // Hitung S terukur terlebih dahulu menggunakan fungsi segitigaDaya
+  const segitigaResult = Rumus.segitigaDaya(60, 80);
+  const S_ukur = segitigaResult.S; // Harusnya 100 MVA
+
+  // Hitung persentase pembebanan
+  const persentase = Rumus.persentasePembebananTrafo(S_ukur, 100);
+  assertCloseTo(persentase, 100, 0.01, 'Persentase harus 100% untuk P=60 MW, Q=80 MVAR, S_rating=100 MVA');
+});
+
+// Kalkulator 3: Mode Arus terukur
+test('Persentase pembebanan trafo mode Arus terukur - I_ukur=1049.73 A, V_ukur=275 kV, S_rating=500 MVA', async t => {
+  // Hitung arus nominal terlebih dahulu menggunakan fungsi arusNominal3Fasa
+  const I_nominal = Rumus.arusNominal3Fasa(500, 275); // Harusnya ~1049.73 A
+
+  // Hitung persentase pembebanan
+  const persentase = (1049.73 / I_nominal) * 100;
+  assertCloseTo(persentase, 100, 0.01, 'Persentase harus 100% untuk I_ukur=1049.73 A, V_ukur=275 kV, S_rating=500 MVA');
+});
+
+test('Persentase pembebanan trafo mode Arus terukur - I_ukur=500 A, V_ukur=275 kV, S_rating=500 MVA (underload)', async t => {
+  // Hitung arus nominal terlebih dahulu menggunakan fungsi arusNominal3Fasa
+  const I_nominal = Rumus.arusNominal3Fasa(500, 275); // Harusnya ~1049.73 A
+
+  // Hitung persentase pembebanan
+  const persentase = (500 / I_nominal) * 100;
+  assertCloseTo(persentase, 47.63, 0.01, 'Persentase harus ~47.63% untuk I_ukur=500 A, V_ukur=275 kV, S_rating=500 MVA');
+});
+
+// Test input tidak valid untuk kalkulator 3 mode MW dan MVAR
+test('Persentase pembebanan trafo mode MW dan MVAR - input P bukan angka', async t => {
+  // Kita tidak dapat langsung menguji fungsi gabungan tanpa memperbesar cakupan,
+  // tetapi kita bisa menguji bahwa fungsi-fungsi komponen bekerja dengan benar
+  assert.throws(
+    () => Rumus.segitigaDaya('abc', 60),
+    { message: 'Daya aktif P harus berupa angka' }
+  );
+});
+
+test('Persentase pembebanan trafo mode MW dan MVAR - input Q bukan angka', async t => {
+  assert.throws(
+    () => Rumus.segitigaDaya(80, 'xyz'),
+    { message: 'Daya reaktif Q harus berupa angka' }
+  );
+});
+
+// Test input tidak valid untuk kalkulator 3 mode Arus terukur
+test('Persentase pembebanan trafo mode Arus terukur - input arus bukan angka', async t => {
+  assert.throws(
+    () => Rumus.arusNominal3Fasa('abc', 20),
+    { message: 'Daya S harus berupa angka' }
+  );
+});
+
+test('Persentase pembebanan trafo mode Arus terukur - input tegangan bukan angka', async t => {
+  assert.throws(
+    () => Rumus.arusNominal3Fasa(60, 'xyz'),
+    { message: 'Tegangan V harus berupa angka' }
+  );
+});

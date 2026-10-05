@@ -57,6 +57,32 @@ Rumus.segitigaDaya = function(P, Q) {
     };
 };
 
+/**
+ * Hitung persentase pembebanan trafo
+ * @param {number} S_ukur - Daya terukur dalam MVA
+ * @param {number} S_rating - Daya rating trafo dalam MVA
+ * @returns {number} Persentase pembebanan
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.persentasePembebananTrafo = function(S_ukur, S_rating) {
+    // Validasi input
+    if (typeof S_ukur !== 'number' || isNaN(S_ukur)) {
+        throw new Error('Daya terukur S_ukur harus berupa angka');
+    }
+    if (typeof S_rating !== 'number' || isNaN(S_rating)) {
+        throw new Error('Daya rating S_rating harus berupa angka');
+    }
+    if (S_ukur < 0) {
+        throw new Error('Daya terukur S_ukur tidak boleh negatif');
+    }
+    if (S_rating <= 0) {
+        throw new Error('Daya rating S_rating harus lebih besar dari nol');
+    }
+
+    const persentase = (S_ukur / S_rating) * 100;
+    return persentase;
+};
+
 // Supaya bisa diuji dengan Node
 if (typeof module !== "undefined") {
     module.exports = Rumus;
