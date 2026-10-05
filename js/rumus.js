@@ -615,6 +615,40 @@ Rumus.dropTeganganSaluran3Fasa = function(I, L, R, X, cosPhi, V) {
     };
 };
 
+/**
+ * Hitung rugi daya saluran
+ * @param {number} I - Arus dalam A
+ * @param {number} R - Resistansi per kilometer dalam Ω/km
+ * @param {number} L - Panjang saluran dalam km
+ * @returns {number} Rugi daya dalam watt
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.rugiDayaSaluran = function(I, R, L) {
+    // Validasi input
+    if (typeof I !== 'number' || isNaN(I)) {
+        throw new Error('Arus I harus berupa angka');
+    }
+    if (typeof R !== 'number' || isNaN(R)) {
+        throw new Error('Resistansi R harus berupa angka');
+    }
+    if (typeof L !== 'number' || isNaN(L)) {
+        throw new Error('Panjang saluran L harus berupa angka');
+    }
+    if (I < 0) {
+        throw new Error('Arus I tidak boleh negatif');
+    }
+    if (R < 0) {
+        throw new Error('Resistansi R tidak boleh negatif');
+    }
+    if (L <= 0) {
+        throw new Error('Panjang saluran L harus lebih besar dari nol');
+    }
+
+    // Rumus: P_loss = 3 × I² × R × L
+    const P_loss = 3 * I * I * R * L;
+    return P_loss;
+};
+
 // Supaya bisa diuji dengan Node
 if (typeof module !== "undefined") {
     module.exports = Rumus;

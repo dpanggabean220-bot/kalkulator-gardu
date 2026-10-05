@@ -898,6 +898,60 @@ test('Drop tegangan saluran 3 fasa - I 200 A, L 10 km, R 0,1, X 0,4 Ω/km, cos �
   assertCloseTo(result.persen, 5.122, 0.01, 'Persentase harus 5,122%');
 });
 
+// Kalkulator 13: Rugi daya saluran
+test('Rugi daya saluran - I 200 A, L 10 km, R 0,1 Ω/km', async t => {
+  const Ploss = Rumus.rugiDayaSaluran(200, 0.1, 10);
+  // Expected: 3 * 200^2 * 0.1 * 10 = 3 * 40000 * 0.1 * 10 = 120000 W
+  assertCloseTo(Ploss, 120000, 0.01, 'Hasil harus 120000 W');
+});
+
+// Test input tidak valid untuk kalkulator 13
+test('Rugi daya saluran - input arus bukan angka', async t => {
+  assert.throws(
+    () => Rumus.rugiDayaSaluran('abc', 0.1, 10),
+    { message: 'Arus I harus berupa angka' }
+  );
+});
+
+test('Rugi daya saluran - input arus kurang dari nol', async t => {
+  assert.throws(
+    () => Rumus.rugiDayaSaluran(-10, 0.1, 10),
+    { message: 'Arus I tidak boleh negatif' }
+  );
+});
+
+test('Rugi daya saluran - input resistansi bukan angka', async t => {
+  assert.throws(
+    () => Rumus.rugiDayaSaluran(200, 'xyz', 10),
+    { message: 'Resistansi R harus berupa angka' }
+  );
+});
+
+test('Rugi daya saluran - input resistansi kurang dari nol', async t => {
+  assert.throws(
+    () => Rumus.rugiDayaSaluran(200, -0.1, 10),
+    { message: 'Resistansi R tidak boleh negatif' }
+  );
+});
+
+test('Rugi daya saluran - input panjang bukan angka', async t => {
+  assert.throws(
+    () => Rumus.rugiDayaSaluran(200, 0.1, 'xyz'),
+    { message: 'Panjang saluran L harus berupa angka' }
+  );
+});
+
+test('Rugi daya saluran - input panjang kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.rugiDayaSaluran(200, 0.1, 0),
+    { message: 'Panjang saluran L harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.rugiDayaSaluran(200, 0.1, -5),
+    { message: 'Panjang saluran L harus lebih besar dari nol' }
+  );
+});
+
 // Test input tidak valid untuk drop tegangan saluran 3 fasa
 test('Drop tegangan saluran 3 fasa - input arus bukan angka', async t => {
   assert.throws(

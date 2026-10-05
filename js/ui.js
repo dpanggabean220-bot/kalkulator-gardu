@@ -1631,4 +1631,100 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Handle form submission for calculator 13
+    const form13 = document.getElementById('form13');
+    if (form13) {
+        form13.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get input values
+            const arusInput = document.getElementById('arus13');
+            const resistansiInput = document.getElementById('resistansi13');
+            const panjangInput = document.getElementById('panjang13');
+            const hasilDiv = document.getElementById('hasil13');
+
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
+            arusInput.classList.remove('error-input');
+            resistansiInput.classList.remove('error-input');
+            panjangInput.classList.remove('error-input');
+
+            // Remove any existing error messages
+            const existingErrors = form13.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
+
+            try {
+                const I = parseFloat(arusInput.value);
+                const R = parseFloat(resistansiInput.value);
+                const L = parseFloat(panjangInput.value);
+
+                // Validate empty inputs
+                if (isNaN(I) || arusInput.value.trim() === '') {
+                    throw new Error('Arus I harus diisi');
+                }
+                if (isNaN(R) || resistansiInput.value.trim() === '') {
+                    throw new Error('Resistansi R harus diisi');
+                }
+                if (isNaN(L) || panjangInput.value.trim() === '') {
+                    throw new Error('Panjang saluran L harus diisi');
+                }
+
+                // Call the rumus function
+                const Ploss = Rumus.rugiDayaSaluran(I, R, L);
+
+                // Format hasil dengan satuan otomatis
+                let hasilFormatted;
+                let hasilSmallText = '';
+
+                if (Ploss < 1000) {
+                    // Di bawah 1000 W, tampilkan dalam W
+                    hasilFormatted = Ploss.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' W';
+                } else if (Ploss < 1000000) {
+                    // Di bawah 1.000.000 W, tampilkan dalam kW
+                    const hasilKW = Ploss / 1000;
+                    hasilFormatted = hasilKW.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kW';
+                    hasilSmallText = `<small>${Ploss.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} W</small>`;
+                } else {
+                    // 1.000.000 W ke atas, tampilkan dalam MW
+                    const hasilMW = Ploss / 1000000;
+                    hasilFormatted = hasilMW.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MW';
+                    hasilSmallText = `<small>${Ploss.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} W</small>`;
+                }
+
+                // Tampilkan hasil
+                hasilDiv.innerHTML = `
+                    <strong>Rugi daya saluran:</strong> ${hasilFormatted}<br>
+                    ${hasilSmallText}
+                    <strong>Rumus:</strong> P_loss = 3 × I² × R × L<br>
+                    <strong>Perhitungan:</strong> P_loss = 3 × ${I}² × ${R} × ${L} = ${Ploss.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} W
+                `;
+                hasilDiv.classList.add('visible');
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (error.message.includes('Arus I')) {
+                    arusInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    arusInput.parentNode.insertBefore(errorElem, arusInput.nextSibling);
+                }
+                if (error.message.includes('Resistansi R')) {
+                    resistansiInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    resistansiInput.parentNode.insertBefore(errorElem, resistansiInput.nextSibling);
+                }
+                if (error.message.includes('Panjang saluran L')) {
+                    panjangInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    panjangInput.parentNode.insertBefore(errorElem, panjangInput.nextSibling);
+                }
+            }
+        });
+    }
 });

@@ -315,7 +315,15 @@
         <section id="kalkulator13">
             <h2>Rugi Daya Saluran</h2>
             <form id="form13">
-                <!-- Form akan ditambahkan nanti -->
+                <label for="arus13">Arus I (A):</label>
+                <input type="number" id="arus13" name="arus13" step="any" required>
+
+                <label for="resistansi13">Resistansi per fasa R (Ω/km):</label>
+                <input type="number" id="resistansi13" name="resistansi13" step="any" required>
+
+                <label for="panjang13">Panjang saluran L (km):</label>
+                <input type="number" id="panjang13" name="panjang13" step="any" required>
+
                 <button type="submit">Hitung</button>
             </form>
             <div id="hasil13" class="hasil"></div>
