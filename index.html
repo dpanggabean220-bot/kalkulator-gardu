@@ -339,11 +339,19 @@
             <div id="hasil14" class="hasil"></div>
         </section>
 
-        <!-- Kalkulator 15: Indeks Polarisasi dan DAR -->
+        <!-- Kalkulator 15: Indeks Polarisasi dan Rasio Absorpsi Dielektrik -->
         <section id="kalkulator15">
-            <h2>Indeks Polarisasi dan DAR</h2>
+            <h2>Indeks Polarisasi dan Rasio Absorpsi Dielektrik</h2>
             <form id="form15">
-                <!-- Form akan ditambahkan nanti -->
+                <label for="r30detik">Tahanan setelah 30 detik R₃₀ (MΩ):</label>
+                <input type="number" id="r30detik" name="r30detik" step="any">
+
+                <label for="r1menit">Tahanan setelah 1 menit R₁ (MΩ):</label>
+                <input type="number" id="r1menit" name="r1menit" step="any" required>
+
+                <label for="r10menit">Tahanan setelah 10 menit R₁₀ (MΩ):</label>
+                <input type="number" id="r10menit" name="r10menit" step="any">
+
                 <button type="submit">Hitung</button>
             </form>
             <div id="hasil15" class="hasil"></div>

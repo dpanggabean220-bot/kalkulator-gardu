@@ -649,6 +649,63 @@ Rumus.rugiDayaSaluran = function(I, R, L) {
     return P_loss;
 };
 
+/**
+ * Hitung indeks polarisasi dan rasio absorpsi dielektrik
+ * @param {number} R30detik - Tahanan setelah 30 detik dalam Ω (opsional)
+ * @param {number} R1menit - Tahanan setelah 1 menit dalam Ω (sama dengan R 60 detik, wajib diisi)
+ * @param {number} R10menit - Tahanan setelah 10 menit dalam Ω (opsional)
+ * @returns {{PI: number, DAR: number}} Objek dengan PI (indeks polarisasi) dan DAR (rasio absorpsi dielektrik)
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.indeksPolarisasiDAR = function(R30detik, R1menit, R10menit) {
+    // Validasi input R1menit (wajib)
+    if (typeof R1menit !== 'number' || isNaN(R1menit)) {
+        throw new Error('Tahanan setelah 1 menit harus berupa angka');
+    }
+    if (R1menit <= 0) {
+        throw new Error('Tahanan setelah 1 menit harus lebih besar dari nol');
+    }
+
+    // Validasi input opsional jika disediakan
+    if (R30detik !== undefined && R30detik !== null) {
+        if (typeof R30detik !== 'number' || isNaN(R30detik)) {
+            throw new Error('Tahanan setelah 30 detik harus berupa angka');
+        }
+        if (R30detik <= 0) {
+            throw new Error('Tahanan setelah 30 detik harus lebih besar dari nol');
+        }
+    }
+
+    if (R10menit !== undefined && R10menit !== null) {
+        if (typeof R10menit !== 'number' || isNaN(R10menit)) {
+            throw new Error('Tahanan setelah 10 menit harus berupa angka');
+        }
+        if (R10menit <= 0) {
+            throw new Error('Tahanan setelah 10 menit harus lebih besar dari nol');
+        }
+    }
+
+    // Validasi bahwa minimal satu dari R30detik atau R10menit disediakan
+    if ((R30detik === undefined || R30detik === null) &&
+        (R10menit === undefined || R10menit === null)) {
+        throw new Error('Minimal satu dari tahanan setelah 30 detik atau 10 menit harus diisi');
+    }
+
+    const result = {};
+
+    // Hitung indeks polarisasi jika R10menit disediakan
+    if (R10menit !== undefined && R10menit !== null) {
+        result.PI = R10menit / R1menit; // Indeks polarisasi = R10menit / R1menit
+    }
+
+    // Hitung rasio absorpsi dielektrik jika R30detik disediakan
+    if (R30detik !== undefined && R30detik !== null) {
+        result.DAR = R1menit / R30detik; // Rasio absorpsi dielektrik = R1menit / R30detik
+    }
+
+    return result;
+}
+
 // Supaya bisa diuji dengan Node
 if (typeof module !== "undefined") {
     module.exports = Rumus;

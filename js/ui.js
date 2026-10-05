@@ -1445,7 +1445,128 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Handle form submission for calculator 18
+// Handle form submission for calculator 15
+const form15 = document.getElementById('form15');
+if (form15) {
+    form15.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get input values
+        const r30detikInput = document.getElementById('r30detik');
+        const r1menitInput = document.getElementById('r1menit');
+        const r10menitInput = document.getElementById('r10menit');
+        const hasilDiv = document.getElementById('hasil15');
+
+        // Clear previous results and errors
+        hasilDiv.innerHTML = '';
+        hasilDiv.classList.remove('visible');
+        r30detikInput.classList.remove('error-input');
+        r1menitInput.classList.remove('error-input');
+        r10menitInput.classList.remove('error-input');
+
+        // Remove any existing error messages
+        const existingErrors = form15.querySelectorAll('.error');
+        existingErrors.forEach(el => el.remove());
+
+        try {
+            // Parse input values (empty strings become undefined for optional fields)
+            const R30detik = r30detikInput.value.trim() === '' ? undefined : parseFloat(r30detikInput.value);
+            const R1menit = parseFloat(r1menitInput.value);
+            const R10menit = r10menitInput.value.trim() === '' ? undefined : parseFloat(r10menitInput.value);
+
+            // Validate required input R1menit
+            if (isNaN(R1menit) || r1menitInput.value.trim() === '') {
+                throw new Error('Tahanan setelah 1 menit harus diisi');
+            }
+
+            // Validate optional inputs if provided
+            if (R30detik !== undefined && R30detik !== null) {
+                if (isNaN(R30detik)) {
+                    throw new Error('Tahanan setelah 30 detik harus berupa angka');
+                }
+                if (R30detik <= 0) {
+                    throw new Error('Tahanan setelah 30 detik harus lebih besar dari nol');
+                }
+            }
+
+            if (R10menit !== undefined && R10menit !== null) {
+                if (isNaN(R10menit)) {
+                    throw new Error('Tahanan setelah 10 menit harus berupa angka');
+                }
+                if (R10menit <= 0) {
+                    throw new Error('Tahanan setelah 10 menit harus lebih besar dari nol');
+                }
+            }
+
+            // Validate that minimal satu dari R30detik atau R10menit disediakan
+            if ((R30detik === undefined || R30detik === null) &&
+                (R10menit === undefined || R10menit === null)) {
+                throw new Error('Minimal satu dari tahanan setelah 30 detik atau 10 menit harus diisi');
+            }
+
+            // Call the rumus function with new parameter order: R30detik, R1menit, R10menit
+            const result = Rumus.indeksPolarisasiDAR(R30detik, R1menit, R10menit);
+
+            // Format hasil dengan locale Indonesia
+            const formatResult = (value) => value.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Tampilkan hasil - hanya tampilkan yang dihitung
+            let hasilHTML = '';
+
+            if (result.PI !== undefined) {
+                hasilHTML += `<strong>Indeks Polarisasi (PI):</strong> ${formatResult(result.PI)}<br>`;
+            }
+
+            if (result.DAR !== undefined) {
+                hasilHTML += `<strong>Rasio Absorpsi Dielektrik (DAR):</strong> ${formatResult(result.DAR)}<br>`;
+            }
+
+            hasilHTML += `<strong>Rumus:</strong><br>`;
+            if (result.PI !== undefined) {
+                hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;PI = R₁₀ / R₁<br>`;
+            }
+            if (result.DAR !== undefined) {
+                hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;DAR = R₁ / R₃₀<br>`;
+            }
+
+            hasilHTML += `<strong>Perhitungan:</strong><br>`;
+            if (result.PI !== undefined) {
+                hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;PI = ${R10menit !== undefined && R10menit !== null ? R10menit : '(tidak dihitung)'} / ${R1menit} = ${formatResult(result.PI)}<br>`;
+            }
+            if (result.DAR !== undefined) {
+                hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;DAR = ${R1menit} / ${R30detik !== undefined && R30detik !== null ? R30detik : '(tidak dihitung)'} = ${formatResult(result.DAR)}<br>`;
+            }
+
+            hasilDiv.innerHTML = hasilHTML;
+            hasilDiv.classList.add('visible');
+        } catch (error) {
+            // Tampilkan error di dekat kolom yang salah
+            if (error.message.includes('Tahanan setelah 1 menit')) {
+                r1menitInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                r1menitInput.parentNode.insertBefore(errorElem, r1menitInput.nextSibling);
+            }
+            if (error.message.includes('Tahanan setelah 30 detik')) {
+                r30detikInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                r30detikInput.parentNode.insertBefore(errorElem, r30detikInput.nextSibling);
+            }
+            if (error.message.includes('Tahanan setelah 10 menit')) {
+                r10menitInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                r10menitInput.parentNode.insertBefore(errorElem, r10menitInput.nextSibling);
+            }
+        }
+    });
+}
+
+// Handle form submission for calculator 18
     const form18 = document.getElementById('form18');
     if (form18) {
         // First, set up mode switching
