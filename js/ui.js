@@ -899,9 +899,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     burdenRatingInput.parentNode.insertBefore(errorElem, burdenRatingInput.nextSibling);
                 }
 
-                // Tampilkan juga error umum di hasil div untuk debugging
-                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
             }
         });
     }
@@ -983,9 +980,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     stepInput.parentNode.insertBefore(errorElem, stepInput.nextSibling);
                 }
 
-                // Tampilkan juga error umum di hasil div untuk debugging
-                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
             }
         });
     }
@@ -1447,9 +1441,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     teganganInput.parentNode.insertBefore(errorElem, teganganInput.nextSibling);
                 }
 
-                // Tampilkan juga error umum di hasil div untuk debugging
-                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
             }
         });
     }
