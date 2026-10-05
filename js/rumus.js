@@ -545,6 +545,76 @@ Rumus.estimasiLokasiGangguan = function(nilai_gangguan, nilai_per_km, panjang_sa
     };
 };
 
+/**
+ * Hitung drop tegangan saluran 3 fasa
+ * @param {number} I - Arus dalam A
+ * @param {number} L - Panjang saluran dalam km
+ * @param {number} R - Resistansi per kilometer dalam Ω/km
+ * @param {number} X - Reaktansi per kilometer dalam Ω/km
+ * @param {number} cosPhi - Faktor daya (cos φ)
+ * @param {number} V - Tegangan dalam kV (untuk menghitung persentase drop tegangan)
+ * @returns {{dropTegangan: number, persen: number}} Objek dengan drop tegangan dalam V dan persentase terhadap tegangan
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.dropTeganganSaluran3Fasa = function(I, L, R, X, cosPhi, V) {
+    // Validasi input
+    if (typeof I !== 'number' || isNaN(I)) {
+        throw new Error('Arus I harus berupa angka');
+    }
+    if (typeof L !== 'number' || isNaN(L)) {
+        throw new Error('Panjang saluran L harus berupa angka');
+    }
+    if (typeof R !== 'number' || isNaN(R)) {
+        throw new Error('Resistansi R harus berupa angka');
+    }
+    if (typeof X !== 'number' || isNaN(X)) {
+        throw new Error('Reaktansi X harus berupa angka');
+    }
+    if (typeof cosPhi !== 'number' || isNaN(cosPhi)) {
+        throw new Error('Faktor daya cos φ harus berupa angka');
+    }
+    if (typeof V !== 'number' || isNaN(V)) {
+        throw new Error('Tegangan V harus berupa angka');
+    }
+    if (I < 0) {
+        throw new Error('Arus I tidak boleh negatif');
+    }
+    if (L <= 0) {
+        throw new Error('Panjang saluran L harus lebih besar dari nol');
+    }
+    if (R < 0) {
+        throw new Error('Resistansi R tidak boleh negatif');
+    }
+    if (X < 0) {
+        throw new Error('Reaktansi X tidak boleh negatif');
+    }
+    if (cosPhi < 0 || cosPhi > 1) {
+        throw new Error('Faktor daya cos φ harus antara 0 dan 1');
+    }
+    if (V <= 0) {
+        throw new Error('Tegangan V harus lebih besar dari nol');
+    }
+
+    // Hitung sin φ dari cos φ
+    // Sin φ = √(1 - cos²φ)
+    const sinPhi = Math.sqrt(1 - cosPhi * cosPhi);
+
+    // Rumus: ΔV ≈ √3 × I × L × (R cos φ + X sin φ)
+    const akar3 = Math.sqrt(3);
+    const dropTegangan = akar3 * I * L * (R * cosPhi + X * sinPhi);
+
+    // Hitung persentase drop tegangan terhadap tegangan
+    // V dalam kV, dropTegangan dalam V, jadi konversi V ke kV untuk perhitungan persen
+    const V_kV = V; // Tegangan sudah dalam kV
+    const dropTegangan_kV = dropTegangan / 1000; // Konversi drop tegangan dari V ke kV
+    const persen = (dropTegangan_kV / V_kV) * 100;
+
+    return {
+        dropTegangan: dropTegangan, // dalam volt
+        persen: persen // dalam persen
+    };
+};
+
 // Supaya bisa diuji dengan Node
 if (typeof module !== "undefined") {
     module.exports = Rumus;

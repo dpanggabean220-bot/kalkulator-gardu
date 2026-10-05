@@ -62,10 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorElem.textContent = error.message;
                     teganganInput.parentNode.insertBefore(errorElem, teganganInput.nextSibling);
                 }
-
-                // Tampilkan juga error umum di hasil div untuk debugging
-                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
             }
         });
     }
@@ -149,10 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorElem.textContent = error.message;
                     qInput.parentNode.insertBefore(errorElem, qInput.nextSibling);
                 }
-
-                // Tampilkan juga error umum di hasil div untuk debugging
-                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
             }
         });
     }
@@ -445,10 +437,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         s_ratingInput.parentNode.insertBefore(errorElem, s_ratingInput.nextSibling);
                     }
                 }
-
-                // Tampilkan juga error umum di hasil div untuk debugging
-                hasilDiv.innerHTML += '<br><strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
             }
         });
     }
@@ -518,10 +506,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorElem.textContent = error.message;
                     tegangan6Input.parentNode.insertBefore(errorElem, tegangan6Input.nextSibling);
                 }
-
-                // Tampilkan juga error umum di hasil div untuk debugging
-                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
             }
         });
     }
@@ -604,10 +588,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorElem.textContent = error.message;
                     zPercent7Input.parentNode.insertBefore(errorElem, zPercent7Input.nextSibling);
                 }
-
-                // Tampilkan juga error umum di hasil div untuk debugging
-                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
             }
         });
     }
@@ -1086,10 +1066,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorElem.textContent = error.message;
                     cosPhi2Input.parentNode.insertBefore(errorElem, cosPhi2Input.nextSibling);
                 }
-
-                // Tampilkan juga error umum di hasil div untuk debugging
-                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
             }
         });
     }
@@ -1186,13 +1162,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 if (error.message.includes('Jenis kurva harus berupa string')) {
                     // This error comes from the function itself, show in hasil div
-                    hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                    hasilDiv.style.color = '#d32f2f';
                 }
                 if (error.message.includes('Jenis kurva harus SI, VI, atau EI')) {
                     // This error comes from the function itself, show in hasil div
-                    hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                    hasilDiv.style.color = '#d32f2f';
                 }
                 if (error.message.includes('TMS harus berupa angka')) {
                     tmsInput.classList.add('error-input');
@@ -1221,12 +1193,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorElem.className = 'error';
                     errorElem.textContent = error.message;
                     ratioInput.parentNode.insertBefore(errorElem, ratioInput.nextSibling);
-                }
-
-                // Tampilkan juga error umum di hasil div untuk debugging
-                if (!hasilDiv.innerHTML.includes('Error:')) {
-                    hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                    hasilDiv.style.color = '#d32f2f';
                 }
             }
         });
@@ -1359,15 +1325,131 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 if (error.message.includes('Metode harus berupa')) {
                     // This error comes from the function itself, show in hasil div
-                    hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                    hasilDiv.style.color = '#d32f2f';
+                }
+            }
+        });
+    }
+
+    // Handle form submission for calculator 12
+    const form12 = document.getElementById('form12');
+    if (form12) {
+        form12.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get input values
+            const arusInput = document.getElementById('arus12');
+            const panjangInput = document.getElementById('panjang12');
+            const resistansiInput = document.getElementById('resistansi12');
+            const reaktansiInput = document.getElementById('reaktansi12');
+            const cosPhiInput = document.getElementById('cosPhi12');
+            const teganganInput = document.getElementById('tegangan12');
+            const hasilDiv = document.getElementById('hasil12');
+
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
+            arusInput.classList.remove('error-input');
+            panjangInput.classList.remove('error-input');
+            resistansiInput.classList.remove('error-input');
+            reaktansiInput.classList.remove('error-input');
+            cosPhiInput.classList.remove('error-input');
+            teganganInput.classList.remove('error-input');
+
+            // Remove any existing error messages
+            const existingErrors = form12.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
+
+            try {
+                const I = parseFloat(arusInput.value);
+                const L = parseFloat(panjangInput.value);
+                const R = parseFloat(resistansiInput.value);
+                const X = parseFloat(reaktansiInput.value);
+                const cosPhi = parseFloat(cosPhiInput.value);
+                const V = parseFloat(teganganInput.value);
+
+                // Validate empty inputs
+                if (isNaN(I) || arusInput.value.trim() === '') {
+                    throw new Error('Arus I harus diisi');
+                }
+                if (isNaN(L) || panjangInput.value.trim() === '') {
+                    throw new Error('Panjang saluran L harus diisi');
+                }
+                if (isNaN(R) || resistansiInput.value.trim() === '') {
+                    throw new Error('Resistansi R harus diisi');
+                }
+                if (isNaN(X) || reaktansiInput.value.trim() === '') {
+                    throw new Error('Reaktansi X harus diisi');
+                }
+                if (isNaN(cosPhi) || cosPhiInput.value.trim() === '') {
+                    throw new Error('Faktor daya cos φ harus diisi');
+                }
+                if (isNaN(V) || teganganInput.value.trim() === '') {
+                    throw new Error('Tegangan V harus diisi');
+                }
+
+                // Call the rumus function
+                const result = Rumus.dropTeganganSaluran3Fasa(I, L, R, X, cosPhi, V);
+
+                // Format hasil dengan satuan dan locale Indonesia
+                const dropTeganganFormatted = result.dropTegangan.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' V';
+                const persenFormatted = result.persen.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' %';
+
+                // Tampilkan hasil
+                hasilDiv.innerHTML = `
+                    <strong>Drop tegangan:</strong> ${dropTeganganFormatted}<br>
+                    <strong>Persentase drop tegangan:</strong> ${persenFormatted}<br>
+                    <strong>Rumus:</strong> ΔV ≈ √3 × I × L × (R cos φ + X sin φ)<br>
+                    <strong>Perhitungan:</strong> ΔV ≈ √3 × ${I} × ${L} × (${R} × cos φ + ${X} × sin φ) = ${result.dropTegangan.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} V
+                `;
+                hasilDiv.classList.add('visible');
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (error.message.includes('Arus I')) {
+                    arusInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    arusInput.parentNode.insertBefore(errorElem, arusInput.nextSibling);
+                }
+                if (error.message.includes('Panjang saluran L')) {
+                    panjangInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    panjangInput.parentNode.insertBefore(errorElem, panjangInput.nextSibling);
+                }
+                if (error.message.includes('Resistansi R')) {
+                    resistansiInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    resistansiInput.parentNode.insertBefore(errorElem, resistansiInput.nextSibling);
+                }
+                if (error.message.includes('Reaktansi X')) {
+                    reaktansiInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    reaktansiInput.parentNode.insertBefore(errorElem, reaktansiInput.nextSibling);
+                }
+                if (error.message.includes('Faktor daya cos φ')) {
+                    cosPhiInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    cosPhiInput.parentNode.insertBefore(errorElem, cosPhiInput.nextSibling);
+                }
+                if (error.message.includes('Tegangan V')) {
+                    teganganInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    teganganInput.parentNode.insertBefore(errorElem, teganganInput.nextSibling);
                 }
 
                 // Tampilkan juga error umum di hasil div untuk debugging
-                if (!hasilDiv.innerHTML.includes('Error:')) {
-                    hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                    hasilDiv.style.color = '#d32f2f';
-                }
+                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                hasilDiv.style.color = '#d32f2f';
             }
         });
     }

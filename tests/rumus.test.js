@@ -888,3 +888,109 @@ test('Estimasi lokasi gangguan - input Z_per_km kurang dari atau sama dengan nol
     { message: 'Nilai per kilometer harus lebih besar dari nol' }
   );
 });
+
+// Kalkulator 12: Drop tegangan saluran 3 fasa
+test('Drop tegangan saluran 3 fasa - I 200 A, L 10 km, R 0,1, X 0,4 Ω/km, cos φ 0,85', async t => {
+  const result = Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, 0.4, 0.85, 20); // Assuming 20 kV tegangan
+  // Expected: ≈ 1024,4 V (from test cases)
+  assertCloseTo(result.dropTegangan, 1024.4, 0.1, 'Hasil harus 1024,4 V');
+  // Persentase: (1024.4 V / 20 kV) * 100 = (1.0244 kV / 20 kV) * 100 = 5.122%
+  assertCloseTo(result.persen, 5.122, 0.01, 'Persentase harus 5,122%');
+});
+
+// Test input tidak valid untuk drop tegangan saluran 3 fasa
+test('Drop tegangan saluran 3 fasa - input arus bukan angka', async t => {
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa('abc', 10, 0.1, 0.4, 0.85, 20),
+    { message: 'Arus I harus berupa angka' }
+  );
+});
+
+test('Drop tegangan saluran 3 fasa - input panjang bukan angka', async t => {
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, 'xyz', 0.1, 0.4, 0.85, 20),
+    { message: 'Panjang saluran L harus berupa angka' }
+  );
+});
+
+test('Drop tegangan saluran 3 fasa - input resistansi bukan angka', async t => {
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, 10, 'abc', 0.4, 0.85, 20),
+    { message: 'Resistansi R harus berupa angka' }
+  );
+});
+
+test('Drop tegangan saluran 3 fasa - input reaktansi bukan angka', async t => {
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, 'xyz', 0.85, 20),
+    { message: 'Reaktansi X harus berupa angka' }
+  );
+});
+
+test('Drop tegangan saluran 3 fasa - input cos φ bukan angka', async t => {
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, 0.4, 'xyz', 20),
+    { message: 'Faktor daya cos φ harus berupa angka' }
+  );
+});
+
+test('Drop tegangan saluran 3 fasa - input tegangan bukan angka', async t => {
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, 0.4, 0.85, 'xyz'),
+    { message: 'Tegangan V harus berupa angka' }
+  );
+});
+
+test('Drop tegangan saluran 3 fasa - input arus kurang dari nol', async t => {
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(-10, 10, 0.1, 0.4, 0.85, 20),
+    { message: 'Arus I tidak boleh negatif' }
+  );
+});
+
+test('Drop tegangan saluran 3 fasa - input panjang kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, 0, 0.1, 0.4, 0.85, 20),
+    { message: 'Panjang saluran L harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, -5, 0.1, 0.4, 0.85, 20),
+    { message: 'Panjang saluran L harus lebih besar dari nol' }
+  );
+});
+
+test('Drop tegangan saluran 3 fasa - input resistansi kurang dari nol', async t => {
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, 10, -0.1, 0.4, 0.85, 20),
+    { message: 'Resistansi R tidak boleh negatif' }
+  );
+});
+
+test('Drop tegangan saluran 3 fasa - input reaktansi kurang dari nol', async t => {
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, -0.1, 0.85, 20),
+    { message: 'Reaktansi X tidak boleh negatif' }
+  );
+});
+
+test('Drop tegangan saluran 3 fasa - input cos φ kurang dari 0 atau lebih dari 1', async t => {
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, 0.4, -0.1, 20),
+    { message: 'Faktor daya cos φ harus antara 0 dan 1' }
+  );
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, 0.4, 1.1, 20),
+    { message: 'Faktor daya cos φ harus antara 0 dan 1' }
+  );
+});
+
+test('Drop tegangan saluran 3 fasa - input tegangan kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, 0.4, 0.85, 0),
+    { message: 'Tegangan V harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, 0.4, 0.85, -5),
+    { message: 'Tegangan V harus lebih besar dari nol' }
+  );
+});
