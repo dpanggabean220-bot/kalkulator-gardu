@@ -479,15 +479,18 @@ if (form6) {
 
             // Call the rumus function
             const I_sc = Rumus.arusHubungSingkatDariMVA(MVA_sc, V);
+            const I_sc_kA = I_sc / 1000;
 
             // Format hasil dengan satuan dan locale Indonesia
-            const hasilFormatted = I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' A';
+            const hasilFormatted_kA = I_sc_kA.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kA';
+            const hasilFormatted_A = I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' A';
 
             // Tampilkan hasil
             hasilDiv.innerHTML = `
-                <strong>Arus hubung singkat:</strong> ${hasilFormatted}<br>
+                <strong>Arus hubung singkat:</strong> ${hasilFormatted_kA}<br>
+                <small>${hasilFormatted_A}</small><br>
                 <strong>Rumus:</strong> I_sc = MVA_sc × 1000 / (√3 × V)<br>
-                <strong>Perhitungan:</strong> I_sc = ${MVA_sc} × 1000 / (√3 × ${V}) = ${I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} A
+                <strong>Perhitungan:</strong> I_sc = ${MVA_sc} × 1000 / (√3 × ${V}) = ${hasilFormatted_A}
             `;
         } catch (error) {
             // Tampilkan error di dekat kolom yang salah
@@ -504,6 +507,90 @@ if (form6) {
                 errorElem.className = 'error';
                 errorElem.textContent = error.message;
                 tegangan6Input.parentNode.insertBefore(errorElem, tegangan6Input.nextSibling);
+            }
+
+            // Tampilkan juga error umum di hasil div untuk debugging
+            hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+            hasilDiv.style.color = '#d32f2f';
+        }
+    });
+}
+
+// Handle form submission for calculator 7
+const form7 = document.getElementById('form7');
+if (form7) {
+    form7.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get input values
+        const daya7Input = document.getElementById('daya7');
+        const tegangan7Input = document.getElementById('tegangan7');
+        const zPercent7Input = document.getElementById('z_percent7');
+        const hasilDiv = document.getElementById('hasil7');
+
+        // Clear previous results and errors
+        hasilDiv.innerHTML = '';
+        daya7Input.classList.remove('error-input');
+        tegangan7Input.classList.remove('error-input');
+        zPercent7Input.classList.remove('error-input');
+
+        // Remove any existing error messages
+        const existingErrors = form7.querySelectorAll('.error');
+        existingErrors.forEach(el => el.remove());
+
+        try {
+            const S = parseFloat(daya7Input.value);
+            const V = parseFloat(tegangan7Input.value);
+            const Z_percent = parseFloat(zPercent7Input.value);
+
+            // Validate empty inputs
+            if (isNaN(S) || daya7Input.value.trim() === '') {
+                throw new Error('Daya S harus diisi');
+            }
+            if (isNaN(V) || tegangan7Input.value.trim() === '') {
+                throw new Error('Tegangan V harus diisi');
+            }
+            if (isNaN(Z_percent) || zPercent7Input.value.trim() === '') {
+                throw new Error('Impedansi Z% harus diisi');
+            }
+
+            // Call the rumus function
+            const I_sc = Rumus.arusHubungSingkatTerminalTrafo(S, V, Z_percent);
+            const I_sc_kA = I_sc / 1000;
+
+            // Format hasil dengan satuan dan locale Indonesia
+            const hasilFormatted_kA = I_sc_kA.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kA';
+            const hasilFormatted_A = I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' A';
+
+            // Tampilkan hasil
+            hasilDiv.innerHTML = `
+                <strong>Arus hubung singkat:</strong> ${hasilFormatted_kA}<br>
+                <small>${hasilFormatted_A}</small><br>
+                <strong>Rumus:</strong> I_sc = I_nominal × 100 / Z%<br>
+                <strong>Perhitungan:</strong> I_sc = ${I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} A
+            `;
+        } catch (error) {
+            // Tampilkan error di dekat kolom yang salah
+            if (error.message.includes('Daya S')) {
+                daya7Input.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                daya7Input.parentNode.insertBefore(errorElem, daya7Input.nextSibling);
+            }
+            if (error.message.includes('Tegangan V')) {
+                tegangan7Input.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                tegangan7Input.parentNode.insertBefore(errorElem, tegangan7Input.nextSibling);
+            }
+            if (error.message.includes('Impedansi Z%')) {
+                zPercent7Input.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                zPercent7Input.parentNode.insertBefore(errorElem, zPercent7Input.nextSibling);
             }
 
             // Tampilkan juga error umum di hasil div untuk debugging

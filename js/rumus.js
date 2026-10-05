@@ -110,6 +110,42 @@ Rumus.arusHubungSingkatDariMVA = function(MVA_sc, V) {
     return I_sc;
 };
 
+/**
+ * Hitung arus hubung singkat di terminal trafo
+ * @param {number} S - Daya trafo dalam MVA
+ * @param {number} V - Tegangan dalam kV
+ * @param {number} Z_percent - Impedansi trafo dalam persen
+ * @returns {number} Arus hubung singkat dalam A
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.arusHubungSingkatTerminalTrafo = function(S, V, Z_percent) {
+    // Validasi input
+    if (typeof S !== 'number' || isNaN(S)) {
+        throw new Error('Daya S harus berupa angka');
+    }
+    if (typeof V !== 'number' || isNaN(V)) {
+        throw new Error('Tegangan V harus berupa angka');
+    }
+    if (typeof Z_percent !== 'number' || isNaN(Z_percent)) {
+        throw new Error('Impedansi Z% harus berupa angka');
+    }
+    if (S <= 0) {
+        throw new Error('Daya S harus lebih besar dari nol');
+    }
+    if (V <= 0) {
+        throw new Error('Tegangan V harus lebih besar dari nol');
+    }
+    if (Z_percent <= 0) {
+        throw new Error('Impedansi Z% harus lebih besar dari nol');
+    }
+
+    // Hitung arus nominal terlebih dahulu
+    const I_nominal = Rumus.arusNominal3Fasa(S, V);
+    // Hitung arus hubung singkat di terminal trafo
+    const I_sc = I_nominal * 100 / Z_percent;
+    return I_sc;
+};
+
 // Supaya bisa diuji dengan Node
 if (typeof module !== "undefined") {
     module.exports = Rumus;

@@ -256,3 +256,63 @@ test('Arus hubung singkat dari MVA hubung singkat - input tegangan kurang dari a
     { message: 'Tegangan V harus lebih besar dari nol' }
   );
 });
+
+// Kalkulator 7: Arus hubung singkat di terminal trafo
+test('Arus hubung singkat di terminal trafo - 60 MVA, 20 kV, Z = 12%', async t => {
+  const I_sc = Rumus.arusHubungSingkatTerminalTrafo(60, 20, 12);
+  assertCloseTo(I_sc, 14433.8, 0.1, 'Hasil harus 14433,8 A (toleransi 0.1)');
+});
+
+test('Arus hubung singkat di terminal trafo - input S bukan angka', async t => {
+  assert.throws(
+    () => Rumus.arusHubungSingkatTerminalTrafo('abc', 20, 12),
+    { message: 'Daya S harus berupa angka' }
+  );
+});
+
+test('Arus hubung singkat di terminal trafo - input V bukan angka', async t => {
+  assert.throws(
+    () => Rumus.arusHubungSingkatTerminalTrafo(60, 'xyz', 12),
+    { message: 'Tegangan V harus berupa angka' }
+  );
+});
+
+test('Arus hubung singkat di terminal trafo - input Z% bukan angka', async t => {
+  assert.throws(
+    () => Rumus.arusHubungSingkatTerminalTrafo(60, 20, 'xyz'),
+    { message: 'Impedansi Z% harus berupa angka' }
+  );
+});
+
+test('Arus hubung singkat di terminal trafo - input S kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.arusHubungSingkatTerminalTrafo(0, 20, 12),
+    { message: 'Daya S harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.arusHubungSingkatTerminalTrafo(-10, 20, 12),
+    { message: 'Daya S harus lebih besar dari nol' }
+  );
+});
+
+test('Arus hubung singkat di terminal trafo - input V kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.arusHubungSingkatTerminalTrafo(60, 0, 12),
+    { message: 'Tegangan V harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.arusHubungSingkatTerminalTrafo(60, -5, 12),
+    { message: 'Tegangan V harus lebih besar dari nol' }
+  );
+});
+
+test('Arus hubung singkat di terminal trafo - input Z% kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.arusHubungSingkatTerminalTrafo(60, 20, 0),
+    { message: 'Impedansi Z% harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.arusHubungSingkatTerminalTrafo(60, 20, -1),
+    { message: 'Impedansi Z% harus lebih besar dari nol' }
+  );
+});
