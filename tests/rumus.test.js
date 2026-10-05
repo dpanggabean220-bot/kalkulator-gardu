@@ -1056,9 +1056,9 @@ test('Indeks polarisasi dan rasio absorpsi dielektrik - kasus uji PI: R_10menit 
   assert.strictEqual(result.DAR, undefined, 'DAR harus undefined karena R30detik tidak diberikan');
 });
 
-test('Indeks polarisasi dan rasio absorpsi dielektrik - kasus uji DAR: R_1menit 2000 MΩ, R_30detik 2000 MΩ', async t => {
-  const result = Rumus.indeksPolarisasiDAR(2000, 2000, undefined); // R30detik, R1menit, R10menit
-  assertCloseTo(result.DAR, 1.0, 0.01, 'DAR harus 1,0');
+test('Indeks polarisasi dan rasio absorpsi dielektrik - kasus uji DAR: R_30detik 1600 MΩ, R_1menit 2000 MΩ', async t => {
+  const result = Rumus.indeksPolarisasiDAR(1600, 2000, undefined); // R30detik, R1menit, R10menit
+  assertCloseTo(result.DAR, 1.25, 0.01, 'DAR harus 1,25');
   assert.strictEqual(result.PI, undefined, 'PI harus undefined karena R10menit tidak diberikan');
 });
 
@@ -1117,24 +1117,11 @@ test('Indeks polarisasi dan rasio absorpsi dielektrik - input R_10menit kurang d
   );
 });
 
-// Test kalkulator 15 dengan input yang tidak lengkap (harus tetap bisa menghitung salah satu nilai)
-test('Indeks polarisasi dan rasio absorpsi dielektrik - hanya menghitung PI ketika R_10menit diberikan', async t => {
-  const result = Rumus.indeksPolarisasiDAR(undefined, 2000, 5000); // R30detik, R1menit, R10menit
-  assertCloseTo(result.PI, 2.5, 0.01, 'PI harus 2,5');
-  assert.strictEqual(result.DAR, undefined, 'DAR harus undefined karena R30detik tidak diberikan');
-});
-
-test('Indeks polarisasi dan rasio absorpsi dielektrik - hanya menghitung DAR ketika R_30detik diberikan', async t => {
-  const result = Rumus.indeksPolarisasiDAR(2000, 2000, undefined); // R30detik, R1menit, R10menit
-  assertCloseTo(result.DAR, 1.0, 0.01, 'DAR harus 1,0');
-  assert.strictEqual(result.PI, undefined, 'PI harus undefined karena R10menit tidak diberikan');
-});
-
 // Test kalkulator 15 dengan kedua nilai diberikan
 test('Indeks polarisasi dan rasio absorpsi dielektrik - menghitung kedua PI dan DAR', async t => {
-  const result = Rumus.indeksPolarisasiDAR(2000, 2000, 5000); // R30detik, R1menit, R10menit
+  const result = Rumus.indeksPolarisasiDAR(1600, 2000, 5000); // R30detik, R1menit, R10menit
   assertCloseTo(result.PI, 2.5, 0.01, 'PI harus 2,5');
-  assertCloseTo(result.DAR, 1.0, 0.01, 'DAR harus 1,0');
+  assertCloseTo(result.DAR, 1.25, 0.01, 'DAR harus 1,25');
 });
 
 // Test kalkulator 15 dengan input yang tidak valid - kedua nilai kosong
