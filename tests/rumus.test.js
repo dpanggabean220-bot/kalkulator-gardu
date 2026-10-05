@@ -316,3 +316,187 @@ test('Arus hubung singkat di terminal trafo - input Z% kurang dari atau sama den
     { message: 'Impedansi Z% harus lebih besar dari nol' }
   );
 });
+
+// Kalkulator 8: Arus sekunder CT dan burden
+test('Arus sekunder CT dan burden - I_prim=100 A, I_sek_rating=1 A, I_prim_rating=100 A, R_relay=1 Ω, R_kabel=0.5 Ω', async t => {
+  const result = Rumus.arusSekunderCT(100, 1, 100, 1, 0.5);
+  assertCloseTo(result.I_sek, 1, 0.0001, 'Arus sekunder harus 1 A');
+  assertCloseTo(result.VA, 1.5, 0.0001, 'Burden harus 1.5 VA');
+});
+
+test('Arus sekunder CT dan burden - I_prim=50 A, I_sek_rating=5 A, I_prim_rating=500 A, R_relay=2 Ω, R_kabel=1 Ω', async t => {
+  const result = Rumus.arusSekunderCT(50, 5, 500, 2, 1);
+  assertCloseTo(result.I_sek, 0.5, 0.0001, 'Arus sekunder harus 0.5 A');
+  assertCloseTo(result.VA, 0.5 * 0.5 * 3, 0.0001, 'Burden harus 0.75 VA'); // 0.5^2 * 3 = 0.75
+});
+
+// Test mode panjang kabel: L = 100 m, A = 2,5 mm² → R_kabel = 1,4 Ω
+test('Arus sekunder CT dan burden mode panjang kabel - L=100 m, A=2.5 mm², I_prim=100 A, I_sek_rating=1 A, I_prim_rating=100 A, R_relay=1 Ω', async t => {
+  // First calculate expected R_kabel
+  const expectedRkabel = Rumus.tahananKabelTembaga(100, 2.5); // Should be 1.4 Ω
+  assertCloseTo(expectedRkabel, 1.4, 0.0001, 'Tahanan kabel harus 1,4 Ω untuk L=100 m, A=2.5 mm²');
+
+  // Then test the full calculation
+  const result = Rumus.arusSekunderCT(100, 1, 100, 1, expectedRkabel);
+  assertCloseTo(result.I_sek, 1, 0.0001, 'Arus sekunder harus 1 A');
+  assertCloseTo(result.VA, 1 * 1 * (1 + 1.4), 0.0001, 'Burden harus 2.4 VA'); // 1^2 * (1 + 1.4) = 2.4
+});
+
+// Test dengan rating burden CT
+test('Arus sekunder CT dan burden dengan rating burden - I_prim=100 A, I_sek_rating=1 A, I_prim_rating=100 A, R_relay=1 Ω, R_kabel=0.5 Ω, burdenRating=2 VA', async t => {
+  const result = Rumus.arusSekunderCT(100, 1, 100, 1, 0.5, 2);
+  assertCloseTo(result.I_sek, 1, 0.0001, 'Arus sekunder harus 1 A');
+  assertCloseTo(result.VA, 1.5, 0.0001, 'Burden harus 1.5 VA');
+  assertCloseTo(result.burdenPercent, 75, 0.0001, 'Persentase pemakaian burden harus 75%');
+});
+
+test('Arus sekunder CT dan burden dengan rating burden yang dilebihi - I_prim=100 A, I_sek_rating=1 A, I_prim_rating=100 A, R_relay=1 Ω, R_kabel=1.5 Ω, burdenRating=2 VA', async t => {
+  const result = Rumus.arusSekunderCT(100, 1, 100, 1, 1.5, 2);
+  assertCloseTo(result.I_sek, 1, 0.0001, 'Arus sekunder harus 1 A');
+  assertCloseTo(result.VA, 2.5, 0.0001, 'Burden harus 2.5 VA');
+  assertCloseTo(result.burdenPercent, 125, 0.0001, 'Persentase pemakaian burden harus 125%');
+});
+
+// Test fungsi tahanan kabel tembaga
+test('Tahanan kabel tembaga - L=100 m, A=2.5 mm²', async t => {
+  const Rkabel = Rumus.tahananKabelTembaga(100, 2.5);
+  assertCloseTo(Rkabel, 1.4, 0.0001, 'Tahanan kabel harus 1,4 Ω untuk L=100 m, A=2.5 mm²');
+});
+
+test('Tahanan kabel tembaga - input panjang bukan angka', async t => {
+  assert.throws(
+    () => Rumus.tahananKabelTembaga('abc', 2.5),
+    { message: 'Panjang kabel harus berupa angka' }
+  );
+});
+
+test('Tahanan kabel tembaga - input luas penampang bukan angka', async t => {
+  assert.throws(
+    () => Rumus.tahananKabelTembaga(100, 'xyz'),
+    { message: 'Luas penampang kabel harus berupa angka' }
+  );
+});
+
+test('Tahanan kabel tembaga - input panjang kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.tahananKabelTembaga(0, 2.5),
+    { message: 'Panjang kabel harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.tahananKabelTembaga(-10, 2.5),
+    { message: 'Panjang kabel harus lebih besar dari nol' }
+  );
+});
+
+test('Tahanan kabel tembaga - input luas penampang kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.tahananKabelTembaga(100, 0),
+    { message: 'Luas penampang kabel harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.tahananKabelTembaga(100, -1),
+    { message: 'Luas penampang kabel harus lebih besar dari nol' }
+  );
+});
+
+// Test input tidak valid untuk arus sekunder CT dan burden
+test('Arus sekunder CT dan burden - input I_prim bukan angka', async t => {
+  assert.throws(
+    () => Rumus.arusSekunderCT('abc', 1, 100, 1, 0.5),
+    { message: 'Arus primer I_prim harus berupa angka' }
+  );
+});
+
+test('Arus sekunder CT dan burden - input I_sek_rating bukan angka', async t => {
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, 'xyz', 100, 1, 0.5),
+    { message: 'Arus sekunder rating I_sek_rating harus berupa angka' }
+  );
+});
+
+test('Arus sekunder CT dan burden - input I_prim_rating bukan angka', async t => {
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, 1, 'xyz', 1, 0.5),
+    { message: 'Arus primer rating I_prim_rating harus berupa angka' }
+  );
+});
+
+test('Arus sekunder CT dan burden - input R_relay bukan angka', async t => {
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, 1, 100, 'abc', 0.5),
+    { message: 'Tahanan relay harus berupa angka' }
+  );
+});
+
+test('Arus sekunder CT dan burden - input R_kabel bukan angka', async t => {
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, 1, 100, 1, 'xyz'),
+    { message: 'Tahanan kabel harus berupa angka' }
+  );
+});
+
+test('Arus sekunder CT dan burden - input burdenRating bukan angka (when provided)', async t => {
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, 1, 100, 1, 0.5, 'xyz'),
+    { message: 'Rating burden CT harus berupa angka' }
+  );
+});
+
+test('Arus sekunder CT dan burden - input I_prim kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.arusSekunderCT(0, 1, 100, 1, 0.5),
+    { message: 'Arus primer I_prim harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.arusSekunderCT(-10, 1, 100, 1, 0.5),
+    { message: 'Arus primer I_prim harus lebih besar dari nol' }
+  );
+});
+
+test('Arus sekunder CT dan burden - input I_sek_rating kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, 0, 100, 1, 0.5),
+    { message: 'Arus sekunder rating I_sek_rating harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, -1, 100, 1, 0.5),
+    { message: 'Arus sekunder rating I_sek_rating harus lebih besar dari nol' }
+  );
+});
+
+test('Arus sekunder CT dan burden - input I_prim_rating kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, 1, 0, 1, 0.5),
+    { message: 'Arus primer rating I_prim_rating harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, 1, -10, 1, 0.5),
+    { message: 'Arus primer rating I_prim_rating harus lebih besar dari nol' }
+  );
+});
+
+test('Arus sekunder CT dan burden - input R_relay kurang dari nol', async t => {
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, 1, 100, -0.5, 0.5),
+    { message: 'Tahanan relay tidak boleh negatif' }
+  );
+});
+
+test('Arus sekunder CT dan burden - input R_kabel kurang dari nol', async t => {
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, 1, 100, 1, -0.5),
+    { message: 'Tahanan kabel tidak boleh negatif' }
+  );
+});
+
+// Test burdenRating validation when provided
+test('Arus sekunder CT dan burden - input burdenRating kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, 1, 100, 1, 0.5, 0),
+    { message: 'Rating burden CT harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.arusSekunderCT(100, 1, 100, 1, 0.5, -1),
+    { message: 'Rating burden CT harus lebih besar dari nol' }
+  );
+});

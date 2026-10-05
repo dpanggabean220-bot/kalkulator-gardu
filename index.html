@@ -131,6 +131,52 @@
             <div id="hasil7" class="hasil"></div>
         </section>
 
+        <!-- Kalkulator 8: Arus Sekunder CT dan Burden -->
+        <section id="kalkulator8">
+            <h2>Arus Sekunder CT dan Burden</h2>
+            <form id="form8">
+                <label for="i_prim">Arus primer I_prim (A):</label>
+                <input type="number" id="i_prim" name="i_prim" step="any" required>
+                <label for="i_sek_rating">Arus sekunder rating I_sek_rating (A):</label>
+                <input type="number" id="i_sek_rating" name="i_sek_rating" step="any" required>
+                <label for="i_prim_rating">Arus primer rating I_prim_rating (A):</label>
+                <input type="number" id="i_prim_rating" name="i_prim_rating" step="any" required>
+
+                <div class="mode-selection">
+                    <label>Pilih cara input tahanan kabel:</label>
+                    <div class="mode-options">
+                        <label><input type="radio" name="kabelMode" value="direct" checked> Langsung (Ω)</label>
+                        <label><input type="radio" name="kabelMode" value="length"> Panjang kabel dan luas penampang</label>
+                    </div>
+                </div>
+
+                <!-- Mode 1: Langsung input R_kabel -->
+                <div id="kabel-mode-direct" class="mode-content">
+                    <label for="tahanan_relay">Tahanan relay (Ω):</label>
+                    <input type="number" id="tahanan_relay" name="tahanan_relay" step="any" required>
+                    <label for="tahanan_kabel">Tahanan kabel total pulang-pergi (Ω):</label>
+                    <input type="number" id="tahanan_kabel" name="tahanan_kabel" step="any" required>
+                </div>
+
+                <!-- Mode 2: Input panjang kabel dan luas penampang -->
+                <div id="kabel-mode-length" class="mode-content" style="display: none;">
+                    <label for="tahanan_relay">Tahanan relay (Ω):</label>
+                    <input type="number" id="tahanan_relay" name="tahanan_relay" step="any" required>
+                    <label for="panjang_kabel">Panjang kabel satu arah (m):</label>
+                    <input type="number" id="panjang_kabel" name="panjang_kabel" step="any" required>
+                    <label for="luas_penampang">Luas penampang kabel (mm²):</label>
+                    <input type="number" id="luas_penampang" name="luas_penampang" step="any" required>
+                    <small>Catatan: Nilai 0,0175 Ω·mm²/m adalah resistivitas tembaga pada 20 °C</small>
+                </div>
+
+                <label for="burden_rating">Rating burden CT (VA) (opsional):</label>
+                <input type="number" id="burden_rating" name="burden_rating" step="any">
+
+                <button type="submit">Hitung</button>
+            </form>
+            <div id="hasil8" class="hasil"></div>
+        </section>
+
         <!-- More sections can be added similarly, but we leave them as placeholders for now -->
     </main>
     <footer>

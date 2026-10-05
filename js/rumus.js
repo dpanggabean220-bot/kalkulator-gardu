@@ -146,6 +146,106 @@ Rumus.arusHubungSingkatTerminalTrafo = function(S, V, Z_percent) {
     return I_sc;
 };
 
+/**
+ * Hitung tahanan kabel tembaga pulang-pergi
+ * @param {number} L - Panjang kabel satu arah dalam meter
+ * @param {number} A - Luas penampang kabel dalam mm²
+ * @returns {number} Tahanan kabel pulang-pergi dalam Ω
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.tahananKabelTembaga = function(L, A) {
+    // Validasi input
+    if (typeof L !== 'number' || isNaN(L)) {
+        throw new Error('Panjang kabel harus berupa angka');
+    }
+    if (typeof A !== 'number' || isNaN(A)) {
+        throw new Error('Luas penampang kabel harus berupa angka');
+    }
+    if (L <= 0) {
+        throw new Error('Panjang kabel harus lebih besar dari nol');
+    }
+    if (A <= 0) {
+        throw new Error('Luas penampang kabel harus lebih besar dari nol');
+    }
+
+    // Resistivitas tembaga pada 20 °C: 0,0175 Ω·mm²/m
+    const RESISTIVITAS_TEMBAGA = 0.0175;
+    // Rumus: R = 2 × L × ρ / A (pulang-pergi)
+    const R_kabel = 2 * L * RESISTIVITAS_TEMBAGA / A;
+    return R_kabel;
+};
+
+/**
+ * Hitung arus sekunder CT dan burden
+ * @param {number} I_prim - Arus primer CT dalam A
+ * @param {number} I_sek_rating - Arus sekunder rating CT dalam A (misal: 1 atau 5)
+ * @param {number} I_prim_rating - Arus primer rating CT dalam A
+ * @param {number} R_relay - Tahanan relay dalam Ω
+ * @param {number} R_kabel - Tahanan kabel total pulang-pergi dalam Ω
+ * @param {number} burdenRating - Rating burden CT dalam VA (opsional)
+ * @returns {{I_sek: number, VA: number, burdenRating: number, burdenPercent: number}} Objek dengan I_sek (A), VA (VA), burdenRating (VA), dan burdenPercent (%)
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.arusSekunderCT = function(I_prim, I_sek_rating, I_prim_rating, R_relay, R_kabel, burdenRating) {
+    // Validasi input
+    if (typeof I_prim !== 'number' || isNaN(I_prim)) {
+        throw new Error('Arus primer I_prim harus berupa angka');
+    }
+    if (typeof I_sek_rating !== 'number' || isNaN(I_sek_rating)) {
+        throw new Error('Arus sekunder rating I_sek_rating harus berupa angka');
+    }
+    if (typeof I_prim_rating !== 'number' || isNaN(I_prim_rating)) {
+        throw new Error('Arus primer rating I_prim_rating harus berupa angka');
+    }
+    if (typeof R_relay !== 'number' || isNaN(R_relay)) {
+        throw new Error('Tahanan relay harus berupa angka');
+    }
+    if (typeof R_kabel !== 'number' || isNaN(R_kabel)) {
+        throw new Error('Tahanan kabel harus berupa angka');
+    }
+    if (I_prim <= 0) {
+        throw new Error('Arus primer I_prim harus lebih besar dari nol');
+    }
+    if (I_sek_rating <= 0) {
+        throw new Error('Arus sekunder rating I_sek_rating harus lebih besar dari nol');
+    }
+    if (I_prim_rating <= 0) {
+        throw new Error('Arus primer rating I_prim_rating harus lebih besar dari nol');
+    }
+    if (R_relay < 0) {
+        throw new Error('Tahanan relay tidak boleh negatif');
+    }
+    if (R_kabel < 0) {
+        throw new Error('Tahanan kabel tidak boleh negatif');
+    }
+    // burdenRating adalah opsional, jika diberikan maka harus valid
+    if (burdenRating !== undefined && burdenRating !== null) {
+        if (typeof burdenRating !== 'number' || isNaN(burdenRating)) {
+            throw new Error('Rating burden CT harus berupa angka');
+        }
+        if (burdenRating <= 0) {
+            throw new Error('Rating burden CT harus lebih besar dari nol');
+        }
+    }
+
+    const I_sek = I_prim * (I_sek_rating / I_prim_rating);
+    const R_total = R_relay + R_kabel;
+    const VA = I_sek * I_sek * R_total; // I_sek^2 * R_total
+
+    const result = {
+        I_sek: I_sek,
+        VA: VA
+    };
+
+    // Tambahkan info burden rating jika diberikan
+    if (burdenRating !== undefined && burdenRating !== null) {
+        result.burdenRating = burdenRating;
+        result.burdenPercent = (VA / burdenRating) * 100;
+    }
+
+    return result;
+};
+
 // Supaya bisa diuji dengan Node
 if (typeof module !== "undefined") {
     module.exports = Rumus;
