@@ -37,10 +37,10 @@
         <section id="kalkulator1">
             <h2>Arus Nominal 3 Fasa</h2>
             <form id="form1">
-                <label for="daya">Daya S (MVA):</label>
-                <input type="number" id="daya" name="daya" step="any" required>
-                <label for="tegangan">Tegangan V (kV):</label>
-                <input type="number" id="tegangan" name="tegangan" step="any" required>
+                <label for="daya1">Daya S (MVA):</label>
+                <input type="number" id="daya1" name="daya1" step="any" required>
+                <label for="tegangan1">Tegangan V (kV):</label>
+                <input type="number" id="tegangan1" name="tegangan1" step="any" required>
                 <button type="submit">Hitung</button>
             </form>
             <div id="hasil1" class="hasil"></div>
@@ -122,8 +122,8 @@
         <section id="kalkulator5">
             <h2>Kapasitor Perbaikan cos φ</h2>
             <form id="form5">
-                <label for="daya">Daya aktif P (MW):</label>
-                <input type="number" id="daya" name="daya" step="any" required>
+                <label for="daya5">Daya aktif P (MW):</label>
+                <input type="number" id="daya5" name="daya5" step="any" required>
                 <label for="cosPhi1">Faktor daya awal cos φ1:</label>
                 <input type="number" id="cosPhi1" name="cosPhi1" step="any" min="0" max="1" required>
                 <label for="cosPhi2">Faktor daya target cos φ2:</label>
@@ -131,48 +131,6 @@
                 <button type="submit">Hitung</button>
             </form>
             <div id="hasil5" class="hasil"></div>
-        </section>
-
-        <!-- Kalkulator 9: Waktu Kerja Relay OCR -->
-        <section id="kalkulator9">
-            <h2>Waktu Kerja Relay OCR</h2>
-            <form id="form9">
-                <div class="mode-selection">
-                    <label>Pilih jenis kurva:</label>
-                    <div class="mode-options">
-                        <label><input type="radio" name="curveType" value="SI" checked> SI (Standard Inverse)</label>
-                        <label><input type="radio" name="curveType" value="VI"> VI (Very Inverse)</label>
-                        <label><input type="radio" name="curveType" value="EI"> EI (Extremely Inverse)</label>
-                    </div>
-                </div>
-                <label for="tms">TMS:</label>
-                <input type="number" id="tms" name="tms" step="any" required>
-                <label for="ratio">I/I_s:</label>
-                <input type="number" id="ratio" name="ratio" step="any" required>
-                <button type="submit">Hitung</button>
-            </form>
-            <div id="hasil9" class="hasil"></div>
-        </section>
-
-        <!-- Kalkulator 9: Waktu Kerja Relay OCR -->
-        <section id="kalkulator9">
-            <h2>Waktu Kerja Relay OCR</h2>
-            <form id="form9">
-                <div class="mode-selection">
-                    <label>Pilih jenis kurva:</label>
-                    <div class="mode-options">
-                        <label><input type="radio" name="curveType" value="SI" checked> SI (Standard Inverse)</label>
-                        <label><input type="radio" name="curveType" value="VI"> VI (Very Inverse)</label>
-                        <label><input type="radio" name="curveType" value="EI"> EI (Extremely Inverse)</label>
-                    </div>
-                </div>
-                <label for="tms">TMS:</label>
-                <input type="number" id="tms" name="tms" step="any" required>
-                <label for="ratio">I/I_s:</label>
-                <input type="number" id="ratio" name="ratio" step="any" required>
-                <button type="submit">Hitung</button>
-            </form>
-            <div id="hasil9" class="hasil"></div>
         </section>
 
         <!-- Kalkulator 6: Arus Hubung Singkat dari MVA Hubung Singkat -->
@@ -224,16 +182,16 @@
 
                 <!-- Mode 1: Langsung input R_kabel -->
                 <div id="kabel-mode-direct" class="mode-content">
-                    <label for="tahanan_relay">Tahanan relay (Ω):</label>
-                    <input type="number" id="tahanan_relay" name="tahanan_relay" step="any" required>
+                    <label for="tahanan_relay_direct">Tahanan relay (Ω):</label>
+                    <input type="number" id="tahanan_relay_direct" name="tahanan_relay_direct" step="any" required>
                     <label for="tahanan_kabel">Tahanan kabel total pulang-pergi (Ω):</label>
                     <input type="number" id="tahanan_kabel" name="tahanan_kabel" step="any" required>
                 </div>
 
                 <!-- Mode 2: Input panjang kabel dan luas penampang -->
                 <div id="kabel-mode-length" class="mode-content" style="display: none;">
-                    <label for="tahanan_relay">Tahanan relay (Ω):</label>
-                    <input type="number" id="tahanan_relay" name="tahanan_relay" step="any" required>
+                    <label for="tahanan_relay_length">Tahanan relay (Ω):</label>
+                    <input type="number" id="tahanan_relay_length" name="tahanan_relay_length" step="any" required>
                     <label for="panjang_kabel">Panjang kabel satu arah (m):</label>
                     <input type="number" id="panjang_kabel" name="panjang_kabel" step="any" required>
                     <label for="luas_penampang">Luas penampang kabel (mm²):</label>
@@ -288,68 +246,14 @@
                     </div>
                 </div>
 
-                <!-- Mode 1: kV ke V -->
-                <div id="mode-kVkeV" class="mode-content">
+                <div class="input-group">
                     <label for="nilai18">Nilai yang akan dikonversi:</label>
                     <input type="number" id="nilai18" name="nilai18" step="any" required>
-                    <label for="satuan18">Satuan:</label>
-                    <input type="text" id="satuan18" name="satuan18" value="kV" readonly>
                 </div>
 
-                <!-- Mode 2: V ke kV -->
-                <div id="mode-VkekV" class="mode-content" style="display: none;">
-                    <label for="nilai18">Nilai yang akan dikonversi:</label>
-                    <input type="number" id="nilai18" name="nilai18" step="any" required>
+                <div class="input-group">
                     <label for="satuan18">Satuan:</label>
-                    <input type="text" id="satuan18" name="satuan18" value="V" readonly>
-                </div>
-
-                <!-- Mode 3: kA ke A -->
-                <div id="mode-kAkeA" class="mode-content" style="display: none;">
-                    <label for="nilai18">Nilai yang akan dikonversi:</label>
-                    <input type="number" id="nilai18" name="nilai18" step="any" required>
-                    <label for="satuan18">Satuan:</label>
-                    <input type="text" id="satuan18" name="satuan18" value="kA" readonly>
-                </div>
-
-                <!-- Mode 4: A ke kA -->
-                <div id="mode-AkekA" class="mode-content" style="display: none;">
-                    <label for="nilai18">Nilai yang akan dikonversi:</label>
-                    <input type="number" id="nilai18" name="nilai18" step="any" required>
-                    <label for="satuan18">Satuan:</label>
-                    <input type="text" id="satuan18" name="satuan18" value="A" readonly>
-                </div>
-
-                <!-- Mode 5: MVA ke kVA -->
-                <div id="mode-MVaketaVA" class="mode-content" style="display: none;">
-                    <label for="nilai18">Nilai yang akan dikonversi:</label>
-                    <input type="number" id="nilai18" name="nilai18" step="any" required>
-                    <label for="satuan18">Satuan:</label>
-                    <input type="text" id="satuan18" name="satuan18" value="MVA" readonly>
-                </div>
-
-                <!-- Mode 6: kVA ke MVA -->
-                <div id="mode-kVAkeMVA" class="mode-content" style="display: none;">
-                    <label for="nilai18">Nilai yang akan dikonversi:</label>
-                    <input type="number" id="nilai18" name="nilai18" step="any" required>
-                    <label for="satuan18">Satuan:</label>
-                    <input type="text" id="satuan18" name="satuan18" value="kVA" readonly>
-                </div>
-
-                <!-- Mode 7: °C ke K -->
-                <div id="mode-CkeK" class="mode-content" style="display: none;">
-                    <label for="nilai18">Nilai yang akan dikonversi:</label>
-                    <input type="number" id="nilai18" name="nilai18" step="any" required>
-                    <label for="satuan18">Satuan:</label>
-                    <input type="text" id="satuan18" name="satuan18" value="°C" readonly>
-                </div>
-
-                <!-- Mode 8: K ke °C -->
-                <div id="mode-KkeC" class="mode-content" style="display: none;">
-                    <label for="nilai18">Nilai yang akan dikonversi:</label>
-                    <input type="number" id="nilai18" name="nilai18" step="any" required>
-                    <label for="satuan18">Satuan:</label>
-                    <input type="text" id="satuan18" name="satuan18" value="K" readonly>
+                    <input type="text" id="satuan18" name="satuan18" readonly>
                 </div>
 
                 <button type="submit">Konversi</button>

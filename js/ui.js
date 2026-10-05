@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
 
             // Get input values
-            const dayaInput = document.getElementById('daya');
-            const teganganInput = document.getElementById('tegangan');
+            const dayaInput = document.getElementById('daya1');
+            const teganganInput = document.getElementById('tegangan1');
             const hasilDiv = document.getElementById('hasil1');
 
             // Clear previous results and errors
@@ -654,7 +654,7 @@ if (form8) {
 
         // Clear error inputs for both cable modes
         const directModeInputs = [
-            document.getElementById('tahanan_relay'),
+            document.getElementById('tahanan_relay_direct'),
             document.getElementById('tahanan_kabel')
         ];
         directModeInputs.forEach(input => {
@@ -662,7 +662,7 @@ if (form8) {
         });
 
         const lengthModeInputs = [
-            document.getElementById('tahanan_relay'),
+            document.getElementById('tahanan_relay_length'),
             document.getElementById('panjang_kabel'),
             document.getElementById('luas_penampang')
         ];
@@ -715,7 +715,7 @@ if (form8) {
 
             if (selectedKabelMode === 'direct') {
                 // Mode 1: Direct input of resistances
-                const tahananRelayInput = document.getElementById('tahanan_relay');
+                const tahananRelayInput = document.getElementById('tahanan_relay_direct');
                 const tahananKabelInput = document.getElementById('tahanan_kabel');
 
                 // Validate empty inputs
@@ -738,7 +738,7 @@ if (form8) {
                 }
             } else if (selectedKabelMode === 'length') {
                 // Mode 2: Calculate resistance from cable length and cross-section
-                const tahananRelayInput = document.getElementById('tahanan_relay');
+                const tahananRelayInput = document.getElementById('tahanan_relay_length');
                 const panjangKabelInput = document.getElementById('panjang_kabel');
                 const luasPenampangInput = document.getElementById('luas_penampang');
 
@@ -845,13 +845,21 @@ if (form8) {
                 iPrimRatingInput.parentNode.insertBefore(errorElem, iPrimRatingInput.nextSibling);
             }
             if (error.message.includes('Tahanan relay')) {
-                const tahananRelayInput = document.getElementById('tahanan_relay');
-                if (tahananRelayInput) {
-                    tahananRelayInput.classList.add('error-input');
+                const tahananRelayInputDirect = document.getElementById('tahanan_relay_direct');
+                const tahananRelayInputLength = document.getElementById('tahanan_relay_length');
+                if (tahananRelayInputDirect) {
+                    tahananRelayInputDirect.classList.add('error-input');
                     const errorElem = document.createElement('div');
                     errorElem.className = 'error';
                     errorElem.textContent = error.message;
-                    tahananRelayInput.parentNode.insertBefore(errorElem, tahananRelayInput.nextSibling);
+                    tahananRelayInputDirect.parentNode.insertBefore(errorElem, tahananRelayInputDirect.nextSibling);
+                }
+                if (tahananRelayInputLength) {
+                    tahananRelayInputLength.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    tahananRelayInputLength.parentNode.insertBefore(errorElem, tahananRelayInputLength.nextSibling);
                 }
             }
             if (error.message.includes('Tahanan kabel')) {
@@ -989,7 +997,7 @@ if (form5) {
         e.preventDefault();
 
         // Get input values
-        const dayaInput = document.getElementById('daya');
+        const dayaInput = document.getElementById('daya5');
         const cosPhi1Input = document.getElementById('cosPhi1');
         const cosPhi2Input = document.getElementById('cosPhi2');
         const hasilDiv = document.getElementById('hasil5');
@@ -1067,45 +1075,13 @@ if (form5) {
 // Handle form submission for calculator 9
 const form9 = document.getElementById('form9');
 if (form9) {
-    // First, set up mode switching
-    const curveTypeRadios = form9.querySelectorAll('input[name="curveType"]');
-    const modeContents = {
-        SI: document.getElementById('mode-SI'),
-        VI: document.getElementById('mode-VI'),
-        EI: document.getElementById('mode-EI')
-    };
-
-    // Function to show the selected mode and hide others
-    function showSelectedCurveType() {
-        curveTypeRadios.forEach(radio => {
-            if (radio.checked) {
-                const curveType = radio.value;
-                // Hide all mode contents
-                Object.values(modeContents).forEach(content => {
-                    content.style.display = 'none';
-                });
-                // Show the selected one
-                if (modeContents[curveType]) {
-                    modeContents[curveType].style.display = 'block';
-                }
-            }
-        });
-    }
-
-    // Add event listeners to radio buttons
-    curveTypeRadios.forEach(radio => {
-        radio.addEventListener('change', showSelectedCurveType);
-    });
-
-    // Initialize the display to the default mode (SI)
-    showSelectedCurveType();
-
     // Now handle the form submission
     form9.addEventListener('submit', function(e) {
         e.preventDefault();
 
         // Get the selected curve type
         let selectedCurveType = '';
+        const curveTypeRadios = form9.querySelectorAll('input[name="curveType"]');
         curveTypeRadios.forEach(radio => {
             if (radio.checked) {
                 selectedCurveType = radio.value;
@@ -1122,11 +1098,9 @@ if (form9) {
         tmsInput.classList.remove('error-input');
         ratioInput.classList.remove('error-input');
 
-        // Remove any existing error messages from all mode contents
-        Object.values(modeContents).forEach(content => {
-            const existingErrors = content.querySelectorAll('.error');
-            existingErrors.forEach(el => el.remove());
-        });
+        // Remove any existing error messages
+        const existingErrors = form9.querySelectorAll('.error');
+        existingErrors.forEach(el => el.remove());
 
         try {
             const TMS = parseFloat(tmsInput.value);
@@ -1241,41 +1215,35 @@ const form18 = document.getElementById('form18');
 if (form18) {
     // First, set up mode switching
     const modeRadios = form18.querySelectorAll('input[name="konversiMode"]');
-    const modeContents = {
-        kVkeV: document.getElementById('mode-kVkeV'),
-        VkekV: document.getElementById('mode-VkekV'),
-        kAkeA: document.getElementById('mode-kAkeA'),
-        AkekA: document.getElementById('mode-AkekA'),
-        MVaketaVA: document.getElementById('mode-MVaketaVA'),
-        kVAkeMVA: document.getElementById('mode-kVAkeMVA'),
-        CkeK: document.getElementById('mode-CkeK'),
-        KkeC: document.getElementById('mode-KkeC')
-    };
+    const nilaiInput = document.getElementById('nilai18');
+    const satuan18 = document.getElementById('satuan18');
 
-    // Function to show the selected mode and hide others
-    function showSelectedMode() {
+    // Function to update satuan18 based on selected mode
+    function updateSatuanDisplay() {
         modeRadios.forEach(radio => {
             if (radio.checked) {
                 const mode = radio.value;
-                // Hide all mode contents
-                Object.values(modeContents).forEach(content => {
-                    content.style.display = 'none';
-                });
-                // Show the selected one
-                if (modeContents[mode]) {
-                    modeContents[mode].style.display = 'block';
+                switch (mode) {
+                    case 'kVkeV': satuan18.value = 'kV'; break;
+                    case 'VkekV': satuan18.value = 'V'; break;
+                    case 'kAkeA': satuan18.value = 'kA'; break;
+                    case 'AkekA': satuan18.value = 'A'; break;
+                    case 'MVaketaVA': satuan18.value = 'MVA'; break;
+                    case 'kVAkeMVA': satuan18.value = 'kVA'; break;
+                    case 'CkeK': satuan18.value = '°C'; break;
+                    case 'KkeC': satuan18.value = 'K'; break;
                 }
             }
         });
     }
 
-    // Add event listeners to radio buttons
+    // Add event listeners to radio buttons to update satuan display
     modeRadios.forEach(radio => {
-        radio.addEventListener('change', showSelectedMode);
+        radio.addEventListener('change', updateSatuanDisplay);
     });
 
     // Initialize the display to the default mode (kVkeV)
-    showSelectedMode();
+    updateSatuanDisplay();
 
     // Now handle the form submission
     form18.addEventListener('submit', function(e) {
@@ -1293,21 +1261,13 @@ if (form18) {
 
         // Clear previous results and errors
         hasilDiv.innerHTML = '';
+        nilaiInput.classList.remove('error-input');
 
-        // Remove any existing error messages from all mode contents
-        Object.values(modeContents).forEach(content => {
-            const existingErrors = content.querySelectorAll('.error');
-            existingErrors.forEach(el => el.remove());
-        });
-
-        // Also remove error-input class from all inputs
-        const allInputs = form18.querySelectorAll('input[type="number"]');
-        allInputs.forEach(input => {
-            input.classList.remove('error-input');
-        });
+        // Remove any existing error messages
+        const existingErrors = form18.querySelectorAll('.error');
+        existingErrors.forEach(el => el.remove());
 
         try {
-            const nilaiInput = document.getElementById('nilai18');
             const nilai = parseFloat(nilaiInput.value);
 
             // Validate empty input
@@ -1427,7 +1387,6 @@ if (form18) {
         } catch (error) {
             // Tampilkan error di dekat kolom yang salah
             if (error.message.includes('Nilai harus diisi')) {
-                const nilaiInput = document.getElementById('nilai18');
                 nilaiInput.classList.add('error-input');
                 const errorElem = document.createElement('div');
                 errorElem.className = 'error';
@@ -1440,14 +1399,12 @@ if (form18) {
                       error.message.includes('MVA harus lebih besar dari nol') ||
                       error.message.includes('kVA harus lebih besar dari nol') ||
                       error.message.includes('Kelvin harus lebih besar dari nol')) {
-                const nilaiInput = document.getElementById('nilai18');
                 nilaiInput.classList.add('error-input');
                 const errorElem = document.createElement('div');
                 errorElem.className = 'error';
                 errorElem.textContent = error.message;
                 nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
             } else if (error.message.includes('Celsius tidak boleh kurang dari -273,15')) {
-                const nilaiInput = document.getElementById('nilai18');
                 nilaiInput.classList.add('error-input');
                 const errorElem = document.createElement('div');
                 errorElem.className = 'error';
