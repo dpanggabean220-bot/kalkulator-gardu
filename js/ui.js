@@ -1,5 +1,34 @@
 // logika tampilan: baca input, panggil rumus, tampilkan hasil
 document.addEventListener('DOMContentLoaded', function() {
+    // Handle mobile navigation toggle
+    const navToggles = document.querySelectorAll('.nav-toggle');
+    navToggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const navCategory = this.parentElement;
+            navCategory.classList.toggle('open');
+            const isOpen = navCategory.classList.contains('open');
+            this.setAttribute('aria-expanded', isOpen);
+        });
+    });
+
+    // Close menu when a calculator link is clicked (on mobile)
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            // Only close on mobile screens
+            if (window.innerWidth <= 600) {
+                const navCategories = document.querySelectorAll('.nav-category');
+                navCategories.forEach(category => {
+                    category.classList.remove('open');
+                    const toggleBtn = category.querySelector('.nav-toggle');
+                    if (toggleBtn) {
+                        toggleBtn.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+        });
+    });
+
     // Handle form submission for calculator 1
     const form1 = document.getElementById('form1');
     if (form1) {
