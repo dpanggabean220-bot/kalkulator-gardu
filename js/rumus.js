@@ -246,6 +246,241 @@ Rumus.arusSekunderCT = function(I_prim, I_sek_rating, I_prim_rating, R_relay, R_
     return result;
 };
 
+/**
+ * Konversi kilovolt ke volt
+ * @param {number} kV - Tegangan dalam kilovolt
+ * @returns {number} Tegangan dalam volt
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.kVkeV = function(kV) {
+    if (typeof kV !== 'number' || isNaN(kV)) {
+        throw new Error('Tegangan kV harus berupa angka');
+    }
+    return kV * 1000;
+};
+
+/**
+ * Konversi volt ke kilovolt
+ * @param {number} V - Tegangan dalam volt
+ * @returns {number} Tegangan dalam kilovolt
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.VkekV = function(V) {
+    if (typeof V !== 'number' || isNaN(V)) {
+        throw new Error('Tegangan V harus berupa angka');
+    }
+    return V / 1000;
+};
+
+/**
+ * Konversi kiloampere ke ampere
+ * @param {number} kA - Arus dalam kiloampere
+ * @returns {number} Arus dalam ampere
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.kAkeA = function(kA) {
+    if (typeof kA !== 'number' || isNaN(kA)) {
+        throw new Error('Arus kA harus berupa angka');
+    }
+    return kA * 1000;
+};
+
+/**
+ * Konversi ampere ke kiloampere
+ * @param {number} A - Arus dalam ampere
+ * @returns {number} Arus dalam kiloampere
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.AkekA = function(A) {
+    if (typeof A !== 'number' || isNaN(A)) {
+        throw new Error('Arus A harus berupa angka');
+    }
+    return A / 1000;
+};
+
+/**
+ * Konversi megavolt-ampere ke kilovolt-ampere
+ * @param {number} MVA - Daya dalam megavolt-ampere
+ * @returns {number} Daya dalam kilovolt-ampere
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.MVaketaVA = function(MVA) {
+    if (typeof MVA !== 'number' || isNaN(MVA)) {
+        throw new Error('Daya MVA harus berupa angka');
+    }
+    return MVA * 1000;
+};
+
+/**
+ * Konversi kilovolt-ampere ke megavolt-ampere
+ * @param {number} kVA - Daya dalam kilovolt-ampere
+ * @returns {number} Daya dalam megavolt-ampere
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.kVAkeMVA = function(kVA) {
+    if (typeof kVA !== 'number' || isNaN(kVA)) {
+        throw new Error('Daya kVA harus berupa angka');
+    }
+    return kVA / 1000;
+};
+
+/**
+ * Konversi derajat Celsius ke Kelvin
+ * @param {number} C - Suhu dalam derajat Celsius
+ * @returns {number} Suhu dalam Kelvin
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.CkeK = function(C) {
+    if (typeof C !== 'number' || isNaN(C)) {
+        throw new Error('Suhu Celsius harus berupa angka');
+    }
+    return C + 273.15;
+};
+
+/**
+ * Konversi Kelvin ke derajat Celsius
+ * @param {number} K - Suhu dalam Kelvin
+ * @returns {number} Suhu dalam derajat Celsius
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.KkeC = function(K) {
+    if (typeof K !== 'number' || isNaN(K)) {
+        throw new Error('Suhu Kelvin harus berupa angka');
+    }
+    return K - 273.15;
+};
+
+/**
+ * Hitung tegangan per posisi tap
+ * @param {number} V_nominal - Tegangan nominal dalam kV
+ * @param {number} n - Posisi tap (biasa bilangan bulat, bisa positip atau negatif)
+ * @param {number} stepPercent - Persentase langkah tap dalam persen
+ * @returns {number} Tegangan setelah tap dalam kV
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.teganganPerPosisiTap = function(V_nominal, n, stepPercent) {
+    // Validasi input
+    if (typeof V_nominal !== 'number' || isNaN(V_nominal)) {
+        throw new Error('Tegangan nominal V_nominal harus berupa angka');
+    }
+    if (typeof n !== 'number' || isNaN(n)) {
+        throw new Error('Posisi tap n harus berupa angka');
+    }
+    if (typeof stepPercent !== 'number' || isNaN(stepPercent)) {
+        throw new Error('Persentase langkah stepPercent harus berupa angka');
+    }
+    if (V_nominal <= 0) {
+        throw new Error('Tegangan nominal V_nominal harus lebih besar dari nol');
+    }
+    // n bisa nol (tap tengah), jadi tidak perlu validasi khusus untuk nol
+    if (stepPercent < 0) {
+        throw new Error('Persentase langkah stepPercent tidak boleh negatif');
+    }
+
+    const V_tap = V_nominal * (1 + n * stepPercent / 100);
+    return V_tap;
+};
+
+/**
+ * Hitung kapasitor perbaikan cos φ
+ * @param {number} P - Daya aktif dalam MW
+ * @param {number} cosPhi1 - Faktor daya awal (0 sampai 1)
+ * @param {number} cosPhi2 - Faktor daya target (0 sampai 1)
+ * @returns {number} Besar kapasitor yang diperlukan dalam MVAR
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.kapasitorPerbaikanCosPhi = function(P, cosPhi1, cosPhi2) {
+    // Validasi input
+    if (typeof P !== 'number' || isNaN(P)) {
+        throw new Error('Daya aktif P harus berupa angka');
+    }
+    if (typeof cosPhi1 !== 'number' || isNaN(cosPhi1)) {
+        throw new Error('Faktor daya awal cos φ1 harus berupa angka');
+    }
+    if (typeof cosPhi2 !== 'number' || isNaN(cosPhi2)) {
+        throw new Error('Faktor daya target cos φ2 harus berupa angka');
+    }
+    if (P <= 0) {
+        throw new Error('Daya aktif P harus lebih besar dari nol');
+    }
+    if (cosPhi1 <= 0 || cosPhi1 > 1) {
+        throw new Error('Faktor daya awal cos φ1 harus antara 0 dan 1');
+    }
+    if (cosPhi2 <= 0 || cosPhi2 > 1) {
+        throw new Error('Faktor daya target cos φ2 harus antara 0 dan 1');
+    }
+    // Pastikan cos φ2 > cos φ1 (perbaikan daya)
+    if (cosPhi2 <= cosPhi1) {
+        throw new Error('Faktor daya target cos φ2 harus lebih besar dari cos φ1');
+    }
+
+    // Hitung tan φ1 dan tan φ2
+    const tanPhi1 = Math.tan(Math.acos(cosPhi1));
+    const tanPhi2 = Math.tan(Math.acos(cosPhi2));
+
+    // Hitung kapasitor yang diperlukan
+    const Qc = P * (tanPhi1 - tanPhi2);
+    return Qc;
+};
+
+/**
+ * Hitung waktu kerja relay OCR, kurva IEC 60255
+ * @param {string} curveType - Jenis kurva: 'SI', 'VI', atau 'EI'
+ * @param {number} TMS - Time Multiplier Setting
+ * @param {number} I_over_Is - Rasio arus masuk terhadap arus set
+ * @returns {number} Waktu kerja dalam detik
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.waktuKerjaRelayOCR = function(curveType, TMS, I_over_Is) {
+    // Validasi input
+    if (typeof curveType !== 'string') {
+        throw new Error('Jenis kurva harus berupa string');
+    }
+    if (!['SI', 'VI', 'EI'].includes(curveType)) {
+        throw new Error('Jenis kurva harus SI, VI, atau EI');
+    }
+    if (typeof TMS !== 'number' || isNaN(TMS)) {
+        throw new Error('TMS harus berupa angka');
+    }
+    if (typeof I_over_Is !== 'number' || isNaN(I_over_Is)) {
+        throw new Error('I/I_s harus berupa angka');
+    }
+    if (TMS <= 0) {
+        throw new Error('TMS harus lebih besar dari nol');
+    }
+    if (I_over_Is <= 0) {
+        throw new Error('I/I_s harus lebih besar dari nol');
+    }
+
+    // Jika I/I_s <= 1, relay tidak bekerja
+    if (I_over_Is <= 1) {
+        return null; // atau bisa kembalikan string "relay tidak bekerja"
+    }
+
+    // Parameter k dan α berdasarkan jenis kurva
+    let k, alpha;
+    switch (curveType) {
+        case 'SI': // Standard Inverse
+            k = 0.14;
+            alpha = 0.02;
+            break;
+        case 'VI': // Very Inverse
+            k = 13.5;
+            alpha = 1;
+            break;
+        case 'EI': // Extremely Inverse
+            k = 80;
+            alpha = 2;
+            break;
+        default:
+            throw new Error('Jenis kurva tidak valid');
+    }
+
+    // Rumus IEC 60255: t = TMS × k / ((I / I_s)^α − 1)
+    const t = TMS * k / (Math.pow(I_over_Is, alpha) - 1);
+    return t;
+};
+
 // Supaya bisa diuji dengan Node
 if (typeof module !== "undefined") {
     module.exports = Rumus;

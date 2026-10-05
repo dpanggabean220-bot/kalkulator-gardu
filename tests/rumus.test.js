@@ -500,3 +500,208 @@ test('Arus sekunder CT dan burden - input burdenRating kurang dari atau sama den
     { message: 'Rating burden CT harus lebih besar dari nol' }
   );
 });
+
+// Kalkulator 4: Tegangan per posisi tap
+test('Tegangan per posisi tap - 150 kV, tap +3, step 1,25%', async t => {
+  const V_tap = Rumus.teganganPerPosisiTap(150, 3, 1.25);
+  assertCloseTo(V_tap, 155.625, 0.001, 'Hasil harus 155,625 kV');
+});
+
+test('Tegangan per posisi tap - 150 kV, tap -2, step 1,25%', async t => {
+  const V_tap = Rumus.teganganPerPosisiTap(150, -2, 1.25);
+  assertCloseTo(V_tap, 146.25, 0.001, 'Hasil harus 146,25 kV');
+});
+
+test('Tegangan per posisi tap - 150 kV, tap 0, step 1,25%', async t => {
+  const V_tap = Rumus.teganganPerPosisiTap(150, 0, 1.25);
+  assertCloseTo(V_tap, 150, 0.001, 'Hasil harus 150 kV (tap tengah)');
+});
+
+test('Tegangan per posisi tap - input V_nominal bukan angka', async t => {
+  assert.throws(
+    () => Rumus.teganganPerPosisiTap('abc', 3, 1.25),
+    { message: 'Tegangan nominal V_nominal harus berupa angka' }
+  );
+});
+
+test('Tegangan per posisi tap - input n bukan angka', async t => {
+  assert.throws(
+    () => Rumus.teganganPerPosisiTap(150, 'xyz', 1.25),
+    { message: 'Posisi tap n harus berupa angka' }
+  );
+});
+
+test('Tegangan per posisi tap - input stepPercent bukan angka', async t => {
+  assert.throws(
+    () => Rumus.teganganPerPosisiTap(150, 3, 'xyz'),
+    { message: 'Persentase langkah stepPercent harus berupa angka' }
+  );
+});
+
+test('Tegangan per posisi tap - input V_nominal kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.teganganPerPosisiTap(0, 3, 1.25),
+    { message: 'Tegangan nominal V_nominal harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.teganganPerPosisiTap(-10, 3, 1.25),
+    { message: 'Tegangan nominal V_nominal harus lebih besar dari nol' }
+  );
+});
+
+test('Tegangan per posisi tap - input stepPercent negatif', async t => {
+  assert.throws(
+    () => Rumus.teganganPerPosisiTap(150, 3, -1.25),
+    { message: 'Persentase langkah stepPercent tidak boleh negatif' }
+  );
+});
+
+// Kalkulator 5: Kapasitor Perbaikan cos φ
+test('Kapasitor perbaikan cos φ - P = 10 MW, cos φ 0,8 → 0,95', async t => {
+  const Qc = Rumus.kapasitorPerbaikanCosPhi(10, 0.8, 0.95);
+  assertCloseTo(Qc, 4.213, 0.001, 'Hasil harus 4,213 MVAR');
+});
+
+test('Kapasitor perbaikan cos φ - P = 100 MW, cos φ 0,7 → 0,9', async t => {
+  const Qc = Rumus.kapasitorPerbaikanCosPhi(100, 0.7, 0.9);
+  assertCloseTo(Qc, 53.59, 0.01, 'Hasil harus 53,59 MVAR');
+});
+
+test('Kapasitor perbaikan cos φ - input P bukan angka', async t => {
+  assert.throws(
+    () => Rumus.kapasitorPerbaikanCosPhi('abc', 0.8, 0.95),
+    { message: 'Daya aktif P harus berupa angka' }
+  );
+});
+
+test('Kapasitor perbaikan cos φ - input cos φ1 bukan angka', async t => {
+  assert.throws(
+    () => Rumus.kapasitorPerbaikanCosPhi(10, 'xyz', 0.95),
+    { message: 'Faktor daya awal cos φ1 harus berupa angka' }
+  );
+});
+
+test('Kapasitor perbaikan cos φ - input cos φ2 bukan angka', async t => {
+  assert.throws(
+    () => Rumus.kapasitorPerbaikanCosPhi(10, 0.8, 'xyz'),
+    { message: 'Faktor daya target cos φ2 harus berupa angka' }
+  );
+});
+
+test('Kapasitor perbaikan cos φ - input P kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.kapasitorPerbaikanCosPhi(0, 0.8, 0.95),
+    { message: 'Daya aktif P harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.kapasitorPerbaikanCosPhi(-10, 0.8, 0.95),
+    { message: 'Daya aktif P harus lebih besar dari nol' }
+  );
+});
+
+test('Kapasitor perbaikan cos φ - input cos φ1 kurang dari 0 atau lebih dari 1', async t => {
+  assert.throws(
+    () => Rumus.kapasitorPerbaikanCosPhi(10, -0.1, 0.95),
+    { message: 'Faktor daya awal cos φ1 harus antara 0 dan 1' }
+  );
+  assert.throws(
+    () => Rumus.kapasitorPerbaikanCosPhi(10, 1.1, 0.95),
+    { message: 'Faktor daya awal cos φ1 harus antara 0 dan 1' }
+  );
+});
+
+test('Kapasitor perbaikan cos φ - input cos φ2 kurang dari 0 atau lebih dari 1', async t => {
+  assert.throws(
+    () => Rumus.kapasitorPerbaikanCosPhi(10, 0.8, -0.1),
+    { message: 'Faktor daya target cos φ2 harus antara 0 dan 1' }
+  );
+  assert.throws(
+    () => Rumus.kapasitorPerbaikanCosPhi(10, 0.8, 1.1),
+    { message: 'Faktor daya target cos φ2 harus antara 0 dan 1' }
+  );
+});
+
+test('Kapasitor perbaikan cos φ - input cos φ2 kurang dari atau sama dengan cos φ1', async t => {
+  assert.throws(
+    () => Rumus.kapasitorPerbaikanCosPhi(10, 0.8, 0.8),
+    { message: 'Faktor daya target cos φ2 harus lebih besar dari cos φ1' }
+  );
+  assert.throws(
+    () => Rumus.kapasitorPerbaikanCosPhi(10, 0.8, 0.7),
+    { message: 'Faktor daya target cos φ2 harus lebih besar dari cos φ1' }
+  );
+});
+
+// Kalkulator 9: Waktu Kerja Relay OCR, kurva IEC 60255
+test('Waktu kerja relay OCR - SI, TMS 0,1, I/I_s = 10', async t => {
+  const waktuSI = Rumus.waktuKerjaRelayOCR('SI', 0.1, 10);
+  assertCloseTo(waktuSI, 0.297, 0.001, 'Hasil harus 0,297 s');
+});
+
+test('Waktu kerja relay OCR - VI, TMS 0,1, I/I_s = 10', async t => {
+  const waktuVI = Rumus.waktuKerjaRelayOCR('VI', 0.1, 10);
+  assertCloseTo(waktuVI, 0.150, 0.001, 'Hasil harus 0,150 s');
+});
+
+test('Waktu kerja relay OCR - EI, TMS 0,1, I/I_s = 10', async t => {
+  const waktuEI = Rumus.waktuKerjaRelayOCR('EI', 0.1, 10);
+  assertCloseTo(waktuEI, 0.0808, 0.001, 'Hasil harus 0,0808 s');
+});
+
+test('Waktu kerja relay OCR - input curveType bukan string', async t => {
+  assert.throws(
+    () => Rumus.waktuKerjaRelayOCR(123, 0.1, 10),
+    { message: 'Jenis kurva harus berupa string' }
+  );
+});
+
+test('Waktu kerja relay OCR - input curveType tidak valid', async t => {
+  assert.throws(
+    () => Rumus.waktuKerjaRelayOCR('XXX', 0.1, 10),
+    { message: 'Jenis kurva harus SI, VI, atau EI' }
+  );
+});
+
+test('Waktu kerja relay OCR - input TMS bukan angka', async t => {
+  assert.throws(
+    () => Rumus.waktuKerjaRelayOCR('SI', 'abc', 10),
+    { message: 'TMS harus berupa angka' }
+  );
+});
+
+test('Waktu kerja relay OCR - input I/I_s bukan angka', async t => {
+  assert.throws(
+    () => Rumus.waktuKerjaRelayOCR('SI', 0.1, 'xyz'),
+    { message: 'I/I_s harus berupa angka' }
+  );
+});
+
+test('Waktu kerja relay OCR - input TMS kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.waktuKerjaRelayOCR('SI', 0, 10),
+    { message: 'TMS harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.waktuKerjaRelayOCR('SI', -0.1, 10),
+    { message: 'TMS harus lebih besar dari nol' }
+  );
+});
+
+test('Waktu kerja relay OCR - input I/I_s kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.waktuKerjaRelayOCR('SI', 0.1, 0),
+    { message: 'I/I_s harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.waktuKerjaRelayOCR('SI', 0.1, -1),
+    { message: 'I/I_s harus lebih besar dari nol' }
+  );
+});
+
+test('Waktu kerja relay OCR - I/I_s <= 1 (relay tidak bekerja)', async t => {
+  const waktuNull1 = Rumus.waktuKerjaRelayOCR('SI', 0.1, 1);
+  assert.strictEqual(waktuNull1, null, 'Hasil harus null untuk I/I_s <= 1');
+
+  const waktuNull2 = Rumus.waktuKerjaRelayOCR('SI', 0.1, 0.5);
+  assert.strictEqual(waktuNull2, null, 'Hasil harus null untuk I/I_s <= 1');
+});

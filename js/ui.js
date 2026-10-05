@@ -900,6 +900,566 @@ if (form8) {
     });
 }
 
-});
+// Handle form submission for calculator 4
+const form4 = document.getElementById('form4');
+if (form4) {
+    form4.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get input values
+        const vNominalInput = document.getElementById('v_nominal');
+        const tapNInput = document.getElementById('tapen');
+        const stepInput = document.getElementById('step');
+        const hasilDiv = document.getElementById('hasil4');
+
+        // Clear previous results and errors
+        hasilDiv.innerHTML = '';
+        vNominalInput.classList.remove('error-input');
+        tapNInput.classList.remove('error-input');
+        stepInput.classList.remove('error-input');
+
+        // Remove any existing error messages
+        const existingErrors = form4.querySelectorAll('.error');
+        existingErrors.forEach(el => el.remove());
+
+        try {
+            const V_nominal = parseFloat(vNominalInput.value);
+            const n = parseFloat(tapNInput.value);
+            const stepPercent = parseFloat(stepInput.value);
+
+            // Validate empty inputs
+            if (isNaN(V_nominal) || vNominalInput.value.trim() === '') {
+                throw new Error('Tegangan nominal V_nominal harus diisi');
+            }
+            if (isNaN(n) || tapNInput.value.trim() === '') {
+                throw new Error('Posisi tap n harus diisi');
+            }
+            if (isNaN(stepPercent) || stepInput.value.trim() === '') {
+                throw new Error('Persentase langkah step harus diisi');
+            }
+
+            // Call the rumus function
+            const V_tap = Rumus.teganganPerPosisiTap(V_nominal, n, stepPercent);
+
+            // Format hasil dengan satuan dan locale Indonesia
+            const vNominalFormatted = V_nominal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kV';
+            const vTapFormatted = V_tap.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kV';
+
+            // Tampilkan hasil
+            hasilDiv.innerHTML = `
+                <strong>Tegangan setelah tap:</strong> ${vTapFormatted}<br>
+                <strong>Rumus:</strong> V_tap = V_nominal × (1 + n × step% / 100)<br>
+                <strong>Perhitungan:</strong> V_tap = ${V_nominal} × (1 + ${n} × ${stepPercent} / 100) = ${V_tap.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kV
+            `;
+        } catch (error) {
+            // Tampilkan error di dekat kolom yang salah
+            if (error.message.includes('Tegangan nominal V_nominal')) {
+                vNominalInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                vNominalInput.parentNode.insertBefore(errorElem, vNominalInput.nextSibling);
+            }
+            if (error.message.includes('Posisi tap n')) {
+                tapNInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                tapNInput.parentNode.insertBefore(errorElem, tapNInput.nextSibling);
+            }
+            if (error.message.includes('Persentase langkah step')) {
+                stepInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                stepInput.parentNode.insertBefore(errorElem, stepInput.nextSibling);
+            }
+
+            // Tampilkan juga error umum di hasil div untuk debugging
+            hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+            hasilDiv.style.color = '#d32f2f';
+        }
+    });
+}
+
+// Handle form submission for calculator 5
+const form5 = document.getElementById('form5');
+if (form5) {
+    form5.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get input values
+        const dayaInput = document.getElementById('daya');
+        const cosPhi1Input = document.getElementById('cosPhi1');
+        const cosPhi2Input = document.getElementById('cosPhi2');
+        const hasilDiv = document.getElementById('hasil5');
+
+        // Clear previous results and errors
+        hasilDiv.innerHTML = '';
+        dayaInput.classList.remove('error-input');
+        cosPhi1Input.classList.remove('error-input');
+        cosPhi2Input.classList.remove('error-input');
+
+        // Remove any existing error messages
+        const existingErrors = form5.querySelectorAll('.error');
+        existingErrors.forEach(el => el.remove());
+
+        try {
+            const P = parseFloat(dayaInput.value);
+            const cosPhi1 = parseFloat(cosPhi1Input.value);
+            const cosPhi2 = parseFloat(cosPhi2Input.value);
+
+            // Validate empty inputs
+            if (isNaN(P) || dayaInput.value.trim() === '') {
+                throw new Error('Daya aktif P harus diisi');
+            }
+            if (isNaN(cosPhi1) || cosPhi1Input.value.trim() === '') {
+                throw new Error('Faktor daya awal cos φ1 harus diisi');
+            }
+            if (isNaN(cosPhi2) || cosPhi2Input.value.trim() === '') {
+                throw new Error('Faktor daya target cos φ2 harus diisi');
+            }
+
+            // Call the rumus function
+            const Qc = Rumus.kapasitorPerbaikanCosPhi(P, cosPhi1, cosPhi2);
+
+            // Format hasil dengan satuan dan locale Indonesia
+            const pFormatted = P.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MW';
+            const qcFormatted = Qc.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' MVAR';
+
+            // Tampilkan hasil
+            hasilDiv.innerHTML = `
+                <strong>Besar kapasitor:</strong> ${qcFormatted}<br>
+                <strong>Rumus:</strong> Qc = P × (tan φ1 − tan φ2)<br>
+                <strong>Perhitungan:</strong> Qc = ${P} × (tan(cos⁻¹(${cosPhi1})) − tan(cos⁻¹(${cosPhi2}))) = ${Qc.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} MVAR
+            `;
+        } catch (error) {
+            // Tampilkan error di dekat kolom yang salah
+            if (error.message.includes('Daya aktif P')) {
+                dayaInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                dayaInput.parentNode.insertBefore(errorElem, dayaInput.nextSibling);
+            }
+            if (error.message.includes('Faktor daya awal cos φ1')) {
+                cosPhi1Input.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                cosPhi1Input.parentNode.insertBefore(errorElem, cosPhi1Input.nextSibling);
+            }
+            if (error.message.includes('Faktor daya target cos φ2')) {
+                cosPhi2Input.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                cosPhi2Input.parentNode.insertBefore(errorElem, cosPhi2Input.nextSibling);
+            }
+
+            // Tampilkan juga error umum di hasil div untuk debugging
+            hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+            hasilDiv.style.color = '#d32f2f';
+        }
+    });
+}
+
+// Handle form submission for calculator 9
+const form9 = document.getElementById('form9');
+if (form9) {
+    // First, set up mode switching
+    const curveTypeRadios = form9.querySelectorAll('input[name="curveType"]');
+    const modeContents = {
+        SI: document.getElementById('mode-SI'),
+        VI: document.getElementById('mode-VI'),
+        EI: document.getElementById('mode-EI')
+    };
+
+    // Function to show the selected mode and hide others
+    function showSelectedCurveType() {
+        curveTypeRadios.forEach(radio => {
+            if (radio.checked) {
+                const curveType = radio.value;
+                // Hide all mode contents
+                Object.values(modeContents).forEach(content => {
+                    content.style.display = 'none';
+                });
+                // Show the selected one
+                if (modeContents[curveType]) {
+                    modeContents[curveType].style.display = 'block';
+                }
+            }
+        });
+    }
+
+    // Add event listeners to radio buttons
+    curveTypeRadios.forEach(radio => {
+        radio.addEventListener('change', showSelectedCurveType);
+    });
+
+    // Initialize the display to the default mode (SI)
+    showSelectedCurveType();
+
+    // Now handle the form submission
+    form9.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get the selected curve type
+        let selectedCurveType = '';
+        curveTypeRadios.forEach(radio => {
+            if (radio.checked) {
+                selectedCurveType = radio.value;
+            }
+        });
+
+        // Get input values
+        const tmsInput = document.getElementById('tms');
+        const ratioInput = document.getElementById('ratio');
+        const hasilDiv = document.getElementById('hasil9');
+
+        // Clear previous results and errors
+        hasilDiv.innerHTML = '';
+        tmsInput.classList.remove('error-input');
+        ratioInput.classList.remove('error-input');
+
+        // Remove any existing error messages from all mode contents
+        Object.values(modeContents).forEach(content => {
+            const existingErrors = content.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
+        });
+
+        try {
+            const TMS = parseFloat(tmsInput.value);
+            const I_over_Is = parseFloat(ratioInput.value);
+
+            // Validate empty inputs
+            if (isNaN(TMS) || tmsInput.value.trim() === '') {
+                throw new Error('TMS harus diisi');
+            }
+            if (isNaN(I_over_Is) || ratioInput.value.trim() === '') {
+                throw new Error('I/I_s harus diisi');
+            }
+
+            // Call the rumus function
+            const t = Rumus.waktuKerjaRelayOCR(selectedCurveType, TMS, I_over_Is);
+
+            // Format hasil dengan satuan dan locale Indonesia
+            const tmsFormatted = TMS.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+            const ratioFormatted = I_over_Is.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+
+            // Tampilkan hasil
+            if (t === null) {
+                hasilDiv.innerHTML = `
+                    <strong>Hasil:</strong> Relay tidak bekerja<br>
+                    <strong>Rumus:</strong> t = TMS × k / ((I / I_s)^α − 1)<br>
+                    <strong>Keterangan:</strong> Karena I/I_s ≤ 1, relay tidak bekerja
+                `;
+            } else {
+                const tFormatted = t.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' s';
+
+                // Get k and alpha values for display
+                let k, alpha;
+                switch (selectedCurveType) {
+                    case 'SI': k = 0.14; alpha = 0.02; break;
+                    case 'VI': k = 13.5; alpha = 1; break;
+                    case 'EI': k = 80; alpha = 2; break;
+                }
+
+                hasilDiv.innerHTML = `
+                    <strong>Waktu kerja:</strong> ${tFormatted}<br>
+                    <strong>Rumus:</strong> t = TMS × k / ((I / I_s)^α − 1)<br>
+                    <strong>Parameter kurva ${selectedCurveType}:</strong> k = ${k}, α = ${alpha}<br>
+                    <strong>Perhitungan:</strong> t = ${TMS} × ${k} / (${I_over_Is}^${alpha} − 1) = ${t.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} s
+                `;
+            }
+        } catch (error) {
+            // Tampilkan error di dekat kolom yang salah
+            if (error.message.includes('TMS harus diisi')) {
+                tmsInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                tmsInput.parentNode.insertBefore(errorElem, tmsInput.nextSibling);
+            }
+            if (error.message.includes('I/I_s harus diisi')) {
+                ratioInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                ratioInput.parentNode.insertBefore(errorElem, ratioInput.nextSibling);
+            }
+            if (error.message.includes('Jenis kurva harus berupa string')) {
+                // This error comes from the function itself, show in hasil div
+                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                hasilDiv.style.color = '#d32f2f';
+            }
+            if (error.message.includes('Jenis kurva harus SI, VI, atau EI')) {
+                // This error comes from the function itself, show in hasil div
+                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                hasilDiv.style.color = '#d32f2f';
+            }
+            if (error.message.includes('TMS harus berupa angka')) {
+                tmsInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                tmsInput.parentNode.insertBefore(errorElem, tmsInput.nextSibling);
+            }
+            if (error.message.includes('I/I_s harus berupa angka')) {
+                ratioInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                ratioInput.parentNode.insertBefore(errorElem, ratioInput.nextSibling);
+            }
+            if (error.message.includes('TMS harus lebih besar dari nol')) {
+                tmsInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                tmsInput.parentNode.insertBefore(errorElem, tmsInput.nextSibling);
+            }
+            if (error.message.includes('I/I_s harus lebih besar dari nol')) {
+                ratioInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                ratioInput.parentNode.insertBefore(errorElem, ratioInput.nextSibling);
+            }
+
+            // Tampilkan juga error umum di hasil div untuk debugging
+            if (!hasilDiv.innerHTML.includes('Error:')) {
+                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                hasilDiv.style.color = '#d32f2f';
+            }
+        }
+    });
+}
+
+// Handle form submission for calculator 18
+const form18 = document.getElementById('form18');
+if (form18) {
+    // First, set up mode switching
+    const modeRadios = form18.querySelectorAll('input[name="konversiMode"]');
+    const modeContents = {
+        kVkeV: document.getElementById('mode-kVkeV'),
+        VkekV: document.getElementById('mode-VkekV'),
+        kAkeA: document.getElementById('mode-kAkeA'),
+        AkekA: document.getElementById('mode-AkekA'),
+        MVaketaVA: document.getElementById('mode-MVaketaVA'),
+        kVAkeMVA: document.getElementById('mode-kVAkeMVA'),
+        CkeK: document.getElementById('mode-CkeK'),
+        KkeC: document.getElementById('mode-KkeC')
+    };
+
+    // Function to show the selected mode and hide others
+    function showSelectedMode() {
+        modeRadios.forEach(radio => {
+            if (radio.checked) {
+                const mode = radio.value;
+                // Hide all mode contents
+                Object.values(modeContents).forEach(content => {
+                    content.style.display = 'none';
+                });
+                // Show the selected one
+                if (modeContents[mode]) {
+                    modeContents[mode].style.display = 'block';
+                }
+            }
+        });
+    }
+
+    // Add event listeners to radio buttons
+    modeRadios.forEach(radio => {
+        radio.addEventListener('change', showSelectedMode);
+    });
+
+    // Initialize the display to the default mode (kVkeV)
+    showSelectedMode();
+
+    // Now handle the form submission
+    form18.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get the selected mode
+        let selectedMode = '';
+        modeRadios.forEach(radio => {
+            if (radio.checked) {
+                selectedMode = radio.value;
+            }
+        });
+
+        const hasilDiv = document.getElementById('hasil18');
+
+        // Clear previous results and errors
+        hasilDiv.innerHTML = '';
+
+        // Remove any existing error messages from all mode contents
+        Object.values(modeContents).forEach(content => {
+            const existingErrors = content.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
+        });
+
+        // Also remove error-input class from all inputs
+        const allInputs = form18.querySelectorAll('input[type="number"]');
+        allInputs.forEach(input => {
+            input.classList.remove('error-input');
+        });
+
+        try {
+            const nilaiInput = document.getElementById('nilai18');
+            const nilai = parseFloat(nilaiInput.value);
+
+            // Validate empty input
+            if (isNaN(nilai) || nilaiInput.value.trim() === '') {
+                throw new Error('Nilai harus diisi');
+            }
+
+            let hasil;
+            let dariSatuan, keSatuan;
+            let rumus;
+            let perhitunganDetail;
+
+            switch (selectedMode) {
+                case 'kVkeV':
+                    // Validasi untuk kV ke V
+                    if (nilai <= 0) {
+                        throw new Error('Nilai kV harus lebih besar dari nol');
+                    }
+                    hasil = Rumus.kVkeV(nilai);
+                    dariSatuan = 'kV';
+                    keSatuan = 'V';
+                    rumus = 'V = kV × 1000';
+                    perhitunganDetail = `${nilai} × 1000 = ${hasil}`;
+                    break;
+                case 'VkekV':
+                    // Validasi untuk V ke kV
+                    if (nilai <= 0) {
+                        throw new Error('Nilai V harus lebih besar dari nol');
+                    }
+                    hasil = Rumus.VkekV(nilai);
+                    dariSatuan = 'V';
+                    keSatuan = 'kV';
+                    rumus = 'kV = V / 1000';
+                    perhitunganDetail = `${nilai} / 1000 = ${hasil}`;
+                    break;
+                case 'kAkeA':
+                    // Validasi untuk kA ke A
+                    if (nilai <= 0) {
+                        throw new Error('Nilai kA harus lebih besar dari nol');
+                    }
+                    hasil = Rumus.kAkeA(nilai);
+                    dariSatuan = 'kA';
+                    keSatuan = 'A';
+                    rumus = 'A = kA × 1000';
+                    perhitunganDetail = `${nilai} × 1000 = ${hasil}`;
+                    break;
+                case 'AkekA':
+                    // Validasi untuk A ke kA
+                    if (nilai <= 0) {
+                        throw new Error('Nilai A harus lebih besar dari nol');
+                    }
+                    hasil = Rumus.AkekA(nilai);
+                    dariSatuan = 'A';
+                    keSatuan = 'kA';
+                    rumus = 'kA = A / 1000';
+                    perhitunganDetail = `${nilai} / 1000 = ${hasil}`;
+                    break;
+                case 'MVaketaVA':
+                    // Validasi untuk MVA ke kVA
+                    if (nilai <= 0) {
+                        throw new Error('Nilai MVA harus lebih besar dari nol');
+                    }
+                    hasil = Rumus.MVaketaVA(nilai);
+                    dariSatuan = 'MVA';
+                    keSatuan = 'kVA';
+                    rumus = 'kVA = MVA × 1000';
+                    perhitunganDetail = `${nilai} × 1000 = ${hasil}`;
+                    break;
+                case 'kVAkeMVA':
+                    // Validasi untuk kVA ke MVA
+                    if (nilai <= 0) {
+                        throw new Error('Nilai kVA harus lebih besar dari nol');
+                    }
+                    hasil = Rumus.kVAkeMVA(nilai);
+                    dariSatuan = 'kVA';
+                    keSatuan = 'MVA';
+                    rumus = 'MVA = kVA / 1000';
+                    perhitunganDetail = `${nilai} / 1000 = ${hasil}`;
+                    break;
+                case 'CkeK':
+                    // Validasi untuk °C ke K
+                    if (nilai < -273.15) {
+                        throw new Error('Nilai Celsius tidak boleh kurang dari -273,15');
+                    }
+                    hasil = Rumus.CkeK(nilai);
+                    dariSatuan = '°C';
+                    keSatuan = 'K';
+                    rumus = 'K = °C + 273,15';
+                    perhitunganDetail = `${nilai} + 273,15 = ${hasil}`;
+                    break;
+                case 'KkeC':
+                    // Validasi untuk K ke °C
+                    if (nilai <= 0) {
+                        throw new Error('Nilai Kelvin harus lebih besar dari nol');
+                    }
+                    hasil = Rumus.KkeC(nilai);
+                    dariSatuan = 'K';
+                    keSatuan = '°C';
+                    rumus = '°C = K - 273,15';
+                    perhitunganDetail = `${nilai} - 273,15 = ${hasil}`;
+                    break;
+                default:
+                    throw new Error('Mode konversi tidak valid');
+            }
+
+            // Format hasil dengan satuan dan locale Indonesia
+            const nilaiFormatted = nilai.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+            const hasilFormatted = hasil.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+
+            // Tampilkan hasil
+            hasilDiv.innerHTML = `
+                <strong>Hasil konversi:</strong> ${hasilFormatted} ${keSatuan}<br>
+                <strong>Rumus:</strong> ${rumus}<br>
+                <strong>Perhitungan:</strong> ${nilaiFormatted} ${dariSatuan} = ${hasilFormatted} ${keSatuan}<br>
+                <strong>Detail perhitungan:</strong> ${perhitunganDetail}
+            `;
+        } catch (error) {
+            // Tampilkan error di dekat kolom yang salah
+            if (error.message.includes('Nilai harus diisi')) {
+                const nilaiInput = document.getElementById('nilai18');
+                nilaiInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
+            } else if (error.message.includes('kV harus lebih besar dari nol') ||
+                      error.message.includes('V harus lebih besar dari nol') ||
+                      error.message.includes('kA harus lebih besar dari nol') ||
+                      error.message.includes('A harus lebih besar dari nol') ||
+                      error.message.includes('MVA harus lebih besar dari nol') ||
+                      error.message.includes('kVA harus lebih besar dari nol') ||
+                      error.message.includes('Kelvin harus lebih besar dari nol')) {
+                const nilaiInput = document.getElementById('nilai18');
+                nilaiInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
+            } else if (error.message.includes('Celsius tidak boleh kurang dari -273,15')) {
+                const nilaiInput = document.getElementById('nilai18');
+                nilaiInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
+            }
+
+            // Tampilkan juga error umum di hasil div untuk debugging
+            hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+            hasilDiv.style.color = '#d32f2f';
+        }
+    });
+}
 
 });

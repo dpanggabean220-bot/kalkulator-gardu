@@ -103,6 +103,78 @@
             <div id="hasil3" class="hasil"></div>
         </section>
 
+        <!-- Kalkulator 4: Tegangan per Posisi Tap -->
+        <section id="kalkulator4">
+            <h2>Tegangan per Posisi Tap</h2>
+            <form id="form4">
+                <label for="v_nominal">Tegangan nominal V_nominal (kV):</label>
+                <input type="number" id="v_nominal" name="v_nominal" step="any" required>
+                <label for="tapen">Posisi tap n:</label>
+                <input type="number" id="tapen" name="tapen" step="any" required>
+                <label for="step">Persentase langkah step (%):</label>
+                <input type="number" id="step" name="step" step="any" required>
+                <button type="submit">Hitung</button>
+            </form>
+            <div id="hasil4" class="hasil"></div>
+        </section>
+
+        <!-- Kalkulator 5: Kapasitor Perbaikan cos φ -->
+        <section id="kalkulator5">
+            <h2>Kapasitor Perbaikan cos φ</h2>
+            <form id="form5">
+                <label for="daya">Daya aktif P (MW):</label>
+                <input type="number" id="daya" name="daya" step="any" required>
+                <label for="cosPhi1">Faktor daya awal cos φ1:</label>
+                <input type="number" id="cosPhi1" name="cosPhi1" step="any" min="0" max="1" required>
+                <label for="cosPhi2">Faktor daya target cos φ2:</label>
+                <input type="number" id="cosPhi2" name="cosPhi2" step="any" min="0" max="1" required>
+                <button type="submit">Hitung</button>
+            </form>
+            <div id="hasil5" class="hasil"></div>
+        </section>
+
+        <!-- Kalkulator 9: Waktu Kerja Relay OCR -->
+        <section id="kalkulator9">
+            <h2>Waktu Kerja Relay OCR</h2>
+            <form id="form9">
+                <div class="mode-selection">
+                    <label>Pilih jenis kurva:</label>
+                    <div class="mode-options">
+                        <label><input type="radio" name="curveType" value="SI" checked> SI (Standard Inverse)</label>
+                        <label><input type="radio" name="curveType" value="VI"> VI (Very Inverse)</label>
+                        <label><input type="radio" name="curveType" value="EI"> EI (Extremely Inverse)</label>
+                    </div>
+                </div>
+                <label for="tms">TMS:</label>
+                <input type="number" id="tms" name="tms" step="any" required>
+                <label for="ratio">I/I_s:</label>
+                <input type="number" id="ratio" name="ratio" step="any" required>
+                <button type="submit">Hitung</button>
+            </form>
+            <div id="hasil9" class="hasil"></div>
+        </section>
+
+        <!-- Kalkulator 9: Waktu Kerja Relay OCR -->
+        <section id="kalkulator9">
+            <h2>Waktu Kerja Relay OCR</h2>
+            <form id="form9">
+                <div class="mode-selection">
+                    <label>Pilih jenis kurva:</label>
+                    <div class="mode-options">
+                        <label><input type="radio" name="curveType" value="SI" checked> SI (Standard Inverse)</label>
+                        <label><input type="radio" name="curveType" value="VI"> VI (Very Inverse)</label>
+                        <label><input type="radio" name="curveType" value="EI"> EI (Extremely Inverse)</label>
+                    </div>
+                </div>
+                <label for="tms">TMS:</label>
+                <input type="number" id="tms" name="tms" step="any" required>
+                <label for="ratio">I/I_s:</label>
+                <input type="number" id="ratio" name="ratio" step="any" required>
+                <button type="submit">Hitung</button>
+            </form>
+            <div id="hasil9" class="hasil"></div>
+        </section>
+
         <!-- Kalkulator 6: Arus Hubung Singkat dari MVA Hubung Singkat -->
         <section id="kalkulator6">
             <h2>Arus Hubung Singkat dari MVA Hubung Singkat</h2>
@@ -175,6 +247,114 @@
                 <button type="submit">Hitung</button>
             </form>
             <div id="hasil8" class="hasil"></div>
+        </section>
+
+        <!-- Kalkulator 9: Waktu Kerja Relay OCR -->
+        <section id="kalkulator9">
+            <h2>Waktu Kerja Relay OCR</h2>
+            <form id="form9">
+                <div class="mode-selection">
+                    <label>Pilih jenis kurva:</label>
+                    <div class="mode-options">
+                        <label><input type="radio" name="curveType" value="SI" checked> SI (Standard Inverse)</label>
+                        <label><input type="radio" name="curveType" value="VI"> VI (Very Inverse)</label>
+                        <label><input type="radio" name="curveType" value="EI"> EI (Extremely Inverse)</label>
+                    </div>
+                </div>
+                <label for="tms">TMS:</label>
+                <input type="number" id="tms" name="tms" step="any" required>
+                <label for="ratio">I/I_s:</label>
+                <input type="number" id="ratio" name="ratio" step="any" required>
+                <button type="submit">Hitung</button>
+            </form>
+            <div id="hasil9" class="hasil"></div>
+        </section>
+
+        <!-- Kalkulator 18: Konversi Satuan -->
+        <section id="kalkulator18">
+            <h2>Konversi Satuan</h2>
+            <form id="form18">
+                <div class="mode-selection">
+                    <label>Pilih jenis konversi:</label>
+                    <div class="mode-options">
+                        <label><input type="radio" name="konversiMode" value="kVkeV" checked> kV ke V</label>
+                        <label><input type="radio" name="konversiMode" value="VkekV"> V ke kV</label>
+                        <label><input type="radio" name="konversiMode" value="kAkeA"> kA ke A</label>
+                        <label><input type="radio" name="konversiMode" value="AkekA"> A ke kA</label>
+                        <label><input type="radio" name="konversiMode" value="MVaketaVA"> MVA ke kVA</label>
+                        <label><input type="radio" name="konversiMode" value="kVAkeMVA"> kVA ke MVA</label>
+                        <label><input type="radio" name="konversiMode" value="CkeK"> °C ke K</label>
+                        <label><input type="radio" name="konversiMode" value="KkeC"> K ke °C</label>
+                    </div>
+                </div>
+
+                <!-- Mode 1: kV ke V -->
+                <div id="mode-kVkeV" class="mode-content">
+                    <label for="nilai18">Nilai yang akan dikonversi:</label>
+                    <input type="number" id="nilai18" name="nilai18" step="any" required>
+                    <label for="satuan18">Satuan:</label>
+                    <input type="text" id="satuan18" name="satuan18" value="kV" readonly>
+                </div>
+
+                <!-- Mode 2: V ke kV -->
+                <div id="mode-VkekV" class="mode-content" style="display: none;">
+                    <label for="nilai18">Nilai yang akan dikonversi:</label>
+                    <input type="number" id="nilai18" name="nilai18" step="any" required>
+                    <label for="satuan18">Satuan:</label>
+                    <input type="text" id="satuan18" name="satuan18" value="V" readonly>
+                </div>
+
+                <!-- Mode 3: kA ke A -->
+                <div id="mode-kAkeA" class="mode-content" style="display: none;">
+                    <label for="nilai18">Nilai yang akan dikonversi:</label>
+                    <input type="number" id="nilai18" name="nilai18" step="any" required>
+                    <label for="satuan18">Satuan:</label>
+                    <input type="text" id="satuan18" name="satuan18" value="kA" readonly>
+                </div>
+
+                <!-- Mode 4: A ke kA -->
+                <div id="mode-AkekA" class="mode-content" style="display: none;">
+                    <label for="nilai18">Nilai yang akan dikonversi:</label>
+                    <input type="number" id="nilai18" name="nilai18" step="any" required>
+                    <label for="satuan18">Satuan:</label>
+                    <input type="text" id="satuan18" name="satuan18" value="A" readonly>
+                </div>
+
+                <!-- Mode 5: MVA ke kVA -->
+                <div id="mode-MVaketaVA" class="mode-content" style="display: none;">
+                    <label for="nilai18">Nilai yang akan dikonversi:</label>
+                    <input type="number" id="nilai18" name="nilai18" step="any" required>
+                    <label for="satuan18">Satuan:</label>
+                    <input type="text" id="satuan18" name="satuan18" value="MVA" readonly>
+                </div>
+
+                <!-- Mode 6: kVA ke MVA -->
+                <div id="mode-kVAkeMVA" class="mode-content" style="display: none;">
+                    <label for="nilai18">Nilai yang akan dikonversi:</label>
+                    <input type="number" id="nilai18" name="nilai18" step="any" required>
+                    <label for="satuan18">Satuan:</label>
+                    <input type="text" id="satuan18" name="satuan18" value="kVA" readonly>
+                </div>
+
+                <!-- Mode 7: °C ke K -->
+                <div id="mode-CkeK" class="mode-content" style="display: none;">
+                    <label for="nilai18">Nilai yang akan dikonversi:</label>
+                    <input type="number" id="nilai18" name="nilai18" step="any" required>
+                    <label for="satuan18">Satuan:</label>
+                    <input type="text" id="satuan18" name="satuan18" value="°C" readonly>
+                </div>
+
+                <!-- Mode 8: K ke °C -->
+                <div id="mode-KkeC" class="mode-content" style="display: none;">
+                    <label for="nilai18">Nilai yang akan dikonversi:</label>
+                    <input type="number" id="nilai18" name="nilai18" step="any" required>
+                    <label for="satuan18">Satuan:</label>
+                    <input type="text" id="satuan18" name="satuan18" value="K" readonly>
+                </div>
+
+                <button type="submit">Konversi</button>
+            </form>
+            <div id="hasil18" class="hasil"></div>
         </section>
 
         <!-- More sections can be added similarly, but we leave them as placeholders for now -->
