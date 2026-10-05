@@ -706,6 +706,122 @@ Rumus.indeksPolarisasiDAR = function(R30detik, R1menit, R10menit) {
     return result;
 }
 
+/**
+ * Koreksi tekanan SF6 ke 20 °C
+ * @param {number} P_ukur - Tekanan terukur dalam satuan yang diberikan (MPa atau bar)
+ * @param {string} jenisTekanan - Jenis tekanan: 'absolut' atau 'relatif'
+ * @param {string} satuan - Satuan tekanan: 'MPa' atau 'bar'
+ * @param {number} T - Suhu gas saat pengukuran dalam °C
+ * @param {number} [batasMinimum] - Batas minimum tekanan relatif dari pabrikan pada 20 °C (opsional)
+ * @returns {{P20_absolut: number, P20_relatif: number, satuan: string, batasMinimum: number, peringatan: string}} Objek dengan hasil koreksi
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.koreksiTekananSF6 = function(P_ukur, jenisTekanan, satuan, T, batasMinimum) {
+    // Validasi input tekanan
+    if (typeof P_ukur !== 'number' || isNaN(P_ukur)) {
+        throw new Error('Tekanan terukur harus berupa angka');
+    }
+    if (P_ukur <= 0) {
+        throw new Error('Tekanan terukur harus lebih besar dari nol');
+    }
+
+    // Validasi jenis tekanan
+    if (typeof jenisTekanan !== 'string') {
+        throw new Error('Jenis tekanan harus berupa string');
+    }
+    if (jenisTekanan !== 'absolut' && jenisTekanan !== 'relatif') {
+        throw new Error('Jenis tekanan harus "absolut" atau "relatif"');
+    }
+
+    // Validasi satuan
+    if (typeof satuan !== 'string') {
+        throw new Error('Satuan tekanan harus berupa string');
+    }
+    if (satuan !== 'MPa' && satuan !== 'bar') {
+        throw new Error('Satuan tekanan harus "MPa" atau "bar"');
+    }
+
+    // Validasi suhu
+    if (typeof T !== 'number' || isNaN(T)) {
+        throw new Error('Suhu harus berupa angka');
+    }
+    if (T <= -273.15) {
+        throw new Error('Suhu harus lebih besar dari -273,15 °C');
+    }
+
+    // Validasi batas minimum jika diberikan
+    if (batasMinimum !== undefined && batasMinimum !== null) {
+        if (typeof batasMinimum !== 'number' || isNaN(batasMinimum)) {
+            throw new Error('Batas minimum harus berupa angka');
+        }
+        if (batasMinimum <= 0) {
+            throw new Error('Batas minimum harus lebih besar dari nol');
+        }
+    }
+
+    // Tekanan atmosfer standar
+    const P_atm_MPa = 0.1013;
+    const P_atm_bar = 1.013;
+
+    // Konversi ke MPa jika satuan bar
+    let P_ukur_MPa = P_ukur;
+    let P_atm = P_atm_MPa;
+
+    if (satuan === 'bar') {
+        P_ukur_MPa = P_ukur * 0.1; // 1 bar = 0.1 MPa
+        P_atm = P_atm_bar;
+    }
+
+    // Konversi ke tekanan absolut jika tekanan relatif
+    let P_absolut_MPa;
+    if (jenisTekanan === 'relatif') {
+        P_absolut_MPa = P_ukur_MPa + P_atm;
+        if (P_absolut_MPa <= 0) {
+            throw new Error('Tekanan absolut hasil konversi tidak valid. Periksa tekanan relatif yang dimasukkan.');
+        }
+    } else {
+        P_absolut_MPa = P_ukur_MPa;
+    }
+
+    // Rumus koreksi: P20 = P_absolut × 293,15 / (T + 273,15)
+    const T_K = T + 273.15;
+    const P20_absolut_MPa = P_absolut_MPa * 293.15 / T_K;
+    const P20_relatif_MPa = P20_absolut_MPa - P_atm_MPa;
+
+    // Konversi kembali ke satuan asli
+    let P20_absolut, P20_relatif;
+    if (satuan === 'bar') {
+        P20_absolut = P20_absolut_MPa * 10; // 1 MPa = 10 bar
+        P20_relatif = P20_relatif_MPa * 10;
+    } else {
+        P20_absolut = P20_absolut_MPa;
+        P20_relatif = P20_relatif_MPa;
+    }
+
+    // Cek peringatan jika batas minimum diberikan
+    // Batas minimum dibandingkan dengan P20 RELATIF (gauge), bukan absolut
+    let peringatan = null;
+    if (batasMinimum !== undefined && batasMinimum !== null) {
+        // Konversi batas minimum ke MPa untuk perbandingan
+        let batasMinimum_MPa = batasMinimum;
+        if (satuan === 'bar') {
+            batasMinimum_MPa = batasMinimum * 0.1;
+        }
+        // Bandingkan dengan P20 relatif (gauge)
+        if (P20_relatif_MPa < batasMinimum_MPa) {
+            peringatan = 'Tekanan P₂₀ relatif di bawah batas minimum yang diberikan.';
+        }
+    }
+
+    return {
+        P20_absolut: P20_absolut,
+        P20_relatif: P20_relatif,
+        satuan: satuan,
+        batasMinimum: batasMinimum !== undefined && batasMinimum !== null ? batasMinimum : null,
+        peringatan: peringatan
+    };
+};
+
 // Supaya bisa diuji dengan Node
 if (typeof module !== "undefined") {
     module.exports = Rumus;

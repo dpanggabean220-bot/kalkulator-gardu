@@ -1131,3 +1131,135 @@ test('Indeks polarvisi dan rasio absorpsi dielektrik - kedua input opsional koso
     { message: 'Minimal satu dari tahanan setelah 30 detik atau 10 menit harus diisi' }
   );
 });
+
+// Kalkulator 16: Koreksi tekanan SF6 ke 20 °C
+test('Koreksi tekanan SF6 - 0,65 MPa absolut pada 35 °C', async t => {
+  const result = Rumus.koreksiTekananSF6(0.65, 'absolut', 'MPa', 35);
+  // P20 = 0.65 × 293.15 / (35 + 273.15) = 0.65 × 293.15 / 308.15 ≈ 0.6184 MPa
+  assertCloseTo(result.P20_absolut, 0.6184, 0.001, 'P20 absolut harus 0,6184 MPa');
+  assertCloseTo(result.P20_relatif, 0.5171, 0.001, 'P20 relatif harus 0,5171 MPa');
+  assert.strictEqual(result.satuan, 'MPa', 'Satuan harus MPa');
+  assert.strictEqual(result.peringatan, null, 'Tidak ada peringatan');
+});
+
+test('Koreksi tekanan SF6 - 6,5 bar absolut pada 35 °C', async t => {
+  const result = Rumus.koreksiTekananSF6(6.5, 'absolut', 'bar', 35);
+  // P20 = 6.5 × 293.15 / 308.15 ≈ 6.184 bar
+  assertCloseTo(result.P20_absolut, 6.184, 0.01, 'P20 absolut harus 6,184 bar');
+  assertCloseTo(result.P20_relatif, 5.171, 0.01, 'P20 relatif harus 5,171 bar');
+  assert.strictEqual(result.satuan, 'bar', 'Satuan harus bar');
+});
+
+test('Koreksi tekanan SF6 - tekanan relatif ke absolut', async t => {
+  const result = Rumus.koreksiTekananSF6(0.55, 'relatif', 'MPa', 35);
+  // P_absolut = 0.55 + 0.1013 = 0.6513 MPa
+  // P20 = 0.6513 × 293.15 / 308.15 ≈ 0.6195 MPa
+  assertCloseTo(result.P20_absolut, 0.6195, 0.001, 'P20 absolut harus 0,6195 MPa');
+  assertCloseTo(result.P20_relatif, 0.5182, 0.001, 'P20 relatif harus 0,5182 MPa');
+});
+
+test('Koreksi tekanan SF6 - dengan batas minimum relatif (perbandingan P20 relatif)', async t => {
+  // P20 relatif 0.5171 < 0.55, walaupun P20 absolut 0.6184 > 0.55
+  const result = Rumus.koreksiTekananSF6(0.65, 'absolut', 'MPa', 35, 0.55);
+  assertCloseTo(result.P20_absolut, 0.6184, 0.001, 'P20 absolut harus 0,6184 MPa');
+  assertCloseTo(result.P20_relatif, 0.5171, 0.001, 'P20 relatif harus 0,5171 MPa');
+  assert.strictEqual(result.peringatan, 'Tekanan P₂₀ relatif di bawah batas minimum yang diberikan.', 'Peringatan harus muncul karena P20 relatif < batas');
+});
+
+test('Koreksi tekanan SF6 - dengan batas minimum terpenuhi', async t => {
+  const result = Rumus.koreksiTekananSF6(0.65, 'absolut', 'MPa', 35, 0.5);
+  assertCloseTo(result.P20_absolut, 0.6184, 0.001, 'P20 absolut harus 0,6184 MPa');
+  assertCloseTo(result.P20_relatif, 0.5171, 0.001, 'P20 relatif harus 0,5171 MPa');
+  assert.strictEqual(result.peringatan, null, 'Tidak ada peringatan');
+});
+
+test('Koreksi tekanan SF6 - kesetaraan tekanan relatif dan absolut', async t => {
+  // 0.5487 MPa relatif pada 35 °C harus memberi P20 yang sama dengan 0.65 MPa absolut pada 35 °C
+  const result_relatif = Rumus.koreksiTekananSF6(0.5487, 'relatif', 'MPa', 35);
+  const result_absolut = Rumus.koreksiTekananSF6(0.65, 'absolut', 'MPa', 35);
+
+  // P_absolut dari 0.5487 relatif = 0.5487 + 0.1013 = 0.65 MPa
+  assertCloseTo(result_relatif.P20_absolut, result_absolut.P20_absolut, 0.001, 'P20 absolut harus sama');
+  assertCloseTo(result_relatif.P20_relatif, result_absolut.P20_relatif, 0.001, 'P20 relatif harus sama');
+});
+
+test('Koreksi tekanan SF6 - suhu 0 °C', async t => {
+  // 0.60 MPa absolut pada 0 °C → P20 ≈ 0.6439 MPa
+  const result = Rumus.koreksiTekananSF6(0.60, 'absolut', 'MPa', 0);
+  // P20 = 0.60 × 293.15 / (0 + 273.15) = 0.60 × 293.15 / 273.15 ≈ 0.6439 MPa
+  assertCloseTo(result.P20_absolut, 0.6439, 0.001, 'P20 absolut harus 0,6439 MPa');
+  assertCloseTo(result.P20_relatif, 0.5426, 0.001, 'P20 relatif harus 0,5426 MPa');
+});
+
+test('Koreksi tekanan SF6 - suhu 20 °C (tidak berubah)', async t => {
+  // 0.60 MPa absolut pada 20 °C → P20 = 0.60 MPa (suhu referensi)
+  const result = Rumus.koreksiTekananSF6(0.60, 'absolut', 'MPa', 20);
+  // P20 = 0.60 × 293.15 / (20 + 273.15) = 0.60 × 293.15 / 293.15 = 0.60 MPa
+  assertCloseTo(result.P20_absolut, 0.60, 0.001, 'P20 absolut harus 0,60 MPa');
+  assertCloseTo(result.P20_relatif, 0.4987, 0.001, 'P20 relatif harus 0,4987 MPa');
+});
+
+// Test input tidak valid untuk kalkulator 16
+test('Koreksi tekanan SF6 - input tekanan bukan angka', async t => {
+  assert.throws(
+    () => Rumus.koreksiTekananSF6('abc', 'absolut', 'MPa', 35),
+    { message: 'Tekanan terukur harus berupa angka' }
+  );
+});
+
+test('Koreksi tekanan SF6 - input tekanan kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.koreksiTekananSF6(0, 'absolut', 'MPa', 35),
+    { message: 'Tekanan terukur harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.koreksiTekananSF6(-0.5, 'absolut', 'MPa', 35),
+    { message: 'Tekanan terukur harus lebih besar dari nol' }
+  );
+});
+
+test('Koreksi tekanan SF6 - input jenis tekanan tidak valid', async t => {
+  assert.throws(
+    () => Rumus.koreksiTekananSF6(0.65, 'invalid', 'MPa', 35),
+    { message: 'Jenis tekanan harus "absolut" atau "relatif"' }
+  );
+});
+
+test('Koreksi tekanan SF6 - input satuan tidak valid', async t => {
+  assert.throws(
+    () => Rumus.koreksiTekananSF6(0.65, 'absolut', 'invalid', 35),
+    { message: 'Satuan tekanan harus "MPa" atau "bar"' }
+  );
+});
+
+test('Koreksi tekanan SF6 - input suhu bukan angka', async t => {
+  assert.throws(
+    () => Rumus.koreksiTekananSF6(0.65, 'absolut', 'MPa', 'abc'),
+    { message: 'Suhu harus berupa angka' }
+  );
+});
+
+test('Koreksi tekanan SF6 - input suhu di bawah nol absolut', async t => {
+  assert.throws(
+    () => Rumus.koreksiTekananSF6(0.65, 'absolut', 'MPa', -274),
+    { message: 'Suhu harus lebih besar dari -273,15 °C' }
+  );
+});
+
+test('Koreksi tekanan SF6 - input batas minimum bukan angka', async t => {
+  assert.throws(
+    () => Rumus.koreksiTekananSF6(0.65, 'absolut', 'MPa', 35, 'abc'),
+    { message: 'Batas minimum harus berupa angka' }
+  );
+});
+
+test('Koreksi tekanan SF6 - input batas minimum kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.koreksiTekananSF6(0.65, 'absolut', 'MPa', 35, 0),
+    { message: 'Batas minimum harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.koreksiTekananSF6(0.65, 'absolut', 'MPa', 35, -0.5),
+    { message: 'Batas minimum harus lebih besar dari nol' }
+  );
+});

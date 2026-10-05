@@ -1848,4 +1848,131 @@ if (form15) {
             }
         });
     }
+
+    // Handle form submission for calculator 16
+    const form16 = document.getElementById('form16');
+    if (form16) {
+        form16.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get input values
+            const tekananInput = document.getElementById('tekanan16');
+            const suhuInput = document.getElementById('suhu16');
+            const batasMinimumInput = document.getElementById('batasMinimum16');
+            const hasilDiv = document.getElementById('hasil16');
+
+            // Get selected jenis tekanan
+            let selectedJenisTekanan = 'absolut';
+            const jenisTekananRadios = form16.querySelectorAll('input[name="jenisTekanan"]');
+            jenisTekananRadios.forEach(radio => {
+                if (radio.checked) {
+                    selectedJenisTekanan = radio.value;
+                }
+            });
+
+            // Get selected satuan
+            let selectedSatuan = 'MPa';
+            const satuanRadios = form16.querySelectorAll('input[name="satuan16"]');
+            satuanRadios.forEach(radio => {
+                if (radio.checked) {
+                    selectedSatuan = radio.value;
+                }
+            });
+
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
+            tekananInput.classList.remove('error-input');
+            suhuInput.classList.remove('error-input');
+            batasMinimumInput.classList.remove('error-input');
+
+            // Remove any existing error messages
+            const existingErrors = form16.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
+
+            try {
+                const P_ukur = parseFloat(tekananInput.value);
+                const T = parseFloat(suhuInput.value);
+                let batasMinimum = null;
+
+                // Parse batas minimum if provided
+                if (batasMinimumInput.value.trim() !== '') {
+                    batasMinimum = parseFloat(batasMinimumInput.value);
+                }
+
+                // Validate empty inputs
+                if (isNaN(P_ukur) || tekananInput.value.trim() === '') {
+                    throw new Error('Tekanan terukur harus diisi');
+                }
+                if (isNaN(T) || suhuInput.value.trim() === '') {
+                    throw new Error('Suhu harus diisi');
+                }
+
+                // Call the rumus function
+                const result = Rumus.koreksiTekananSF6(P_ukur, selectedJenisTekanan, selectedSatuan, T, batasMinimum);
+
+                // Format hasil dengan satuan dan locale Indonesia
+                const p20AbsolutFormatted = result.P20_absolut.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' ' + result.satuan;
+                const p20RelatifFormatted = result.P20_relatif.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' ' + result.satuan;
+
+                // Tampilkan hasil
+                let hasilHTML = `
+                    <strong>Tekanan P₂₀ (absolut):</strong> ${p20AbsolutFormatted}<br>
+                    <strong>Tekanan P₂₀ (relatif):</strong> ${p20RelatifFormatted}<br>
+                    <strong>Rumus:</strong> P₂₀ = P_absolut × 293,15 / (T + 273,15)<br>
+                `;
+
+                // Tampilkan perhitungan detail
+                if (selectedJenisTekanan === 'relatif') {
+                    const P_atm = selectedSatuan === 'MPa' ? 0.1013 : 1.013;
+                    const P_absolut = P_ukur + P_atm;
+                    hasilHTML += `<strong>Perhitungan:</strong><br>`;
+                    hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;P_absolut = ${P_ukur} + ${P_atm} = ${P_absolut.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} ${selectedSatuan}<br>`;
+                    hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;P₂₀ = ${P_absolut.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} × 293,15 / (${T} + 273,15) = ${result.P20_absolut.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} ${selectedSatuan}<br>`;
+                } else {
+                    hasilHTML += `<strong>Perhitungan:</strong> P₂₀ = ${P_ukur} × 293,15 / (${T} + 273,15) = ${result.P20_absolut.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} ${selectedSatuan}<br>`;
+                }
+
+                // Tampilkan batas minimum jika diberikan
+                if (batasMinimum !== null) {
+                    const batasFormatted = batasMinimum.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' ' + selectedSatuan;
+                    hasilHTML += `<strong>Batas minimum dari pabrikan:</strong> ${batasFormatted}<br>`;
+                }
+
+                // Tampilkan peringatan jika ada
+                if (result.peringatan !== null) {
+                    hasilHTML += `<br><span style="color: #d32f2f; font-weight: bold;">${result.peringatan}</span><br>`;
+                }
+
+                // Tampilkan catatan
+                hasilHTML += `<br><small><em>Pendekatan gas ideal. Acuan resmi tetap kurva koreksi dari pabrikan peralatan.</em></small>`;
+
+                hasilDiv.innerHTML = hasilHTML;
+                hasilDiv.classList.add('visible');
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (error.message.includes('Tekanan terukur')) {
+                    tekananInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    tekananInput.parentNode.insertBefore(errorElem, tekananInput.nextSibling);
+                }
+                if (error.message.includes('Suhu')) {
+                    suhuInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    suhuInput.parentNode.insertBefore(errorElem, suhuInput.nextSibling);
+                }
+                if (error.message.includes('Batas minimum')) {
+                    batasMinimumInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    batasMinimumInput.parentNode.insertBefore(errorElem, batasMinimumInput.nextSibling);
+                }
+            }
+        });
+    }
 });

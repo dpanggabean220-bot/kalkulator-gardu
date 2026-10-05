@@ -361,7 +361,32 @@
         <section id="kalkulator16">
             <h2>Koreksi Tekanan SF6 ke 20 °C</h2>
             <form id="form16">
-                <!-- Form akan ditambahkan nanti -->
+                <label for="tekanan16">Tekanan terukur:</label>
+                <input type="number" id="tekanan16" name="tekanan16" step="any" required>
+
+                <div class="mode-selection">
+                    <label>Jenis tekanan:</label>
+                    <div class="mode-options">
+                        <label><input type="radio" name="jenisTekanan" value="absolut" checked> Absolut</label>
+                        <label><input type="radio" name="jenisTekanan" value="relatif"> Relatif (gauge)</label>
+                    </div>
+                </div>
+
+                <div class="mode-selection">
+                    <label>Satuan:</label>
+                    <div class="mode-options">
+                        <label><input type="radio" name="satuan16" value="MPa" checked> MPa</label>
+                        <label><input type="radio" name="satuan16" value="bar"> bar</label>
+                    </div>
+                </div>
+
+                <label for="suhu16">Suhu gas saat pengukuran (°C):</label>
+                <input type="number" id="suhu16" name="suhu16" step="any" required>
+
+                <label for="batasMinimum16">Batas minimum pabrikan (tekanan relatif pada 20 °C):</label>
+                <input type="number" id="batasMinimum16" name="batasMinimum16" step="any">
+                <small>Catatan: Isi jika ingin membandingkan hasil dengan batas minimum. Nilai pada pelat nama GIS umumnya adalah tekanan relatif pada 20 °C.</small>
+
                 <button type="submit">Hitung</button>
             </form>
             <div id="hasil16" class="hasil"></div>
