@@ -67,4 +67,89 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Handle form submission for calculator 2
+    const form2 = document.getElementById('form2');
+    if (form2) {
+        form2.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get input values
+            const pInput = document.getElementById('dayaAktif');
+            const qInput = document.getElementById('dayaReaktif');
+            const hasilDiv = document.getElementById('hasil2');
+
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+            pInput.classList.remove('error-input');
+            qInput.classList.remove('error-input');
+
+            // Remove any existing error messages
+            const existingErrors = form2.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
+
+            try {
+                const P = parseFloat(pInput.value);
+                const Q = parseFloat(qInput.value);
+
+                // Validate empty inputs
+                if (isNaN(P) || pInput.value.trim() === '') {
+                    throw new Error('Daya aktif P harus diisi');
+                }
+                if (isNaN(Q) || qInput.value.trim() === '') {
+                    throw new Error('Daya reaktif Q harus diisi');
+                }
+
+                // Call the rumus function
+                const result = Rumus.segitigaDaya(P, Q);
+
+                // Format hasil dengan satuan dan locale Indonesia
+                const sFormatted = result.S.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MVA';
+                const cosPhiFormatted = result.cosPhi.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                // Determine beban sifat based on Q value
+                let bebanSifat = '';
+                if (Q > 0) {
+                    bebanSifat = 'lagging (induktif)';
+                } else if (Q < 0) {
+                    bebanSifat = 'leading (kapasitif)';
+                } else {
+                    bebanSifat = 'beban resistif murni';
+                }
+
+                // Tampilkan hasil
+                hasilDiv.innerHTML = `
+                    <strong>Daya S:</strong> ${sFormatted}<br>
+                    <strong>cos φ:</strong> ${cosPhiFormatted}<br>
+                    <strong>Sifat beban:</strong> ${bebanSifat}<br>
+                    <strong>Rumus:</strong><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;S = √(P² + Q²)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;cos φ = P / S<br>
+                    <strong>Perhitungan:</strong><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;S = √(${P}² + ${Q}²) = ${result.S.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MVA<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;cos φ = ${P} / ${result.S.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${result.cosPhi.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                `;
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (error.message.includes('Daya aktif P')) {
+                    pInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    pInput.parentNode.insertBefore(errorElem, pInput.nextSibling);
+                }
+                if (error.message.includes('Daya reaktif Q')) {
+                    qInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    qInput.parentNode.insertBefore(errorElem, qInput.nextSibling);
+                }
+
+                // Tampilkan juga error umum di hasil div untuk debugging
+                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                hasilDiv.style.color = '#d32f2f';
+            }
+        });
+    }
 });

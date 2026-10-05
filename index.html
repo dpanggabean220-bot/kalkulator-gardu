@@ -46,10 +46,17 @@
             <div id="hasil1" class="hasil"></div>
         </section>
 
-        <!-- Placeholder for other calculators -->
+        <!-- Kalkulator 2: Segitiga Daya -->
         <section id="kalkulator2">
             <h2>Segitiga Daya</h2>
-            <p>Kalkulator ini belum diimplementasikan.</p>
+            <form id="form2">
+                <label for="dayaAktif">Daya aktif P (MW):</label>
+                <input type="number" id="dayaAktif" name="dayaAktif" step="any" required>
+                <label for="dayaReaktif">Daya reaktif Q (MVAR):</label>
+                <input type="number" id="dayaReaktif" name="dayaReaktif" step="any" required>
+                <button type="submit">Hitung</button>
+            </form>
+            <div id="hasil2" class="hasil"></div>
         </section>
         <!-- More sections can be added similarly, but we leave them as placeholders for now -->
     </main>
