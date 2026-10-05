@@ -481,6 +481,70 @@ Rumus.waktuKerjaRelayOCR = function(curveType, TMS, I_over_Is) {
     return t;
 };
 
+/**
+ * Hitung estimasi lokasi gangguan
+ * @param {number} nilai_gangguan - Nilai gangguan (impedansi atau reaktansi) dalam Ω
+ * @param {number} nilai_per_km - Nilai per kilometer (impedansi atau reaktansi) dalam Ω/km
+ * @param {number} [panjang_saluran] - Panjang saluran dalam km (opsional)
+ * @param {string} [metode] - Metode perhitungan: 'impedansi' atau 'reaktansi' (default: 'impedansi')
+ * @returns {{jarak: number, persen: number, jarak_dari_ujung_lain: number, metode: string, peringatan: string}} Objek dengan hasil perhitungan
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.estimasiLokasiGangguan = function(nilai_gangguan, nilai_per_km, panjang_saluran, metode) {
+    // Validasi input
+    if (typeof nilai_gangguan !== 'number' || isNaN(nilai_gangguan)) {
+        throw new Error('Nilai gangguan harus berupa angka');
+    }
+    if (typeof nilai_per_km !== 'number' || isNaN(nilai_per_km)) {
+        throw new Error('Nilai per kilometer harus berupa angka');
+    }
+    if (nilai_gangguan < 0) {
+        throw new Error('Nilai gangguan tidak boleh negatif');
+    }
+    if (nilai_per_km <= 0) {
+        throw new Error('Nilai per kilometer harus lebih besar dari nol');
+    }
+
+    // Set default values
+    metode = metode || 'impedansi';
+    if (metode !== 'impedansi' && metode !== 'reaktansi') {
+        throw new Error('Metode harus berupa \"impedansi\" atau \"reaktansi\"');
+    }
+
+    // Hitung jarak
+    const jarak = nilai_gangguan / nilai_per_km;
+
+    // Hitung persen dan jarak dari ujung lain jika panjang saluran diberikan
+    let persen = null;
+    let jarak_dari_ujung_lain = null;
+    let peringatan = null;
+
+    if (panjang_saluran !== undefined && panjang_saluran !== null) {
+        if (typeof panjang_saluran !== 'number' || isNaN(panjang_saluran)) {
+            throw new Error('Panjang saluran harus berupa angka');
+        }
+        if (panjang_saluran <= 0) {
+            throw new Error('Panjang saluran harus lebih besar dari nol');
+        }
+
+        persen = (jarak / panjang_saluran) * 100;
+        jarak_dari_ujung_lain = panjang_saluran - jarak;
+
+        // Peringatan jika jarak melebihi panjang saluran
+        if (jarak > panjang_saluran) {
+            peringatan = 'Lokasi di luar panjang saluran. Periksa data atau kemungkinan gangguan di saluran berikutnya.';
+        }
+    }
+
+    return {
+        jarak: jarak,
+        persen: persen,
+        jarak_dari_ujung_lain: jarak_dari_ujung_lain,
+        metode: metode,
+        peringatan: peringatan
+    };
+};
+
 // Supaya bisa diuji dengan Node
 if (typeof module !== "undefined") {
     module.exports = Rumus;

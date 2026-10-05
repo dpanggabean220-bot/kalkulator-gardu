@@ -803,3 +803,88 @@ test('Konversi K ke °C - input bukan angka', async t => {
     { message: 'Suhu Kelvin harus berupa angka' }
   );
 });
+
+// Kalkulator 11: Estimasi lokasi gangguan
+test('Estimasi lokasi gangguan - Z_gangguan 4 Ω, 0,4 Ω/km', async t => {
+  const jarak = Rumus.estimasiLokasiGangguan(4, 0.4);
+  assertCloseTo(jarak, 10, 0.01, 'Hasil harus 10 km');
+});
+
+// Test baru untuk kalkulator 11 dengan panjang saluran dan metode
+test('Estimasi lokasi gangguan dengan panjang saluran - X 4 Ω, 0,4 Ω/km, panjang 40 km', async t => {
+  const result = Rumus.estimasiLokasiGangguan(4, 0.4, 40, 'reaktansi');
+  assertCloseTo(result.jarak, 10, 0.01, 'Jarak harus 10 km');
+  assertCloseTo(result.persen, 25, 0.01, 'Persen harus 25%');
+  assertCloseTo(result.jarak_dari_ujung_lain, 30, 0.01, 'Jarak dari ujung lain harus 30 km');
+  assert.strictEqual(result.metode, 'reaktansi', 'Metode harus reaktansi');
+  assert.strictEqual(result.peringatan, null, 'Tidak boleh ada peringatan');
+});
+
+test('Estimasi lokasi gangguan - jarak melebihi panjang saluran', async t => {
+  const result = Rumus.estimasiLokasiGangguan(20, 0.4, 10, 'impedansi'); // 20/0.4 = 50 km > 10 km
+  assertCloseTo(result.jarak, 50, 0.01, 'Jarak harus 50 km');
+  assertCloseTo(result.persen, 500, 0.01, 'Persen harus 500%');
+  assertCloseTo(result.jarak_dari_ujung_lain, -40, 0.01, 'Jarak dari ujung lain harus -40 km');
+  assert.strictEqual(result.metode, 'impedansi', 'Metode harus impedansi');
+  assert.strictEqual(result.peringatan, 'Lokasi di luar panjang saluran. Periksa data atau kemungkinan gangguan di saluran berikutnya.', 'Peringatan harus muncul ketika jarak melebihi panjang saluran');
+});
+
+// Test input tidak valid untuk estimasi lokasi gangguan - panjang saluran
+test('Estimasi lokasi gangguan - input panjang saluran bukan angka', async t => {
+  assert.throws(
+    () => Rumus.estimasiLokasiGangguan(4, 0.4, 'abc'),
+    { message: 'Panjang saluran harus berupa angka' }
+  );
+});
+
+test('Estimasi lokasi gangguan - input panjang saluran kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.estimasiLokasiGangguan(4, 0.4, 0),
+    { message: 'Panjang saluran harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.estimasiLokasiGangguan(4, 0.4, -5),
+    { message: 'Panjang saluran harus lebih besar dari nol' }
+  );
+});
+
+// Test input tidak valid untuk estimasi lokasi gangguan - metode
+test('Estimasi lokasi gangguan - input metode tidak valid', async t => {
+  assert.throws(
+    () => Rumus.estimasiLokasiGangguan(4, 0.4, 10, 'invalid'),
+    { message: 'Metode harus berupa \"impedansi\" atau \"reaktansi\"' }
+  );
+});
+
+// Test input tidak valid untuk estimasi lokasi gangguan
+test('Estimasi lokasi gangguan - input Z_gangguan bukan angka', async t => {
+  assert.throws(
+    () => Rumus.estimasiLokasiGangguan('abc', 0.4),
+    { message: 'Nilai gangguan harus berupa angka' }
+  );
+});
+
+test('Estimasi lokasi gangguan - input Z_per_km bukan angka', async t => {
+  assert.throws(
+    () => Rumus.estimasiLokasiGangguan(4, 'xyz'),
+    { message: 'Nilai per kilometer harus berupa angka' }
+  );
+});
+
+test('Estimasi lokasi gangguan - input Z_gangguan negatif', async t => {
+  assert.throws(
+    () => Rumus.estimasiLokasiGangguan(-1, 0.4),
+    { message: 'Nilai gangguan tidak boleh negatif' }
+  );
+});
+
+test('Estimasi lokasi gangguan - input Z_per_km kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.estimasiLokasiGangguan(4, 0),
+    { message: 'Nilai per kilometer harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.estimasiLokasiGangguan(4, -0.1),
+    { message: 'Nilai per kilometer harus lebih besar dari nol' }
+  );
+});

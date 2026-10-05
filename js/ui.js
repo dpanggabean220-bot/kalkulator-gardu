@@ -1232,6 +1232,146 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Handle form submission for calculator 10 (placeholder - no logic needed yet)
+    const form10 = document.getElementById('form10');
+    if (form10) {
+        form10.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Placeholder for future implementation
+            const hasilDiv = document.getElementById('hasil10');
+            hasilDiv.innerHTML = '<strong>Kalkulator belum diimplementasi</strong>';
+            hasilDiv.classList.add('visible');
+            hasilDiv.style.color = '#666';
+        });
+    }
+
+    // Handle form submission for calculator 11
+    const form11 = document.getElementById('form11');
+    if (form11) {
+        form11.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get input values
+            const nilaiGangguanInput = document.getElementById('nilai_gangguan');
+            const nilaiPerKmInput = document.getElementById('nilai_per_km');
+            const panjangSaluranInput = document.getElementById('panjang_saluran');
+            const hasilDiv = document.getElementById('hasil11');
+
+            // Get selected method
+            let selectedMetode = 'impedansi'; // default
+            const metodeRadios = form11.querySelectorAll('input[name="metode"]');
+            metodeRadios.forEach(radio => {
+                if (radio.checked) {
+                    selectedMetode = radio.value;
+                }
+            });
+
+            // Clear previous results and errors
+            hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
+            nilaiGangguanInput.classList.remove('error-input');
+            nilaiPerKmInput.classList.remove('error-input');
+            panjangSaluranInput.classList.remove('error-input');
+
+            // Remove any existing error messages
+            const existingErrors = form11.querySelectorAll('.error');
+            existingErrors.forEach(el => el.remove());
+
+            try {
+                const nilai_gangguan = parseFloat(nilaiGangguanInput.value);
+                const nilai_per_km = parseFloat(nilaiPerKmInput.value);
+                let panjang_saluran = null;
+
+                // Parse panjang saluran if provided
+                if (panjangSaluranInput.value.trim() !== '') {
+                    panjang_saluran = parseFloat(panjangSaluranInput.value);
+                }
+
+                // Validate empty inputs
+                if (isNaN(nilai_gangguan) || nilaiGangguanInput.value.trim() === '') {
+                    throw new Error('Nilai gangguan harus diisi');
+                }
+                if (isNaN(nilai_per_km) || nilaiPerKmInput.value.trim() === '') {
+                    throw new Error('Nilai per kilometer harus diisi');
+                }
+
+                // Call the rumus function
+                const result = Rumus.estimasiLokasiGangguan(nilai_gangguan, nilai_per_km, panjang_saluran, selectedMetode);
+
+                // Format hasil dengan satuan dan locale Indonesia
+                const jarakFormatted = result.jarak.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' km';
+
+                let persenFormatted = '-';
+                let jarakUjungLainFormatted = '-';
+
+                if (result.persen !== null) {
+                    persenFormatted = result.persen.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' %';
+                }
+
+                if (result.jarak_dari_ujung_lain !== null) {
+                    jarakUjungLainFormatted = Math.abs(result.jarak_dari_ujung_lain).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' km';
+                }
+
+                // Tampilkan hasil
+                let hasilHTML = `
+                    <strong>Estimasi lokasi gangguan:</strong> ${jarakFormatted}<br>
+                    <strong>Metode:</strong> ${selectedMetode === 'impedansi' ? 'Impedansi |Z|' : 'Reaktansi X'}<br>
+                    <strong>Rumus:</strong> jarak = nilai_gangguan / nilai_per_km<br>
+                    <strong>Perhitungan:</strong> jarak = ${nilai_gangguan} / ${nilai_per_km} = ${result.jarak.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} km
+                `;
+
+                if (panjang_saluran !== null) {
+                    hasilHTML += `
+                        <strong>Persen lokasi gangguan:</strong> ${persenFormatted}<br>
+                        <strong>Jarak dari ujung saluran yang lain:</strong> ${jarakUjungLainFormatted}<br>
+                    `;
+
+                    // Add warning if applicable
+                    if (result.peringatan !== null) {
+                        hasilHTML += `<br><span style="color: #d32f2f; font-weight: bold;">${result.peringatan}</span><br>`;
+                    }
+                }
+
+                hasilDiv.innerHTML = hasilHTML;
+                hasilDiv.classList.add('visible');
+            } catch (error) {
+                // Tampilkan error di dekat kolom yang salah
+                if (error.message.includes('Nilai gangguan')) {
+                    nilaiGangguanInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    nilaiGangguanInput.parentNode.insertBefore(errorElem, nilaiGangguanInput.nextSibling);
+                }
+                if (error.message.includes('Nilai per kilometer')) {
+                    nilaiPerKmInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    nilaiPerKmInput.parentNode.insertBefore(errorElem, nilaiPerKmInput.nextSibling);
+                }
+                if (error.message.includes('Panjang saluran')) {
+                    panjangSaluranInput.classList.add('error-input');
+                    const errorElem = document.createElement('div');
+                    errorElem.className = 'error';
+                    errorElem.textContent = error.message;
+                    panjangSaluranInput.parentNode.insertBefore(errorElem, panjangSaluranInput.nextSibling);
+                }
+                if (error.message.includes('Metode harus berupa')) {
+                    // This error comes from the function itself, show in hasil div
+                    hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                    hasilDiv.style.color = '#d32f2f';
+                }
+
+                // Tampilkan juga error umum di hasil div untuk debugging
+                if (!hasilDiv.innerHTML.includes('Error:')) {
+                    hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                    hasilDiv.style.color = '#d32f2f';
+                }
+            }
+        });
+    }
+
     // Handle form submission for calculator 18
     const form18 = document.getElementById('form18');
     if (form18) {
