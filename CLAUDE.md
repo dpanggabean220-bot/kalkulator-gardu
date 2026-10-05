@@ -10,6 +10,7 @@ tanpa server dan tanpa login. Harus bisa dibuka dengan dobel klik `index.html`
 ```
 kalkulator/
 ├── CLAUDE.md
+├── README.md           # halaman depan repositori
 ├── index.html          # halaman utama + navigasi antar kalkulator
 ├── css/style.css       # semua gaya tampilan
 ├── js/rumus.js         # SEMUA rumus, fungsi murni, tanpa akses DOM
@@ -119,6 +120,7 @@ Prinsip kasus uji: pilih nilai yang membuat jawaban benar dan jawaban salah meng
 
 Kerjakan SATU kalkulator per tugas. Jangan lanjut ke kalkulator berikutnya
 sebelum test kalkulator sekarang lolos.
+
 
 
 
