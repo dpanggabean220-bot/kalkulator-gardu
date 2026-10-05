@@ -808,7 +808,7 @@ if (form8) {
                 &nbsp;&nbsp;&nbsp;&nbsp;VA = I_sek² × R_total<br>
                 <strong>Perhitungan:</strong><br>
                 &nbsp;&nbsp;&nbsp;&nbsp;I_sek = ${I_prim} × (${I_sek_rating} / ${I_prim_rating}) = ${result.I_sek.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} A<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;R_total = ${R_relay.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${R_kabel.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${(R_relay + R_kabel).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Ω<be>
+                &nbsp;&nbsp;&nbsp;&nbsp;R_total = ${R_relay.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${R_kabel.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${(R_relay + R_kabel).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Ω<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;VA = ${result.I_sek.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}² × ${(R_relay + R_kabel).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${result.VA.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} VA
             `;
 
@@ -844,53 +844,58 @@ if (form8) {
                 errorElem.textContent = error.message;
                 iPrimRatingInput.parentNode.insertBefore(errorElem, iPrimRatingInput.nextSibling);
             }
-            if (error.message.includes('Tahanan relay')) {
-                const tahananRelayInputDirect = document.getElementById('tahanan_relay_direct');
-                const tahananRelayInputLength = document.getElementById('tahanan_relay_length');
-                if (tahananRelayInputDirect) {
-                    tahananRelayInputDirect.classList.add('error-input');
-                    const errorElem = document.createElement('div');
-                    errorElem.className = 'error';
-                    errorElem.textContent = error.message;
-                    tahananRelayInputDirect.parentNode.insertBefore(errorElem, tahananRelayInputDirect.nextSibling);
+            // Error untuk input mode-specific - hanya tampilkan di mode yang aktif
+            if (selectedKabelMode === 'direct') {
+                if (error.message.includes('Tahanan relay')) {
+                    const tahananRelayInput = document.getElementById('tahanan_relay_direct');
+                    if (tahananRelayInput) {
+                        tahananRelayInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        tahananRelayInput.parentNode.insertBefore(errorElem, tahananRelayInput.nextSibling);
+                    }
                 }
-                if (tahananRelayInputLength) {
-                    tahananRelayInputLength.classList.add('error-input');
-                    const errorElem = document.createElement('div');
-                    errorElem.className = 'error';
-                    errorElem.textContent = error.message;
-                    tahananRelayInputLength.parentNode.insertBefore(errorElem, tahananRelayInputLength.nextSibling);
+                if (error.message.includes('Tahanan kabel')) {
+                    const tahananKabelInput = document.getElementById('tahanan_kabel');
+                    if (tahananKabelInput) {
+                        tahananKabelInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        tahananKabelInput.parentNode.insertBefore(errorElem, tahananKabelInput.nextSibling);
+                    }
                 }
-            }
-            if (error.message.includes('Tahanan kabel')) {
-                // Check both possible input fields for resistance
-                const tahananKabelInput = document.getElementById('tahanan_kabel');
-                if (tahananKabelInput) {
-                    tahananKabelInput.classList.add('error-input');
-                    const errorElem = document.createElement('div');
-                    errorElem.className = 'error';
-                    errorElem.textContent = error.message;
-                    tahananKabelInput.parentNode.insertBefore(errorElem, tahananKabelInput.nextSibling);
+            } else if (selectedKabelMode === 'length') {
+                if (error.message.includes('Tahanan relay')) {
+                    const tahananRelayInput = document.getElementById('tahanan_relay_length');
+                    if (tahananRelayInput) {
+                        tahananRelayInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        tahananRelayInput.parentNode.insertBefore(errorElem, tahananRelayInput.nextSibling);
+                    }
                 }
-            }
-            if (error.message.includes('Panjang kabel')) {
-                const panjangKabelInput = document.getElementById('panjang_kabel');
-                if (panjangKabelInput) {
-                    panjangKabelInput.classList.add('error-input');
-                    const errorElem = document.createElement('div');
-                    errorElem.className = 'error';
-                    errorElem.textContent = error.message;
-                    panjangKabelInput.parentNode.insertBefore(errorElem, panjangKabelInput.nextSibling);
+                if (error.message.includes('Panjang kabel')) {
+                    const panjangKabelInput = document.getElementById('panjang_kabel');
+                    if (panjangKabelInput) {
+                        panjangKabelInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        panjangKabelInput.parentNode.insertBefore(errorElem, panjangKabelInput.nextSibling);
+                    }
                 }
-            }
-            if (error.message.includes('Luas penampang')) {
-                const luasPenampangInput = document.getElementById('luas_penampang');
-                if (luasPenampangInput) {
-                    luasPenampangInput.classList.add('error-input');
-                    const errorElem = document.createElement('div');
-                    errorElem.className = 'error';
-                    errorElem.textContent = error.message;
-                    luasPenampangInput.parentNode.insertBefore(errorElem, luasPenampangInput.nextSibling);
+                if (error.message.includes('Luas penampang')) {
+                    const luasPenampangInput = document.getElementById('luas_penampang');
+                    if (luasPenampangInput) {
+                        luasPenampangInput.classList.add('error-input');
+                        const errorElem = document.createElement('div');
+                        errorElem.className = 'error';
+                        errorElem.textContent = error.message;
+                        luasPenampangInput.parentNode.insertBefore(errorElem, luasPenampangInput.nextSibling);
+                    }
                 }
             }
             if (error.message.includes('Rating burden CT')) {

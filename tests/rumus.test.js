@@ -705,3 +705,101 @@ test('Waktu kerja relay OCR - I/I_s <= 1 (relay tidak bekerja)', async t => {
   const waktuNull2 = Rumus.waktuKerjaRelayOCR('SI', 0.1, 0.5);
   assert.strictEqual(waktuNull2, null, 'Hasil harus null untuk I/I_s <= 1');
 });
+
+// Kalkulator 18: Konversi satuan
+test('Konversi kV ke V - 150 kV = 150.000 V', async t => {
+  const V = Rumus.kVkeV(150);
+  assertCloseTo(V, 150000, 0.01, '150 kV harus 150.000 V');
+});
+
+test('Konversi kA ke A - 2,5 kA = 2.500 A', async t => {
+  const A = Rumus.kAkeA(2.5);
+  assertCloseTo(A, 2500, 0.01, '2,5 kA harus 2.500 A');
+});
+
+test('Konversi MVA ke kVA - 60 MVA = 60.000 kVA', async t => {
+  const kVA = Rumus.MVaketaVA(60);
+  assertCloseTo(kVA, 60000, 0.01, '60 MVA harus 60.000 kVA');
+});
+
+test('Konversi °C ke K - 20 °C = 293,15 K', async t => {
+  const K = Rumus.CkeK(20);
+  assertCloseTo(K, 293.15, 0.01, '20 °C harus 293,15 K');
+});
+
+test('Konversi V ke kV - 150.000 V = 150 kV', async t => {
+  const kV = Rumus.VkekV(150000);
+  assertCloseTo(kV, 150, 0.01, '150.000 V harus 150 kV');
+});
+
+test('Konversi A ke kA - 2.500 A = 2,5 kA', async t => {
+  const kA = Rumus.AkekA(2500);
+  assertCloseTo(kA, 2.5, 0.01, '2.500 A harus 2,5 kA');
+});
+
+test('Konversi kVA ke MVA - 60.000 kVA = 60 MVA', async t => {
+  const MVA = Rumus.kVAkeMVA(60000);
+  assertCloseTo(MVA, 60, 0.01, '60.000 kVA harus 60 MVA');
+});
+
+test('Konversi K ke °C - 293,15 K = 20 °C', async t => {
+  const C = Rumus.KkeC(293.15);
+  assertCloseTo(C, 20, 0.01, '293,15 K harus 20 °C');
+});
+
+// Test input tidak valid untuk konversi satuan
+test('Konversi kV ke V - input bukan angka', async t => {
+  assert.throws(
+    () => Rumus.kVkeV('abc'),
+    { message: 'Tegangan kV harus berupa angka' }
+  );
+});
+
+test('Konversi V ke kV - input bukan angka', async t => {
+  assert.throws(
+    () => Rumus.VkekV('xyz'),
+    { message: 'Tegangan V harus berupa angka' }
+  );
+});
+
+test('Konversi kA ke A - input bukan angka', async t => {
+  assert.throws(
+    () => Rumus.kAkeA('abc'),
+    { message: 'Arus kA harus berupa angka' }
+  );
+});
+
+test('Konversi A ke kA - input bukan angka', async t => {
+  assert.throws(
+    () => Rumus.AkekA('xyz'),
+    { message: 'Arus A harus berupa angka' }
+  );
+});
+
+test('Konversi MVA ke kVA - input bukan angka', async t => {
+  assert.throws(
+    () => Rumus.MVaketaVA('abc'),
+    { message: 'Daya MVA harus berupa angka' }
+  );
+});
+
+test('Konversi kVA ke MVA - input bukan angka', async t => {
+  assert.throws(
+    () => Rumus.kVAkeMVA('xyz'),
+    { message: 'Daya kVA harus berupa angka' }
+  );
+});
+
+test('Konversi °C ke K - input bukan angka', async t => {
+  assert.throws(
+    () => Rumus.CkeK('abc'),
+    { message: 'Suhu Celsius harus berupa angka' }
+  );
+});
+
+test('Konversi K ke °C - input bukan angka', async t => {
+  assert.throws(
+    () => Rumus.KkeC('xyz'),
+    { message: 'Suhu Kelvin harus berupa angka' }
+  );
+});
