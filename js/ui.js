@@ -2004,4 +2004,19 @@ if (form15) {
             }
         });
     }
+
+    // Pendaftaran Service Worker untuk PWA
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('./sw.js')
+                .then(function(registration) {
+                    // Registrasi berhasil
+                    console.log('ServiceWorker registrasi berhasil dengan scope: ', registration.scope);
+                })
+                .catch(function(err) {
+                    // Pendaftaran gagal
+                    console.error('ServiceWorker registrasi gagal: ', err);
+                });
+        });
+    }
 });
