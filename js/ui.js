@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clear previous results and errors
             hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
             dayaInput.classList.remove('error-input');
             teganganInput.classList.remove('error-input');
 
@@ -44,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <strong>Rumus:</strong> I = S × 1000 / (√3 × V)<br>
                     <strong>Perhitungan:</strong> I = ${S} × 1000 / (√3 × ${V}) = ${I.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} A
                 `;
+                hasilDiv.classList.add('visible');
             } catch (error) {
                 // Tampilkan error di dekat kolom yang salah
                 if (error.message.includes('Daya S')) {
@@ -81,6 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clear previous results and errors
             hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
             pInput.classList.remove('error-input');
             qInput.classList.remove('error-input');
 
@@ -129,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     &nbsp;&nbsp;&nbsp;&nbsp;S = √(${P}² + ${Q}²) = ${result.S.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MVA<br>
                     &nbsp;&nbsp;&nbsp;&nbsp;cos φ = ${P} / ${result.S.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${result.cosPhi.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 `;
+                hasilDiv.classList.add('visible');
             } catch (error) {
                 // Tampilkan error di dekat kolom yang salah
                 if (error.message.includes('Daya aktif P')) {
@@ -205,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clear previous results and errors
             hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
 
             // Remove any existing error messages from all mode contents
             Object.values(modeContents).forEach(content => {
@@ -258,6 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <strong>Rumus:</strong> % = S_ukur / S_rating × 100<br>
                         <strong>Perhitungan:</strong> % = ${S_ukur} / ${S_rating} × 100 = ${persentase.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %
                     `;
+                    hasilDiv.classList.add('visible');
 
                 } else if (selectedMode === 'mw_mvar') {
                     // Mode 2: MW dan MVAR
@@ -306,6 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         &nbsp;&nbsp;&nbsp;&nbsp;S_ukur = √(${P}² + ${Q}²) = ${s_ukurFormatted}<br>
                         &nbsp;&nbsp;&nbsp;&nbsp;% = ${s_ukurFormatted} / ${S_rating} × 100 = ${persentaseFormatted}
                     `;
+                    hasilDiv.classList.add('visible');
 
                 } else if (selectedMode === 'arus') {
                     // Mode 3: Arus terukur
@@ -357,6 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         &nbsp;&nbsp;&nbsp;&nbsp;I_nominal = ${S_rating} × 1000 / (√3 × ${V_ukur}) = ${i_nominalFormatted}<br>
                         &nbsp;&nbsp;&nbsp;&nbsp;% = ${I_ukur.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / ${i_nominalFormatted} × 100 = ${persentaseFormatted}
                     `;
+                    hasilDiv.classList.add('visible');
 
                 } else {
                     throw new Error('Mode input tidak valid');
@@ -458,6 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clear previous results and errors
             hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
             mvascInput.classList.remove('error-input');
             tegangan6Input.classList.remove('error-input');
 
@@ -492,6 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <strong>Rumus:</strong> I_sc = MVA_sc × 1000 / (√3 × V)<br>
                     <strong>Perhitungan:</strong> I_sc = ${MVA_sc} × 1000 / (√3 × ${V}) = ${hasilFormatted_A}
                 `;
+                hasilDiv.classList.add('visible');
             } catch (error) {
                 // Tampilkan error di dekat kolom yang salah
                 if (error.message.includes('MVA hubung singkat')) {
@@ -530,6 +540,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clear previous results and errors
             hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
             daya7Input.classList.remove('error-input');
             tegangan7Input.classList.remove('error-input');
             zPercent7Input.classList.remove('error-input');
@@ -569,6 +580,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <strong>Rumus:</strong> I_sc = I_nominal × 100 / Z%<br>
                     <strong>Perhitungan:</strong> I_sc = ${I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} A
                 `;
+                hasilDiv.classList.add('visible');
             } catch (error) {
                 // Tampilkan error di dekat kolom yang salah
                 if (error.message.includes('Daya S')) {
@@ -647,6 +659,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clear previous results and errors
             hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
             iPrimInput.classList.remove('error-input');
             iSekRatingInput.classList.remove('error-input');
             iPrimRatingInput.classList.remove('error-input');
@@ -927,6 +940,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clear previous results and errors
             hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
             vNominalInput.classList.remove('error-input');
             tapNInput.classList.remove('error-input');
             stepInput.classList.remove('error-input');
@@ -964,6 +978,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <strong>Rumus:</strong> V_tap = V_nominal × (1 + n × step% / 100)<br>
                     <strong>Perhitungan:</strong> V_tap = ${V_nominal} × (1 + ${n} × ${stepPercent} / 100) = ${V_tap.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kV
                 `;
+                hasilDiv.classList.add('visible');
             } catch (error) {
                 // Tampilkan error di dekat kolom yang salah
                 if (error.message.includes('Tegangan nominal V_nominal')) {
@@ -1009,6 +1024,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clear previous results and errors
             hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
             dayaInput.classList.remove('error-input');
             cosPhi1Input.classList.remove('error-input');
             cosPhi2Input.classList.remove('error-input');
@@ -1046,6 +1062,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <strong>Rumus:</strong> Qc = P × (tan φ1 − tan φ2)<br>
                     <strong>Perhitungan:</strong> Qc = ${P} × (tan(cos⁻¹(${cosPhi1})) − tan(cos⁻¹(${cosPhi2}))) = ${Qc.toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} MVAR
                 `;
+                hasilDiv.classList.add('visible');
             } catch (error) {
                 // Tampilkan error di dekat kolom yang salah
                 if (error.message.includes('Daya aktif P')) {
@@ -1266,6 +1283,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clear previous results and errors
             hasilDiv.innerHTML = '';
+            hasilDiv.classList.remove('visible');
             nilaiInput.classList.remove('error-input');
 
             // Remove any existing error messages
@@ -1389,6 +1407,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <strong>Perhitungan:</strong> ${nilaiFormatted} ${dariSatuan} = ${hasilFormatted} ${keSatuan}<br>
                     <strong>Detail perhitungan:</strong> ${perhitunganDetail}
                 `;
+                hasilDiv.classList.add('visible');
             } catch (error) {
                 // Tampilkan error di dekat kolom yang salah
                 nilaiInput.classList.add('error-input');
