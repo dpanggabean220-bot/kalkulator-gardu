@@ -553,7 +553,7 @@ Rumus.estimasiLokasiGangguan = function(nilai_gangguan, nilai_per_km, panjang_sa
  * @param {number} X - Reaktansi per kilometer dalam Ω/km
  * @param {number} cosPhi - Faktor daya (cos φ)
  * @param {number} V - Tegangan dalam kV (untuk menghitung persentase drop tegangan)
- * @returns {{dropTegangan: number, persen: number}} Objek dengan drop tegangan dalam V dan persentase terhadap tegangan
+ * @returns {{dropTegangan: number, persen: number, sinPhi: number}} Objek dengan drop tegangan dalam V, persentase terhadap tegangan, dan nilai sin φ
  * @throws {Error} Jika input tidak valid
  */
 Rumus.dropTeganganSaluran3Fasa = function(I, L, R, X, cosPhi, V) {
@@ -611,7 +611,8 @@ Rumus.dropTeganganSaluran3Fasa = function(I, L, R, X, cosPhi, V) {
 
     return {
         dropTegangan: dropTegangan, // dalam volt
-        persen: persen // dalam persen
+        persen: persen, // dalam persen
+        sinPhi: sinPhi // nilai sin φ
     };
 };
 
@@ -647,6 +648,43 @@ Rumus.rugiDayaSaluran = function(I, R, L) {
     // Rumus: P_loss = 3 × I² × R × L
     const P_loss = 3 * I * I * R * L;
     return P_loss;
+};
+
+/**
+ * Format daya dengan satuan yang sesuai (W, kW, atau MW)
+ * @param {number} watt - Daya dalam watt
+ * @returns {{nilai: number, satuan: string}} Objek dengan nilai dan satuan
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.formatDaya = function(watt) {
+    // Validasi input
+    if (typeof watt !== 'number' || isNaN(watt)) {
+        throw new Error('Daya harus berupa angka');
+    }
+    if (watt < 0) {
+        throw new Error('Daya tidak boleh negatif');
+    }
+
+    // Tentukan satuan yang sesuai
+    if (watt < 1000) {
+        // Di bawah 1000 W, tampilkan dalam W
+        return {
+            nilai: watt,
+            satuan: 'W'
+        };
+    } else if (watt < 1000000) {
+        // Di bawah 1.000.000 W, tampilkan dalam kW
+        return {
+            nilai: watt / 1000,
+            satuan: 'kW'
+        };
+    } else {
+        // 1.000.000 W ke atas, tampilkan dalam MW
+        return {
+            nilai: watt / 1000000,
+            satuan: 'MW'
+        };
+    }
 };
 
 /**

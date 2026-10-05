@@ -894,8 +894,22 @@ test('Drop tegangan saluran 3 fasa - I 200 A, L 10 km, R 0,1, X 0,4 Ω/km, cos �
   const result = Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, 0.4, 0.85, 20); // Assuming 20 kV tegangan
   // Expected: ≈ 1024,4 V (from test cases)
   assertCloseTo(result.dropTegangan, 1024.4, 0.1, 'Hasil harus 1024,4 V');
+  assertCloseTo(result.sinPhi, Math.sqrt(1 - 0.85*0.85), 0.0001, 'Sin φ harus sesuai dengan cos φ 0,85');
   // Persentase: (1024.4 V / 20 kV) * 100 = (1.0244 kV / 20 kV) * 100 = 5.122%
   assertCloseTo(result.persen, 5.122, 0.01, 'Persentase harus 5,122%');
+});
+
+// Test baru untuk kalkulator 12: cos φ = 1 dan cos φ = 0
+test('Drop tegangan saluran 3 fasa - I 200 A, L 10 km, R 0,1, X 0,4 Ω/km, cos φ 1', async t => {
+  const result = Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, 0.4, 1, 20); // cos φ = 1, sin φ = 0
+  assertCloseTo(result.dropTegangan, 346.4, 0.1, 'Hasil harus 346,4 V untuk cos φ = 1');
+  assertCloseTo(result.sinPhi, 0, 0.0001, 'Sin φ harus 0 untuk cos φ = 1');
+});
+
+test('Drop tegangan saluran 3 fasa - I 200 A, L 10 km, R 0,1, X 0,4 Ω/km, cos φ 0', async t => {
+  const result = Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, 0.4, 0, 20); // cos φ = 0, sin φ = 1
+  assertCloseTo(result.dropTegangan, 1385.6, 0.1, 'Hasil harus 1385,6 V untuk cos φ = 0');
+  assertCloseTo(result.sinPhi, 1, 0.0001, 'Sin φ harus 1 untuk cos φ = 0');
 });
 
 // Kalkulator 13: Rugi daya saluran
@@ -1046,6 +1060,58 @@ test('Drop tegangan saluran 3 fasa - input tegangan kurang dari atau sama dengan
   assert.throws(
     () => Rumus.dropTeganganSaluran3Fasa(200, 10, 0.1, 0.4, 0.85, -5),
     { message: 'Tegangan V harus lebih besar dari nol' }
+  );
+});
+
+// Kalkulator 13: Rugi daya saluran
+test('Rugi daya saluran - I = 0 → P_loss = 0', async t => {
+  const Ploss = Rumus.rugiDayaSaluran(0, 0.1, 10);
+  assertCloseTo(Ploss, 0, 0.01, 'Hasil harus 0 W ketika arus = 0');
+});
+
+// Tests untuk fungsi formatDaya
+test('Format daya - 999 W → 999 W', async t => {
+  const result = Rumus.formatDaya(999);
+  assert.strictEqual(result.nilai, 999);
+  assert.strictEqual(result.satuan, 'W');
+});
+
+test('Format daya - 1000 W → 1 kW', async t => {
+  const result = Rumus.formatDaya(1000);
+  assertCloseTo(result.nilai, 1, 0.001, 'Nilai harus 1');
+  assert.strictEqual(result.satuan, 'kW');
+});
+
+test('Format daya - 999999 W → 999,999 kW', async t => {
+  const result = Rumus.formatDaya(999999);
+  assertCloseTo(result.nilai, 999.999, 0.001, 'Nilai harus 999,999');
+  assert.strictEqual(result.satuan, 'kW');
+});
+
+test('Format daya - 1000000 W → 1 MW', async t => {
+  const result = Rumus.formatDaya(1000000);
+  assertCloseTo(result.nilai, 1, 0.001, 'Nilai harus 1');
+  assert.strictEqual(result.satuan, 'MW');
+});
+
+test('Format daya - 7500000 W → 7,5 MW', async t => {
+  const result = Rumus.formatDaya(7500000);
+  assertCloseTo(result.nilai, 7.5, 0.001, 'Nilai harus 7,5');
+  assert.strictEqual(result.satuan, 'MW');
+});
+
+// Test input tidak valid untuk formatDaya
+test('Format daya - input bukan angka', async t => {
+  assert.throws(
+    () => Rumus.formatDaya('abc'),
+    { message: 'Daya harus berupa angka' }
+  );
+});
+
+test('Format daya - input kurang dari nol', async t => {
+  assert.throws(
+    () => Rumus.formatDaya(-10),
+    { message: 'Daya tidak boleh negatif' }
   );
 });
 

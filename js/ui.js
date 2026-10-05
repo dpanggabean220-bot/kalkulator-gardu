@@ -1275,9 +1275,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Tampilkan hasil
                 let hasilHTML = `
                     <strong>Estimasi lokasi gangguan:</strong> ${jarakFormatted}<br>
-                    <strong>Metode:</strong> ${selectedMetode === 'impedansi' ? 'Impedansi |Z|' : 'Reaktansi X'}<br>
+                    <strong>Metode:</strong> ${selectedMetode === 'impedansi' ? 'Impedansi gangguan |Z|' : 'Reaktansi gangguan X'}<br>
+                    <strong>Satuan:</strong> ${selectedMetode === 'impedansi' ? 'Ω' : 'Ω'}<br>
+                    <strong>Satuan per km:</strong> ${selectedMetode === 'impedansi' ? 'Ω/km' : 'Ω/km'}<br>
                     <strong>Rumus:</strong> jarak = nilai_gangguan / nilai_per_km<br>
-                    <strong>Perhitungan:</strong> jarak = ${nilai_gangguan} / ${nilai_per_km} = ${result.jarak.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} km
+                    <strong>Perhitungan:</strong> jarak = ${nilai_gangguan.toLocaleString('id-ID')} / ${nilai_per_km.toLocaleString('id-ID')} = ${result.jarak.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} km
                 `;
 
                 if (panjang_saluran !== null) {
@@ -1388,12 +1390,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const dropTeganganFormatted = result.dropTegangan.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' V';
                 const persenFormatted = result.persen.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' %';
 
+                // Hitung sin φ untuk ditampilkan
+                const sinPhi = result.sinPhi;
+
                 // Tampilkan hasil
                 hasilDiv.innerHTML = `
                     <strong>Drop tegangan:</strong> ${dropTeganganFormatted}<br>
                     <strong>Persentase drop tegangan:</strong> ${persenFormatted}<br>
                     <strong>Rumus:</strong> ΔV ≈ √3 × I × L × (R cos φ + X sin φ)<br>
-                    <strong>Perhitungan:</strong> ΔV ≈ √3 × ${I} × ${L} × (${R} × cos φ + ${X} × sin φ) = ${result.dropTegangan.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} V
+                    <strong>Perhitungan:</strong> ΔV ≈ √3 × ${I} × ${L} × (${R} × ${cosPhi.toLocaleString('id-ID')} + ${X} × ${sinPhi.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}) = ${result.dropTegangan.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} V<br>
+                    <strong>Nilai sin φ:</strong> ${sinPhi.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
                 `;
                 hasilDiv.classList.add('visible');
             } catch (error) {
@@ -1795,31 +1801,18 @@ if (form15) {
                 // Call the rumus function
                 const Ploss = Rumus.rugiDayaSaluran(I, R, L);
 
-                // Format hasil dengan satuan otomatis
-                let hasilFormatted;
-                let hasilSmallText = '';
-
-                if (Ploss < 1000) {
-                    // Di bawah 1000 W, tampilkan dalam W
-                    hasilFormatted = Ploss.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' W';
-                } else if (Ploss < 1000000) {
-                    // Di bawah 1.000.000 W, tampilkan dalam kW
-                    const hasilKW = Ploss / 1000;
-                    hasilFormatted = hasilKW.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kW';
-                    hasilSmallText = `<small>${Ploss.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} W</small>`;
-                } else {
-                    // 1.000.000 W ke atas, tampilkan dalam MW
-                    const hasilMW = Ploss / 1000000;
-                    hasilFormatted = hasilMW.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MW';
-                    hasilSmallText = `<small>${Ploss.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} W</small>`;
-                }
+                // Format hasil menggunakan fungsi formatDaya dari rumus.js
+                const dayaFormatted = Rumus.formatDaya(Ploss);
+                const hasilFormatted = dayaFormatted.nilai.toLocaleString('id-ID', {
+                    minimumFractionDigits: dayaFormatted.satuan === 'W' ? 0 : 2,
+                    maximumFractionDigits: dayaFormatted.satuan === 'W' ? 0 : 2
+                }) + ' ' + dayaFormatted.satuan;
 
                 // Tampilkan hasil
                 hasilDiv.innerHTML = `
                     <strong>Rugi daya saluran:</strong> ${hasilFormatted}<br>
-                    ${hasilSmallText}
                     <strong>Rumus:</strong> P_loss = 3 × I² × R × L<br>
-                    <strong>Perhitungan:</strong> P_loss = 3 × ${I}² × ${R} × ${L} = ${Ploss.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} W
+                    <strong>Perhitungan:</strong> P_loss = 3 × ${I.toLocaleString('id-ID')}² × ${R.toLocaleString('id-ID')} × ${L.toLocaleString('id-ID')} = ${Ploss.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} W
                 `;
                 hasilDiv.classList.add('visible');
             } catch (error) {
