@@ -1537,10 +1537,10 @@ if (form15) {
 
             hasilHTML += `<strong>Perhitungan:</strong><br>`;
             if (result.PI !== undefined) {
-                hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;PI = ${R10menit !== undefined && R10menit !== null ? R10menit : '(tidak dihitung)'} / ${R1menit} = ${formatResult(result.PI)}<br>`;
+                hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;PI = ${R10menit !== undefined && R10menit !== null ? R10menit : 'tidak diisi'} / ${R1menit} = ${formatResult(result.PI)}<br>`;
             }
             if (result.DAR !== undefined) {
-                hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;DAR = ${R1menit} / ${R30detik !== undefined && R30detik !== null ? R30detik : '(tidak dihitung)'} = ${formatResult(result.DAR)}<br>`;
+                hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;DAR = ${R1menit} / ${R30detik !== undefined && R30detik !== null ? R30detik : 'tidak diisi'} = ${formatResult(result.DAR)}<br>`;
             }
 
             hasilDiv.innerHTML = hasilHTML;
@@ -1920,6 +1920,7 @@ if (form15) {
                     const P_atm = selectedSatuan === 'MPa' ? 0.1013 : 1.013;
                     const P_absolut = P_ukur + P_atm;
                     hasilHTML += `<strong>Perhitungan:</strong><br>`;
+                    hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;Tekanan atmosfer = ${P_atm.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} ${selectedSatuan}<br>`;
                     hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;P_absolut = ${P_ukur} + ${P_atm} = ${P_absolut.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} ${selectedSatuan}<br>`;
                     hasilHTML += `&nbsp;&nbsp;&nbsp;&nbsp;P₂₀ = ${P_absolut.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} × 293,15 / (${T} + 273,15) = ${result.P20_absolut.toLocaleString('id-ID', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} ${selectedSatuan}<br>`;
                 } else {
@@ -1939,6 +1940,9 @@ if (form15) {
 
                 // Tampilkan catatan
                 hasilHTML += `<br><small><em>Pendekatan gas ideal. Acuan resmi tetap kurva koreksi dari pabrikan peralatan.</em></small>`;
+
+                // Tambahkan catatan singkat tentang P20 absolut vs relatif
+                hasilHTML += `<br><small><em>P₂₀ absolut diukur terhadap vakum; P₂₀ relatif diukur terhadap tekanan atmosfer. Batas minimum pabrikan dibandingkan dengan P₂₀ relatif.</em></small>`;
 
                 hasilDiv.innerHTML = hasilHTML;
                 hasilDiv.classList.add('visible');

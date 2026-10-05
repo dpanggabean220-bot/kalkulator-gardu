@@ -1329,3 +1329,27 @@ test('Koreksi tekanan SF6 - input batas minimum kurang dari atau sama dengan nol
     { message: 'Batas minimum harus lebih besar dari nol' }
   );
 });
+
+// Kalkulator 16: Test input relatif dengan batas: 0,5487 MPa relatif, 35 °C, batas 0,55 → harus ada peringatan
+test('Koreksi tekanan SF6 - 0,5487 MPa relatif, 35 °C, batas 0,55 → harus ada peringatan', async t => {
+  const result = Rumus.koreksiTekananSF6(0.5487, 'relatif', 'MPa', 35, 0.55);
+  // P_absolut = 0.5487 + 0.1013 = 0.65 MPa
+  // P20 = 0.65 × 293.15 / (35 + 273.15) = 0.65 × 293.15 / 308.15 ≈ 0.6184 MPa
+  // P20_relatif = 0.6184 - 0.1013 = 0.5171 MPa
+  assertCloseTo(result.P20_absolut, 0.6184, 0.001, 'P20 absolut harus 0,6184 MPa');
+  assertCloseTo(result.P20_relatif, 0.5171, 0.001, 'P20 relatif harus 0,5171 MPa');
+  assert.strictEqual(result.satuan, 'MPa', 'Satuan harus MPa');
+  assert.strictEqual(result.peringatan, 'Tekanan P₂₀ relatif di bawah batas minimum yang diberikan.', 'Peringatan harus muncul karena P20 relatif < batas');
+});
+
+// Kalkulator 16: Test input relatif dengan batas: 0,5487 MPa relatif, 35 °C, batas 0,50 → tidak ada peringatan
+test('Koreksi tekanan SF6 - 0,5487 MPa relatif, 35 °C, batas 0,50 → tidak ada peringatan', async t => {
+  const result = Rumus.koreksiTekananSF6(0.5487, 'relatif', 'MPa', 35, 0.50);
+  // P_absolut = 0.5487 + 0.1013 = 0.65 MPa
+  // P20 = 0.65 × 293.15 / (35 + 273.15) = 0.65 × 293.15 / 308.15 ≈ 0.6184 MPa
+  // P20_relatif = 0.6184 - 0.1013 = 0.5171 MPa
+  assertCloseTo(result.P20_absolut, 0.6184, 0.001, 'P20 absolut harus 0,6184 MPa');
+  assertCloseTo(result.P20_relatif, 0.5171, 0.001, 'P20 relatif harus 0,5171 MPa');
+  assert.strictEqual(result.satuan, 'MPa', 'Satuan harus MPa');
+  assert.strictEqual(result.peringatan, null, 'Tidak ada peringatan karena P20 relatif >= batas');
+});
