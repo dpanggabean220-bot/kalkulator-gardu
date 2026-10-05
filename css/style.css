@@ -1,9 +1,19 @@
 :root {
+    color-scheme: light dark;
+
+    /* Warna teks, tautan, garis, dan ring fokus */
     --color-primary: #2563EB;
     --color-primary-dark: #1d4ed8;
     --color-secondary: #3B82F6;
     --color-accent: #EA580C;
     --color-accent-dark: #c2410c;
+
+    /* Warna latar untuk elemen bertulisan putih (semua lolos kontras AA) */
+    --color-fill: #2563EB;        /* header, tombol: ~5,2:1 */
+    --color-fill-hover: #1d4ed8;  /* hover tombol, tombol kategori: ~6,7:1 */
+    --color-fill-strong: #1e40af; /* kategori terbuka, tautan menu: ~8,7:1 */
+    --color-fill-deep: #1e3a8a;   /* hover tautan menu */
+
     --color-background: #F8FAFC;
     --color-card: #FFFFFF;
     --color-foreground: #1E293B;
@@ -12,9 +22,12 @@
     --color-border: #E2E8F0;
     --color-destructive: #d32f2f;
     --color-destructive-dark: #b71c1c;
-    --color-ring: --color-primary;
+    --color-ring: var(--color-primary);
     --color-success: #16a34a;
     --color-warning: #ea580c;
+
+    --color-hasil-bg: #e6f2ff;
+    --color-error-bg: #fff5f5;
 
     --font-base: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
@@ -66,16 +79,20 @@
         --color-muted: #334155;
         --color-muted-foreground: #94a3b8;
         --color-border: #475569;
-        --color-primary: #3b82f6;
-        --color-primary-dark: #2563eb;
+        /* Teks dan tautan biru dibuat lebih terang agar terbaca di latar gelap */
+        --color-primary: #60a5fa;
+        --color-primary-dark: #93c5fd;
         --color-secondary: #60a5fa;
         --color-accent: #fbbf24;
         --color-accent-dark: #f59e0b;
         --color-destructive: #f87171;
         --color-destructive-dark: #ef4444;
-        --color-ring: --color-primary;
         --color-success: #4ade80;
         --color-warning: #fbbf24;
+
+        --color-hasil-bg: #172554;
+        --color-error-bg: #450a0a;
+        /* --color-fill* sengaja tidak diubah: tetap biru tua dengan tulisan putih */
     }
 }
 
@@ -125,7 +142,6 @@ a:hover {
 
 button,
 input[type="number"],
-input[type="radio"],
 .nav-toggle {
     font-family: inherit;
     font-size: var(--font-size-base);
@@ -138,7 +154,7 @@ button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--color-primary);
+    background-color: var(--color-fill);
     color: #fff;
     border: none;
     border-radius: var(--radius-sm);
@@ -147,7 +163,7 @@ button {
     transition: background-color var(--transition-fast);
 }
 button:hover:not(:disabled) {
-    background-color: var(--color-primary-dark);
+    background-color: var(--color-fill-hover);
 }
 button:disabled {
     opacity: 0.5;
@@ -170,7 +186,16 @@ input[type="number"]:focus {
 }
 input[type="number"].error-input {
     border-color: var(--color-destructive);
-    background-color: #fff5f5;
+    background-color: var(--color-error-bg);
+}
+
+/* Radio tetap berukuran wajar; area sentuh diperbesar lewat label-nya */
+input[type="radio"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    accent-color: var(--color-fill);
+    cursor: pointer;
 }
 
 label {
@@ -188,7 +213,7 @@ label {
 }
 
 header {
-    background-color: var(--color-primary);
+    background-color: var(--color-fill);
     color: #fff;
     padding: var(--space-2);
     text-align: center;
@@ -205,7 +230,7 @@ nav {
 }
 .nav-toggle {
     width: 100%;
-    background-color: var(--color-secondary);
+    background-color: var(--color-fill-hover);
     color: #fff;
     border: none;
     border-radius: var(--radius-sm);
@@ -217,10 +242,10 @@ nav {
     justify-content: space-between;
 }
 .nav-toggle:hover {
-    background-color: #1d4ed8; /* secondary dark */
+    background-color: var(--color-fill-strong);
 }
 .nav-toggle[aria-expanded="true"] {
-    background-color: var(--color-primary);
+    background-color: var(--color-fill-strong);
 }
 .nav-category ul {
     list-style: none;
@@ -232,17 +257,20 @@ nav {
     margin-bottom: var(--space-0-5);
 }
 .nav-category a {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
+    min-height: 44px;
     padding: var(--space-0-5) var(--space-1);
-    background-color: var(--color-secondary);
+    background-color: var(--color-fill-strong);
     color: #fff;
     border-radius: var(--radius-sm);
     text-align: center;
     text-decoration: none;
 }
 .nav-category a:hover {
-    background-color: #1d4ed8;
+    background-color: var(--color-fill-deep);
 }
 
 /* Show menu items on larger screens */
@@ -257,7 +285,7 @@ nav {
     }
     .nav-category .nav-toggle {
         display: block;
-        background: var(--color-secondary);
+        background: var(--color-fill-hover);
         color: white;
         padding: var(--space-1) var(--space-2);
         margin: 0 0 var(--space-0-5) 0;
@@ -276,7 +304,6 @@ nav {
         margin-bottom: var(--space-0-5);
     }
     .nav-category a {
-        display: block;
         width: 100%;
         padding: var(--space-0-5) var(--space-1);
         text-align: center;
@@ -311,13 +338,17 @@ section h2 {
 }
 .mode-options {
     display: flex;
-    gap: var(--space-2);
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
     margin: var(--space-0-5) 0;
 }
 .mode-options label {
     display: flex;
     align-items: center;
-    gap: var(--space-0-5);
+    gap: var(--space-1);
+    min-height: 44px;
+    padding: var(--space-0-5) var(--space-1);
+    margin-bottom: 0;
     cursor: pointer;
 }
 .mode-content {
@@ -335,11 +366,12 @@ section h2 {
 .hasil {
     margin-top: var(--space-2);
     padding: var(--space-1-5);
-    background: #e6f2ff;
+    background: var(--color-hasil-bg);
+    color: var(--color-foreground);
     border-left: 4px solid var(--color-primary);
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
-    white-space: pre-wrap;
+    white-space: pre-line;
     display: none;
     border-radius: var(--radius-sm);
 }
