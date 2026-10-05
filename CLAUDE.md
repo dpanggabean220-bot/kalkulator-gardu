@@ -108,6 +108,8 @@ kalkulator/
 | 17 | 150 kV, 100 MVA | Z_base = 225 Ω |
 
 ## Alur kerja per kalkulator
+Prinsip kasus uji: pilih nilai yang membuat jawaban benar dan jawaban salah menghasilkan angka berbeda. Hindari nilai yang membuat rumus terbalik atau acuan yang salah tetap lolos (misalnya dua input bernilai sama, atau batas yang jauh dari hasil).
+
 1. Tulis fungsi di `js/rumus.js`.
 2. Tulis test di `tests/rumus.test.js` memakai kasus uji di atas, plus test
    untuk input tidak valid.
@@ -117,6 +119,7 @@ kalkulator/
 
 Kerjakan SATU kalkulator per tugas. Jangan lanjut ke kalkulator berikutnya
 sebelum test kalkulator sekarang lolos.
+
 
 
 
