@@ -43,6 +43,7 @@ kalkulator/
   pengganti setting proteksi resmi, standar, atau prosedur kerja yang berlaku."
 
 ## Larangan
+- Jangan membuat file atau folder di luar struktur folder yang ditetapkan, termasuk catatan kerja.
 - Jangan masukkan nama, logo, data, atau dokumen PLN.
 - Jangan menanamkan nilai batas dari SOP internal mana pun (misalnya ambang
   tekanan SF6 atau ambang tahanan isolasi). Kalau perlu nilai batas, sediakan
@@ -116,4 +117,5 @@ kalkulator/
 
 Kerjakan SATU kalkulator per tugas. Jangan lanjut ke kalkulator berikutnya
 sebelum test kalkulator sekarang lolos.
+
 
