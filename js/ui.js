@@ -75,6 +75,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <strong>Perhitungan:</strong> I = ${S} × 1000 / (√3 × ${V}) = ${I.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} A
                 `;
                 hasilDiv.classList.add('visible');
+                // Scroll ke hasil; tanpa animasi jika pengguna memilih kurangi gerakan
+                const kurangiGerak = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                hasilDiv.scrollIntoView({ behavior: kurangiGerak ? 'auto' : 'smooth', block: 'center' });
             } catch (error) {
                 // Tampilkan error di dekat kolom yang salah
                 if (error.message.includes('Daya S')) {
