@@ -2007,6 +2007,11 @@ if (form15) {
 
     // Pendaftaran Service Worker untuk PWA
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+        // Manifest hanya dimuat di https/localhost; lewat file:// diblokir CORS
+        var linkManifest = document.createElement('link');
+        linkManifest.rel = 'manifest';
+        linkManifest.href = 'manifest.json';
+        document.head.appendChild(linkManifest);
         window.addEventListener('load', function() {
             navigator.serviceWorker.register('./sw.js')
                 .then(function(registration) {
