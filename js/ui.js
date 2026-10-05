@@ -1391,35 +1391,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             } catch (error) {
                 // Tampilkan error di dekat kolom yang salah
-                if (error.message.includes('Nilai harus diisi')) {
-                    nilaiInput.classList.add('error-input');
-                    const errorElem = document.createElement('div');
-                    errorElem.className = 'error';
-                    errorElem.textContent = error.message;
-                    nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
-                } else if (error.message.includes('kV harus lebih besar dari nol') ||
-                          error.message.includes('V harus lebih besar dari nol') ||
-                          error.message.includes('kA harus lebih besar dari nol') ||
-                          error.message.includes('A harus lebih besar dari nol') ||
-                          error.message.includes('MVA harus lebih besar dari nol') ||
-                          error.message.includes('kVA harus lebih besar dari nol') ||
-                          error.message.includes('Kelvin harus lebih besar dari nol')) {
-                    nilaiInput.classList.add('error-input');
-                    const errorElem = document.createElement('div');
-                    errorElem.className = 'error';
-                    errorElem.textContent = error.message;
-                    nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
-                } else if (error.message.includes('Celsius tidak boleh kurang dari -273,15')) {
-                    nilaiInput.classList.add('error-input');
-                    const errorElem = document.createElement('div');
-                    errorElem.className = 'error';
-                    errorElem.textContent = error.message;
-                    nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
-                }
-
-                // Tampilkan juga error umum di hasil div untuk debugging
-                hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
-                hasilDiv.style.color = '#d32f2f';
+                nilaiInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                nilaiInput.parentNode.insertBefore(errorElem, nilaiInput.nextSibling);
             }
         });
     }
