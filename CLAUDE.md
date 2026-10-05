@@ -15,7 +15,10 @@ kalkulator/
 ├── css/style.css       # semua gaya tampilan
 ├── js/rumus.js         # SEMUA rumus, fungsi murni, tanpa akses DOM
 ├── js/ui.js            # logika tampilan: baca input, panggil rumus, tampilkan hasil
-└── tests/rumus.test.js # unit test untuk setiap fungsi di rumus.js
+├── tests/rumus.test.js # unit test untuk setiap fungsi di rumus.js
+├── manifest.json       # data PWA: nama aplikasi, ikon, warna
+├── sw.js               # service worker: cache agar jalan tanpa sinyal
+└── icons/              # ikon PWA (PNG), dibuat manual, jangan diubah agen
 ```
 
 ## Aturan teknis
@@ -42,6 +45,22 @@ kalkulator/
   Tampilkan pesan error di dekat kolom yang salah, jangan pakai `alert()`.
 - Footer wajib: "Hasil kalkulator ini untuk estimasi dan pembelajaran. Bukan
   pengganti setting proteksi resmi, standar, atau prosedur kerja yang berlaku."
+
+## Aturan PWA (bisa dipasang di HP dan jalan tanpa sinyal)
+- `sw.js` wajib di root agar cakupannya seluruh situs. Semua path di
+  `manifest.json` dan `sw.js` memakai path relatif (`./`), karena situs
+  berada di subfolder `/kalkulator-gardu/` di GitHub Pages.
+- Daftarkan service worker hanya jika `"serviceWorker" in navigator` dan
+  halaman dibuka lewat `https:` atau `localhost`. Saat dibuka lewat `file://`,
+  lewati tanpa pesan error di Console.
+- `sw.js` menyimpan semua file aplikasi ke cache saat install, lalu melayani
+  dari cache lebih dulu (cache-first). Cache versi lama dihapus saat activate.
+- Daftar file yang di-cache harus sama persis dengan URL yang dipakai
+  `index.html`, termasuk akhiran `?v=`.
+- Setiap kali isi file yang di-cache berubah, naikkan konstanta
+  `CACHE_VERSION` di `sw.js` dan nomor `?v=` di `index.html`. Tanpa ini,
+  HP pengguna tetap memakai versi lama.
+- Jangan mengubah, mengganti, atau membuat ulang file di folder `icons/`.
 
 ## Larangan
 - Jangan membuat file atau folder di luar struktur folder yang ditetapkan, termasuk catatan kerja. Catatan memori agen hanya boleh disimpan di folder memori bawaan Claude Code, bukan di folder proyek ini.
