@@ -83,6 +83,33 @@ Rumus.persentasePembebananTrafo = function(S_ukur, S_rating) {
     return persentase;
 };
 
+/**
+ * Hitung arus hubung singkat dari MVA hubung singkat
+ * @param {number} MVA_sc - MVA hubung singkat
+ * @param {number} V - Tegangan dalam kV
+ * @returns {number} Arus hubung singkat dalam A
+ * @throws {Error} Jika input tidak valid
+ */
+Rumus.arusHubungSingkatDariMVA = function(MVA_sc, V) {
+    // Validasi input
+    if (typeof MVA_sc !== 'number' || isNaN(MVA_sc)) {
+        throw new Error('MVA hubung singkat harus berupa angka');
+    }
+    if (typeof V !== 'number' || isNaN(V)) {
+        throw new Error('Tegangan V harus berupa angka');
+    }
+    if (MVA_sc <= 0) {
+        throw new Error('MVA hubung singkat harus lebih besar dari nol');
+    }
+    if (V <= 0) {
+        throw new Error('Tegangan V harus lebih besar dari nol');
+    }
+
+    const akar3 = Math.sqrt(3);
+    const I_sc = (MVA_sc * 1000) / (akar3 * V);
+    return I_sc;
+};
+
 // Supaya bisa diuji dengan Node
 if (typeof module !== "undefined") {
     module.exports = Rumus;

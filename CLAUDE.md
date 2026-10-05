@@ -25,7 +25,7 @@ kalkulator/
 - Muat script di `index.html` dengan `<script src="js/rumus.js"></script>`
   lalu `<script src="js/ui.js"></script>`.
 - Tanpa library eksternal dan tanpa CDN. Harus jalan offline.
-- Test memakai test runner bawaan Node: `node --test tests/`
+- Test memakai test runner bawaan Node: `node --test tests/rumus.test.js`
   (pakai `require`, `node:test`, dan `node:assert`).
 - Fungsi di `rumus.js` menerima angka dan mengembalikan angka atau objek.
   Kalau input tidak valid, lempar `Error` dengan pesan Bahasa Indonesia.
@@ -110,9 +110,10 @@ kalkulator/
 1. Tulis fungsi di `js/rumus.js`.
 2. Tulis test di `tests/rumus.test.js` memakai kasus uji di atas, plus test
    untuk input tidak valid.
-3. Jalankan `node --test tests/` sampai semua lolos.
+3. Jalankan `node --test tests/rumus.test.js` sampai semua lolos.
 4. Baru buat tampilannya di `index.html` dan `js/ui.js`.
 5. Laporkan: fungsi apa yang ditambahkan, hasil test, dan cara mencobanya.
 
 Kerjakan SATU kalkulator per tugas. Jangan lanjut ke kalkulator berikutnya
 sebelum test kalkulator sekarang lolos.
+

@@ -444,4 +444,73 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+// Handle form submission for calculator 6
+const form6 = document.getElementById('form6');
+if (form6) {
+    form6.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get input values
+        const mvascInput = document.getElementById('mvasc');
+        const tegangan6Input = document.getElementById('tegangan6');
+        const hasilDiv = document.getElementById('hasil6');
+
+        // Clear previous results and errors
+        hasilDiv.innerHTML = '';
+        mvascInput.classList.remove('error-input');
+        tegangan6Input.classList.remove('error-input');
+
+        // Remove any existing error messages
+        const existingErrors = form6.querySelectorAll('.error');
+        existingErrors.forEach(el => el.remove());
+
+        try {
+            const MVA_sc = parseFloat(mvascInput.value);
+            const V = parseFloat(tegangan6Input.value);
+
+            // Validate empty inputs
+            if (isNaN(MVA_sc) || mvascInput.value.trim() === '') {
+                throw new Error('MVA hubung singkat harus diisi');
+            }
+            if (isNaN(V) || tegangan6Input.value.trim() === '') {
+                throw new Error('Tegangan V harus diisi');
+            }
+
+            // Call the rumus function
+            const I_sc = Rumus.arusHubungSingkatDariMVA(MVA_sc, V);
+
+            // Format hasil dengan satuan dan locale Indonesia
+            const hasilFormatted = I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' A';
+
+            // Tampilkan hasil
+            hasilDiv.innerHTML = `
+                <strong>Arus hubung singkat:</strong> ${hasilFormatted}<br>
+                <strong>Rumus:</strong> I_sc = MVA_sc × 1000 / (√3 × V)<br>
+                <strong>Perhitungan:</strong> I_sc = ${MVA_sc} × 1000 / (√3 × ${V}) = ${I_sc.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} A
+            `;
+        } catch (error) {
+            // Tampilkan error di dekat kolom yang salah
+            if (error.message.includes('MVA hubung singkat')) {
+                mvascInput.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                mvascInput.parentNode.insertBefore(errorElem, mvascInput.nextSibling);
+            }
+            if (error.message.includes('Tegangan V')) {
+                tegangan6Input.classList.add('error-input');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'error';
+                errorElem.textContent = error.message;
+                tegangan6Input.parentNode.insertBefore(errorElem, tegangan6Input.nextSibling);
+            }
+
+            // Tampilkan juga error umum di hasil div untuk debugging
+            hasilDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+            hasilDiv.style.color = '#d32f2f';
+        }
+    });
+}
+
 });

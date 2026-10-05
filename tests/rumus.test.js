@@ -214,3 +214,45 @@ test('Persentase pembebanan trafo mode Arus terukur - input tegangan bukan angka
     { message: 'Tegangan V harus berupa angka' }
   );
 });
+
+// Kalkulator 6: Arus hubung singkat dari MVA hubung singkat
+test('Arus hubung singkat dari MVA hubung singkat - 10000 MVA_sc, 150 kV', async t => {
+  const I_sc = Rumus.arusHubungSingkatDariMVA(10000, 150);
+  assertCloseTo(I_sc, 38490, 1, 'Hasil harus 38490 A (toleransi 1)');
+});
+
+test('Arus hubung singkat dari MVA hubung singkat - input MVA_sc bukan angka', async t => {
+  assert.throws(
+    () => Rumus.arusHubungSingkatDariMVA('abc', 150),
+    { message: 'MVA hubung singkat harus berupa angka' }
+  );
+});
+
+test('Arus hubung singkat dari MVA hubung singkat - input tegangan bukan angka', async t => {
+  assert.throws(
+    () => Rumus.arusHubungSingkatDariMVA(10000, 'xyz'),
+    { message: 'Tegangan V harus berupa angka' }
+  );
+});
+
+test('Arus hubung singkat dari MVA hubung singkat - input MVA_sc kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.arusHubungSingkatDariMVA(0, 150),
+    { message: 'MVA hubung singkat harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.arusHubungSingkatDariMVA(-100, 150),
+    { message: 'MVA hubung singkat harus lebih besar dari nol' }
+  );
+});
+
+test('Arus hubung singkat dari MVA hubung singkat - input tegangan kurang dari atau sama dengan nol', async t => {
+  assert.throws(
+    () => Rumus.arusHubungSingkatDariMVA(10000, 0),
+    { message: 'Tegangan V harus lebih besar dari nol' }
+  );
+  assert.throws(
+    () => Rumus.arusHubungSingkatDariMVA(10000, -5),
+    { message: 'Tegangan V harus lebih besar dari nol' }
+  );
+});
