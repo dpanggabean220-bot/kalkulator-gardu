@@ -16,7 +16,7 @@ body {
 header {
     background: #004080;
     color: #fff;
-    padding: 1rem;
+    padding: 0.5rem;
     text-align: center;
 }
 
@@ -52,12 +52,41 @@ nav ul {
 
 /* Show menu items on larger screens */
 @media (min-width: 601px) {
+    nav {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+    }
+
+    .nav-category {
+        margin: 0;
+    }
+
     .nav-category h3 {
-        display: none;
+        display: block;
+        background: #0066cc;
+        color: white;
+        padding: 0.5rem;
+        margin: 0 0 0.5rem 0;
+        border-radius: 3px;
+        text-align: center;
     }
 
     .nav-category ul {
-        display: block !important;
+        display: block;
+        margin-top: 0;
+    }
+
+    .nav-category li {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .nav-category a {
+        display: block;
+        width: 100%;
+        padding: 0.4rem 0.8rem;
+        text-align: center;
     }
 }
 
